@@ -1,8 +1,7 @@
 import Head from "next/head";
+import Link from "next/link";
 
 const Index = () => {
-  console.log(process.env.PORT);
-  console.log(process.env.URL_APP);
   return (
     <div>
       <Head>
@@ -21,6 +20,9 @@ const Index = () => {
         }}
       >
         <p>Content on Index page</p>
+        <Link href="/csr-page" as="/csr-page">
+          <a>Go to CSR page</a>
+        </Link>
       </div>
     </div>
   );
