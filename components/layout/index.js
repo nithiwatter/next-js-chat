@@ -6,6 +6,7 @@ import MenuLink from '../common/MenuWithLinks';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Notifier from '../common/Notifier';
+import Confirmer from '../common/Confirmer';
 
 const styleGrid = {
   width: '100vw',
@@ -83,6 +84,7 @@ class Layout extends Component {
           {children}
         </Grid>
         <Notifier></Notifier>
+        <Confirmer></Confirmer>
       </Grid>
     );
   }

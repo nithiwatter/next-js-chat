@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Layout from '../components/layout/index';
 import Button from '@material-ui/core/Button';
 import notify from '../lib/notify';
+import confirm from '../lib/confirm';
 
 const Index = () => {
   return (
@@ -27,6 +28,28 @@ const Index = () => {
             <a>Go to CSR page</a>
           </Link>
           <Button onClick={() => notify('some text')}>Click me</Button>
+          <Button
+            onClick={() =>
+              confirm({
+                title: 'Are you sure?',
+                message: 'long explanation',
+                onAnswer: async (answer) => {
+                  console.log(answer);
+
+                  if (!answer) return;
+
+                  try {
+                    notify('You successfully confirmed');
+                  } catch (error) {
+                    console.error(error);
+                    notify(error);
+                  }
+                },
+              })
+            }
+          >
+            Click me 2
+          </Button>
         </div>
       </div>
     </Layout>
