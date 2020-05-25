@@ -1,8 +1,9 @@
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Router from 'next/router';
-import React, { Component } from 'react';
-import { withRouter } from 'next/router';
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Router from "next/router";
+import React, { Component } from "react";
+import Divider from "@material-ui/core/Divider";
+import { withRouter } from "next/router";
 
 class MenuWithLinks extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ class MenuWithLinks extends Component {
   render() {
     const { options, children, router } = this.props;
     const { anchorEl } = this.state;
+
     return (
       <div>
         <div onClick={this.handleClick}>{children}</div>
@@ -35,10 +37,7 @@ class MenuWithLinks extends Component {
         >
           {options.map((option, i) => {
             return option.separator ? (
-              <hr
-                style={{ width: '85%', margin: '10px auto' }}
-                key={`separated-${i}`}
-              />
+              <Divider key={`separated-${i}`} variant="middle"></Divider>
             ) : (
               <MenuItem
                 onClick={() => {
@@ -47,10 +46,9 @@ class MenuWithLinks extends Component {
                 }}
                 key={option.href}
                 style={{
-                  fontWeight: router.asPath.includes(option.highlighterSlug)
-                    ? 600
-                    : 300,
-                  fontSize: '14px',
+                  fontWeight:
+                    router.asPath === option.highlighterSlug ? 600 : 300,
+                  fontSize: "14px",
                 }}
               >
                 {option.text}
