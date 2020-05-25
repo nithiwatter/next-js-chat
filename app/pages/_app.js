@@ -24,6 +24,7 @@ class MyApp extends App {
     };
 
     if (Component.getInitialProps) {
+      // will call getInitialProps for each page
       Object.assign(pageProps, await Component.getInitialProps(ctx));
     }
 

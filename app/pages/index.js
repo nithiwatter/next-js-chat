@@ -5,10 +5,17 @@ import Button from '@material-ui/core/Button';
 import notify from '../lib/notify';
 import confirm from '../lib/confirm';
 import React, { Component } from 'react';
+import { getUser } from '../lib/api/public';
 
 class Index extends Component {
   constructor(props) {
     super(props);
+  }
+
+  static async getInitialProps(ctx) {
+    const user = await getUser();
+    console.log(user);
+    return { ...user };
   }
 
   render() {
