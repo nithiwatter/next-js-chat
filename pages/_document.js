@@ -28,6 +28,7 @@ class MyDocument extends Document {
   };
 
   render() {
+    console.log("render");
     return (
       <Html lang="eng">
         <Head>
@@ -38,6 +39,21 @@ class MyDocument extends Document {
           />
           <meta name="google" content="notranslate" />
           <meta name="theme-color" content="#303030" />
+
+          <style>
+            {`
+              a,
+              a:focus {
+                font-weight: 600;
+                color: #fff;
+                text-decoration: none;
+                outline: none;
+              }
+              a:hover,
+              button:hover {
+                opacity: 0.6;
+                cursor: pointer;`}
+          </style>
         </Head>
         <body>
           <Main />

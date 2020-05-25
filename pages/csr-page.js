@@ -17,7 +17,6 @@ const CSRPage = (props) => {
           padding: "0px 30px",
           fontSize: "15px",
           height: "100%",
-          //   color: "#222",
         }}
       >
         <p>Content on CSR page</p>
