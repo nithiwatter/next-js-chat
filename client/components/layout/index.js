@@ -15,24 +15,33 @@ const styleGrid = {
   padding: '0px 10px',
 };
 
+const styleGridIsMobile = {
+  width: '100vw',
+  minHeight: '100vh',
+  maxWidth: '100%',
+  padding: '0px 0px 0px 10px',
+};
+
 class Layout extends Component {
   state = {};
   render() {
-    const { firstGridItem, children } = this.props;
+    // props passed from App.getInitialProps
+    const { firstGridItem, children, isMobile } = this.props;
     return (
       <Grid
         container
         justify="flex-start"
         alignItems="stretch"
-        style={styleGrid}
+        style={isMobile ? styleGridIsMobile : styleGrid}
       >
         {firstGridItem ? (
           <Grid
             item
-            sm={2}
+            md={2}
+            sm={4}
             xs={12}
             style={{
-              borderRight: '1px #707070 solid',
+              borderRight: isMobile ? 'none' : '1px #707070 solid',
               paddingTop: '10px',
             }}
           >
@@ -71,7 +80,7 @@ class Layout extends Component {
                   },
                 ]}
               >
-                <IconButton size="small">
+                <IconButton size="small" style={{ marginRight: '10px' }}>
                   <AccountCircleIcon
                     style={{ width: '40px', height: '40px' }}
                   ></AccountCircleIcon>
@@ -80,7 +89,7 @@ class Layout extends Component {
             </div>
           </Grid>
         ) : null}
-        <Grid item sm={10} xs={12}>
+        <Grid item md={10} sm={8} xs={12}>
           {children}
         </Grid>
         <Notifier></Notifier>
