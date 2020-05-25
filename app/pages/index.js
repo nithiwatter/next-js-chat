@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import notify from '../lib/notify';
 import confirm from '../lib/confirm';
 import React, { Component } from 'react';
-import { getUser } from '../lib/api/public';
+import { getUserBySlugApiMethod } from '../lib/api/public';
 
 class Index extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class Index extends Component {
   }
 
   static async getInitialProps(ctx) {
-    const user = await getUser();
+    const user = await getUserBySlugApiMethod('team-builder-book');
     console.log(user);
     return { ...user };
   }

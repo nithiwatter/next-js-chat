@@ -10,7 +10,7 @@ export default async function sendRequest(path, opts) {
   };
 
   config.url = `${process.env.URL_API}/${path}/${qs}`;
-
+  console.log(config.url);
   const response = await axios(config);
 
   return response.data;
