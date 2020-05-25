@@ -1,6 +1,6 @@
-import Document, { Head, Html, Main, NextScript } from "next/document";
-import React from "react";
-import { ServerStyleSheets } from "@material-ui/styles";
+import Document, { Head, Html, Main, NextScript } from 'next/document';
+import React from 'react';
+import { ServerStyleSheets } from '@material-ui/styles';
 
 class MyDocument extends Document {
   static getInitialProps = async (ctx) => {
@@ -28,7 +28,6 @@ class MyDocument extends Document {
   };
 
   render() {
-    console.log("render");
     return (
       <Html lang="eng">
         <Head>
@@ -39,7 +38,10 @@ class MyDocument extends Document {
           />
           <meta name="google" content="notranslate" />
           <meta name="theme-color" content="#303030" />
-
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          />
           <style>
             {`
               a,
