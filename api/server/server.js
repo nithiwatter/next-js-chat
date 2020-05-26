@@ -1,8 +1,8 @@
-const express = require("express");
-require("dotenv").config();
-const api = require("./api/index");
-const mongoose = require("mongoose");
-const cors = require("cors");
+const express = require('express');
+require('dotenv').config();
+const api = require('./api/index');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 mongoose
   .connect(process.env.DATABASE_LOCAL, {
@@ -11,17 +11,18 @@ mongoose
     useFindAndModify: false,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("> DB connection successful"));
+  .then(() => console.log('> DB connection successful'));
 
 const server = express();
 server.use(express.json());
+console.log(process.env.URL_APP);
 server.use(cors({ origin: process.env.URL_APP }));
 
 api(server);
 
-server.get("/api/v1/public/get-user", (req, res) => {
-  console.log("API server got request from APP server");
-  res.json({ user: { email: "team@builderbook.org" } });
+server.get('/api/v1/public/get-user', (req, res) => {
+  console.log('API server got request from APP server');
+  res.json({ user: { email: 'team@builderbook.org' } });
 });
 
 server.listen(process.env.PORT_API, (err) => {

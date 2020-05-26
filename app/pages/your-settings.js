@@ -1,90 +1,123 @@
-import React, { Component } from "react";
-import Layout from "../components/layout/index";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import Divider from "@material-ui/core/Divider";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import Button from "@material-ui/core/Button";
-import PhotoCamera from "@material-ui/icons/PhotoCamera";
-import { withStyles } from "@material-ui/core/styles";
-import Head from "next/head";
-import EmailIcon from "@material-ui/icons/Email";
-
+import React, { Component } from 'react';
+import Layout from '../components/layout/index';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
+import Button from '@material-ui/core/Button';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import { withStyles } from '@material-ui/core/styles';
+import Head from 'next/head';
+import EmailIcon from '@material-ui/icons/Email';
+import {
+  getSignedRequestApiMethod,
+  uploadUsingSignedRequestApiMethod,
+} from '../lib/api/team-member';
 import SimpleForm, {
   openSimpleFormExternal,
-} from "../components/common/SimpleForm";
-import notify from "../lib/notify";
-import { updateProfileApiMethod } from "../lib/api/public";
+} from '../components/common/SimpleForm';
+import notify from '../lib/notify';
+import {
+  updateProfileApiMethod,
+  getUserBySlugApiMethod,
+} from '../lib/api/public';
+import axios from 'axios';
 
 const styles = (theme) => ({
   title: {
-    [theme.breakpoints.down("sm")]: {
-      fontSize: "2.75rem",
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '2.75rem',
     },
-    [theme.breakpoints.down("xs")]: {
-      fontSize: "2rem",
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '2rem',
     },
   },
   root: {
-    width: "90%",
-    margin: "4rem auto",
-    borderRadius: "5px",
-    border: "2px solid",
+    width: '90%',
+    margin: '4rem auto',
+    borderRadius: '5px',
+    border: '2px solid',
     borderColor: theme.palette.grey[700],
     backgroundColor: theme.palette.background.paper,
   },
   icons: {
-    width: "80px",
-    textAlign: "center",
+    width: '80px',
+    textAlign: 'center',
   },
   listItem: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
     padding: theme.spacing(2, 2),
-    [theme.breakpoints.down("sm")]: {
-      flexDirection: "column",
-      alignItems: "flex-start",
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
     },
   },
   input: {
-    display: "none",
+    display: 'none',
   },
 });
 
 async function onSubmit(status, value) {
   if (!status) return;
 
-  if (value === "") return notify("A name is required");
+  if (value === '') return notify('A name is required');
 
   try {
-    const user = await updateProfileApiMethod({ name: value });
-    console.log(user);
+    await updateProfileApiMethod({
+      name: value,
+      userId: '5ecc0f6e7ab98548b452b938',
+    });
   } catch (err) {
     console.log(err);
   }
 }
 
 class YourSettings extends Component {
+  static async getInitialProps() {
+    const user = await getUserBySlugApiMethod('team-builder-book');
+    return { ...user };
+  }
+
   constructor(props) {
     super(props);
     this.state = { disabled: true, selectedFile: null };
     this.handleSelectFile = this.handleSelectFile.bind(this);
+    this.handleSubmitFile = this.handleSubmitFile.bind(this);
   }
 
   handleSelectFile(e) {
     this.setState({ selectedFile: e.target.files[0] });
   }
 
+  async handleSubmitFile() {
+    const { selectedFile } = this.state;
+    if (selectedFile === null) return notify('A photo is required');
+
+    const data = {
+      fileType: selectedFile.type,
+      prefix: 'team-builder-book',
+    };
+
+    const response = await getSignedRequestApiMethod(data);
+
+    await uploadUsingSignedRequestApiMethod(
+      response.signedRequest,
+      selectedFile,
+      selectedFile.type
+    );
+  }
+
   render() {
-    const { isMobile, firstGridItem, classes, theme } = this.props;
-    const { disabled } = this.state;
+    const { isMobile, firstGridItem, classes, theme, user } = this.props;
+
     return (
       <Layout isMobile={isMobile} firstGridItem={firstGridItem}>
         <Head>
@@ -93,9 +126,9 @@ class YourSettings extends Component {
         </Head>
         <div
           style={{
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
           <List className={classes.root}>
@@ -110,16 +143,23 @@ class YourSettings extends Component {
                 </Typography>
               </ListItemText>
               <ListItemAvatar className={classes.icons}>
-                <label htmlFor="icon-button-file">
-                  <IconButton
-                    color="primary"
-                    aria-label="upload picture"
-                    component="span"
+                <div>
+                  <label htmlFor="icon-button-file">
+                    <IconButton
+                      color="primary"
+                      aria-label="upload picture"
+                      component="span"
+                    >
+                      <PhotoCamera />
+                    </IconButton>
+                  </label>
+                  <Button
+                    style={{ marginTop: '0.5rem' }}
+                    onClick={this.handleSubmitFile}
                   >
-                    <PhotoCamera />
-                  </IconButton>
-                </label>
-                <Button disabled={disabled}>Upload</Button>
+                    Upload
+                  </Button>
+                </div>
               </ListItemAvatar>
             </ListItem>
             <ListItem>
@@ -137,11 +177,12 @@ class YourSettings extends Component {
               <ListItemAvatar className={classes.icons}>
                 <Avatar
                   style={{
-                    height: "70px",
-                    width: "70px",
-                    fontSize: "2rem",
-                    margin: "0 auto",
+                    height: '70px',
+                    width: '70px',
+                    fontSize: '2rem',
+                    margin: '0 auto',
                   }}
+                  src="https://next-js-chat-avatars.s3-ap-southeast-1.amazonaws.com/team-builder-book/avatar"
                 >
                   A
                 </Avatar>
@@ -156,7 +197,7 @@ class YourSettings extends Component {
                     variant="subtitle1"
                     className={classes.description}
                   >
-                    nithiwatter@gmail.com
+                    {user.email}
                   </Typography>
                 </div>
               </ListItemText>
@@ -172,8 +213,8 @@ class YourSettings extends Component {
               onClick={() =>
                 openSimpleFormExternal({
                   onSubmit,
-                  title: "Your Name",
-                  description: "Please enter your new name",
+                  title: 'Your Name',
+                  description: 'Please enter your new name',
                 })
               }
             >
@@ -184,7 +225,7 @@ class YourSettings extends Component {
                     variant="subtitle1"
                     className={classes.description}
                   >
-                    Nithiwat Seesillapachai
+                    {user.displayName}
                   </Typography>
                 </div>
               </ListItemText>

@@ -11,11 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.683.0",
+    "axios": "^0.19.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.16",
     "nodemon": "^2.0.4",
+    "request": "^2.88.2",
     "slugify": "^1.4.0"
   }
 }
