@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const mongoSchema = new mongoose.Schema({
   slug: {
@@ -22,29 +23,24 @@ const mongoSchema = new mongoose.Schema({
 mongoSchema.statics.getUserBySlug = async function ({ slug }) {
   // this refers to the User model
   // lean quickens the query - returning just a plain JS obj
-  return this.findOne({ slug }, 'email displayName', {
+  return this.findOne({ slug }, "email displayName", {
     lean: true,
   });
 };
 
-mongoSchema.statics.updateProfile = async function ({
-  userId,
-  name,
-  avatarUrl,
-}) {
+mongoSchema.statics.updateProfile = async function ({ userId, name }) {
   const user = await this.findById(userId);
 
   if (name !== user.displayName) {
     user.displayName = name;
-    user.slug = name;
+    user.slug = slugify(name);
   }
 
-  user.avatarUrl = avatarUrl;
   await user.save();
 
   return user;
 };
 
-const User = mongoose.model('User', mongoSchema);
+const User = mongoose.model("User", mongoSchema);
 
 module.exports = User;

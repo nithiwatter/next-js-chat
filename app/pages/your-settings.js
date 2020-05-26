@@ -10,7 +10,16 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import Button from "@material-ui/core/Button";
+import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import { withStyles } from "@material-ui/core/styles";
+import Head from "next/head";
+import EmailIcon from "@material-ui/icons/Email";
+
+import SimpleForm, {
+  openSimpleFormExternal,
+} from "../components/common/SimpleForm";
+import notify from "../lib/notify";
+import { updateProfileApiMethod } from "../lib/api/public";
 
 const styles = (theme) => ({
   title: {
@@ -44,16 +53,44 @@ const styles = (theme) => ({
       alignItems: "flex-start",
     },
   },
+  input: {
+    display: "none",
+  },
 });
+
+async function onSubmit(status, value) {
+  if (!status) return;
+
+  if (value === "") return notify("A name is required");
+
+  try {
+    const user = await updateProfileApiMethod({ name: value });
+    console.log(user);
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 class YourSettings extends Component {
   constructor(props) {
     super(props);
+    this.state = { disabled: true, selectedFile: null };
+    this.handleSelectFile = this.handleSelectFile.bind(this);
   }
+
+  handleSelectFile(e) {
+    this.setState({ selectedFile: e.target.files[0] });
+  }
+
   render() {
     const { isMobile, firstGridItem, classes, theme } = this.props;
+    const { disabled } = this.state;
     return (
       <Layout isMobile={isMobile} firstGridItem={firstGridItem}>
+        <Head>
+          <title>Your Settings at Async</title>
+          <meta name="description" content="description" />
+        </Head>
         <div
           style={{
             height: "100%",
@@ -72,10 +109,20 @@ class YourSettings extends Component {
                   Your Settings
                 </Typography>
               </ListItemText>
-
-              <Button>Upload Photo</Button>
+              <ListItemAvatar className={classes.icons}>
+                <label htmlFor="icon-button-file">
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="span"
+                  >
+                    <PhotoCamera />
+                  </IconButton>
+                </label>
+                <Button disabled={disabled}>Upload</Button>
+              </ListItemAvatar>
             </ListItem>
-            <ListItem button>
+            <ListItem>
               <ListItemText>
                 <div className={classes.listItem}>
                   <Typography variant="h5">Profile Photo</Typography>
@@ -101,7 +148,7 @@ class YourSettings extends Component {
               </ListItemAvatar>
             </ListItem>
             <Divider variant="middle"></Divider>
-            <ListItem button>
+            <ListItem>
               <ListItemText>
                 <div className={classes.listItem}>
                   <Typography variant="h5">Your Email</Typography>
@@ -115,12 +162,21 @@ class YourSettings extends Component {
               </ListItemText>
               <ListItemAvatar className={classes.icons}>
                 <IconButton>
-                  <EditIcon></EditIcon>
+                  <EmailIcon></EmailIcon>
                 </IconButton>
               </ListItemAvatar>
             </ListItem>
             <Divider variant="middle" />
-            <ListItem button>
+            <ListItem
+              button
+              onClick={() =>
+                openSimpleFormExternal({
+                  onSubmit,
+                  title: "Your Name",
+                  description: "Please enter your new name",
+                })
+              }
+            >
               <ListItemText>
                 <div className={classes.listItem}>
                   <Typography variant="h5">Your Name</Typography>
@@ -139,6 +195,14 @@ class YourSettings extends Component {
               </ListItemAvatar>
             </ListItem>
           </List>
+          <SimpleForm></SimpleForm>
+          <input
+            accept="image/*"
+            className={classes.input}
+            id="icon-button-file"
+            type="file"
+            onChange={this.handleSelectFile}
+          />
         </div>
       </Layout>
     );
