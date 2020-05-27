@@ -23,6 +23,10 @@ class MyApp extends App {
       firstGridItem: true,
     };
 
+    if (ctx.pathname.includes('/login')) {
+      pageProps.firstGridItem = false;
+    }
+
     if (Component.getInitialProps) {
       // will call getInitialProps for each page
       Object.assign(pageProps, await Component.getInitialProps(ctx));

@@ -65,32 +65,21 @@ const styles = (theme) => ({
   },
 });
 
-async function onSubmit(status, value) {
-  if (!status) return;
-
-  if (value === '') return notify('A name is required');
-
-  try {
-    await updateProfileApiMethod({
-      name: value,
-      userId: '5ecc0f6e7ab98548b452b938',
-    });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 class YourSettings extends Component {
-  static async getInitialProps() {
-    const user = await getUserBySlugApiMethod('team-builder-book');
-    return { ...user };
-  }
-
   constructor(props) {
     super(props);
-    this.state = { disabled: true, selectedFile: null };
+    const { user } = this.props;
+    this.state = {
+      disabled: true,
+      selectedFile: null,
+      displayName: user.displayName,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      avatarHash: Date.now(),
+    };
     this.handleSelectFile = this.handleSelectFile.bind(this);
     this.handleSubmitFile = this.handleSubmitFile.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   handleSelectFile(e) {
@@ -103,21 +92,55 @@ class YourSettings extends Component {
 
     const data = {
       fileType: selectedFile.type,
-      prefix: 'team-builder-book',
+      prefix: this.props.user._id,
     };
 
     const response = await getSignedRequestApiMethod(data);
+    console.log(response);
 
     await uploadUsingSignedRequestApiMethod(
       response.signedRequest,
       selectedFile,
       selectedFile.type
     );
+
+    await updateProfileApiMethod({
+      avatarUrl: response.url,
+      userId: this.props.user._id,
+    });
+
+    console.log('done updating');
+    notify('You successfully uploaded your new profile photo.');
+
+    this.setState({
+      avatarUrl: response.url,
+      avatarHash: Date.now(),
+      selectedFile: null,
+    });
+  }
+
+  async onSubmit(status, value) {
+    if (!status) return;
+
+    if (value === '') return notify('A name is required');
+
+    try {
+      const { updatedUser } = await updateProfileApiMethod({
+        name: value,
+        userId: this.props.user._id,
+      });
+
+      notify('You successfully updated your new name.');
+      this.setState({ displayName: updatedUser.displayName });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   render() {
+    console.log('render');
     const { isMobile, firstGridItem, classes, theme, user } = this.props;
-
+    const { displayName, email, avatarUrl } = this.state;
     return (
       <Layout isMobile={isMobile} firstGridItem={firstGridItem}>
         <Head>
@@ -182,7 +205,7 @@ class YourSettings extends Component {
                     fontSize: '2rem',
                     margin: '0 auto',
                   }}
-                  src="https://next-js-chat-avatars.s3-ap-southeast-1.amazonaws.com/team-builder-book/avatar"
+                  src={avatarUrl + '?' + this.state.avatarHash}
                 >
                   A
                 </Avatar>
@@ -197,7 +220,7 @@ class YourSettings extends Component {
                     variant="subtitle1"
                     className={classes.description}
                   >
-                    {user.email}
+                    {email}
                   </Typography>
                 </div>
               </ListItemText>
@@ -212,7 +235,7 @@ class YourSettings extends Component {
               button
               onClick={() =>
                 openSimpleFormExternal({
-                  onSubmit,
+                  onSubmit: this.onSubmit,
                   title: 'Your Name',
                   description: 'Please enter your new name',
                 })
@@ -225,7 +248,7 @@ class YourSettings extends Component {
                     variant="subtitle1"
                     className={classes.description}
                   >
-                    {user.displayName}
+                    {displayName}
                   </Typography>
                 </div>
               </ListItemText>

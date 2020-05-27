@@ -28,11 +28,22 @@ mongoSchema.statics.getUserBySlug = async function ({ slug }) {
   });
 };
 
-mongoSchema.statics.updateProfile = async function ({ userId, name }) {
+mongoSchema.statics.updateProfile = async function ({
+  userId,
+  name,
+  avatarUrl,
+}) {
   const user = await this.findById(userId);
 
-  if (name !== user.displayName) {
-    user.displayName = name;
+  if (name) {
+    if (name !== user.displayName) {
+      user.displayName = name;
+      user.slug = slugify(name);
+    }
+  }
+
+  if (avatarUrl) {
+    user.avatarUrl = avatarUrl;
   }
 
   await user.save();

@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button';
 import withAuth from '../lib/withAuth';
 import Layout from '../components/layout/index';
 import Head from 'next/head';
+import Typography from '@material-ui/core/Typography';
 
 class LogIn extends Component {
   state = {};
@@ -17,12 +18,18 @@ class LogIn extends Component {
               content="Login and signup page for SaaS boilerplate demo by Async"
             />
           </Head>
-          <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: 400 }}>
+          <Typography variant="h3" style={{ margin: '2rem' }}>
             Log in
-          </p>
-          <p>You’ll be logged in for 14 days unless you log out manually.</p>
+          </Typography>
+          <Typography variant="h5">
+            You’ll be logged in for 14 days unless you log out manually.
+          </Typography>
 
-          <Button href={`${process.env.URL_API}/api/v1/auth/google`}>
+          <Button
+            href={`${process.env.URL_API}/api/v1/auth/google`}
+            style={{ marginTop: '2rem' }}
+            variant="outlined"
+          >
             Log in with Google
           </Button>
         </div>
