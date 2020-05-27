@@ -74,9 +74,13 @@ exports.callbackGoogle = async (req, res, next) => {
 
 exports.generateJWTToken = async (req, res, next) => {
   console.log(req.user._id);
-  const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET_KEY);
+  const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: '14d',
+  });
   res.cookie('async-chat-app', token, { httpOnly: true });
-  res.send(token);
+
+  // everything passed so redirect the user to index page
+  res.redirect(process.env.URL_APP);
 };
 
 exports.logOut = async (req, res, next) => {
@@ -84,4 +88,24 @@ exports.logOut = async (req, res, next) => {
   console.log(req.cookies);
   res.clearCookie('async-chat-app');
   res.json({ done: 'done' });
+};
+
+exports.validateUser = async (req, res, next) => {
+  try {
+    console.log(req.cookies);
+    const token = req.cookies['async-chat-app'];
+
+    // if the user does not send the token (usually when trying to access protected routes on client side)
+    if (!token) return res.json({ user: null });
+
+    const { _id } = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log(_id);
+
+    const user = await User.findById(_id).lean();
+    req.user = user;
+    next();
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') return res.json({ user: null });
+    next(err);
+  }
 };

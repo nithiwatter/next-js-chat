@@ -3,6 +3,7 @@ const teamMemberRouter = require('./team-member');
 const authRouter = require('./auth');
 
 function handleError(err, req, res, next) {
+  console.log('in error handler');
   console.log(err.stack);
   res.status(400).json({ error: err.message || err.toString() });
 }

@@ -6,18 +6,12 @@ import notify from '../lib/notify';
 import confirm from '../lib/confirm';
 import React, { Component } from 'react';
 import axios from 'axios';
-import { getUserBySlugApiMethod } from '../lib/api/public';
+import withAuth from '../lib/withAuth';
 
 class Index extends Component {
   constructor(props) {
     super(props);
   }
-
-  // static async getInitialProps(ctx) {
-  //   const user = await getUserBySlugApiMethod('team-builder-book');
-  //   console.log(user);
-  //   return { ...user };
-  // }
 
   render() {
     const { isMobile, firstGridItem } = this.props;
@@ -41,6 +35,9 @@ class Index extends Component {
             <p>Content on Index page</p>
             <Link href="/csr-page" as="/csr-page">
               <a>Go to CSR page</a>
+            </Link>
+            <Link href="/login" as="/login">
+              <a>Go to Log in page</a>
             </Link>
             <Button onClick={() => notify('some text')}>Click me</Button>
             <Button
@@ -86,4 +83,4 @@ class Index extends Component {
   }
 }
 
-export default Index;
+export default withAuth(Index, { loginRequired: true, logoutRequired: false });

@@ -1,9 +1,10 @@
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Router from "next/router";
-import React, { Component } from "react";
-import Divider from "@material-ui/core/Divider";
-import { withRouter } from "next/router";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Router from 'next/router';
+import React, { Component } from 'react';
+import Divider from '@material-ui/core/Divider';
+import { withRouter } from 'next/router';
+import axios from 'axios';
 
 class MenuWithLinks extends Component {
   constructor(props) {
@@ -19,6 +20,13 @@ class MenuWithLinks extends Component {
 
   handleClose() {
     this.setState({ anchorEl: null });
+  }
+
+  async handleLogOut() {
+    await axios.get(`${process.env.URL_API}/api/v1/auth/log-out`, {
+      withCredentials: true,
+    });
+    Router.push('/login');
   }
 
   render() {
@@ -40,15 +48,22 @@ class MenuWithLinks extends Component {
               <Divider key={`separated-${i}`} variant="middle"></Divider>
             ) : (
               <MenuItem
-                onClick={() => {
-                  Router.push(option.href, option.as || option.href);
-                  this.handleClose();
-                }}
+                onClick={
+                  option.text === 'Log out'
+                    ? () => {
+                        this.handleLogOut();
+                        this.handleClose();
+                      }
+                    : () => {
+                        Router.push(option.href, option.as || option.href);
+                        this.handleClose();
+                      }
+                }
                 key={option.href}
                 style={{
                   fontWeight:
                     router.asPath === option.highlighterSlug ? 600 : 300,
-                  fontSize: "14px",
+                  fontSize: '14px',
                 }}
               >
                 {option.text}

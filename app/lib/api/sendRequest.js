@@ -7,6 +7,7 @@ export default async function sendRequest(path, opts) {
     headers: { ...opts.headers },
     method: opts.method,
     data: opts.data,
+    withCredentials: opts.withCredentials,
   };
 
   config.url = `${process.env.URL_API}/${path}/${qs}`;

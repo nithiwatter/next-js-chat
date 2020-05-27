@@ -26,7 +26,7 @@ import {
   updateProfileApiMethod,
   getUserBySlugApiMethod,
 } from '../lib/api/public';
-import axios from 'axios';
+import withAuth from '../lib/withAuth';
 
 const styles = (theme) => ({
   title: {
@@ -250,4 +250,7 @@ class YourSettings extends Component {
   }
 }
 
-export default withStyles(styles, { withTheme: true })(YourSettings);
+export default withAuth(withStyles(styles, { withTheme: true })(YourSettings), {
+  loginRequired: true,
+  logoutRequired: false,
+});
