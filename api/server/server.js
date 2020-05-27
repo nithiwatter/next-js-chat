@@ -3,6 +3,8 @@ require('dotenv').config();
 const api = require('./api/index');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 mongoose
   .connect(process.env.DATABASE_LOCAL, {
@@ -15,8 +17,9 @@ mongoose
 
 const server = express();
 server.use(express.json());
-console.log(process.env.URL_APP);
-server.use(cors({ origin: process.env.URL_APP }));
+server.use(cookieParser());
+server.use(morgan('dev'));
+server.use(cors({ origin: process.env.URL_APP, credentials: true }));
 
 api(server);
 
