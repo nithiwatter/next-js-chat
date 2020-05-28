@@ -7,6 +7,7 @@ import isMobile from '../lib/isMobile';
 import App from 'next/app';
 import React from 'react';
 import { StoreContext } from '../lib/context';
+import { observer } from 'mobx-react';
 
 class MyApp extends App {
   componentDidMount() {
@@ -68,7 +69,9 @@ class MyApp extends App {
 
     return (
       <React.Fragment>
-        <ThemeProvider theme={true ? themeDark : themeLight}>
+        <ThemeProvider
+          theme={this.rootStore.darkTheme ? themeDark : themeLight}
+        >
           <CssBaseline />
           <StoreContext.Provider value={this.rootStore}>
             <Component {...pageProps} />
@@ -79,4 +82,4 @@ class MyApp extends App {
   }
 }
 
-export default MyApp;
+export default observer(MyApp);

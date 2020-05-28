@@ -1,4 +1,4 @@
-import { decorate, observable, configure } from 'mobx';
+import { decorate, observable, configure, action } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
 
@@ -14,10 +14,16 @@ class Store {
     console.log(initialState);
     this.userStore = new User(this, { ...initialState.user });
     this.currentUrl = initialState.currentUrl;
+    this.darkTheme = true;
+    this.changeTheme = this.changeTheme.bind(this);
   }
 
   changeCurrentUrl(currentUrl) {
     this.currentUrl = currentUrl;
+  }
+
+  changeTheme() {
+    this.darkTheme = !this.darkTheme;
   }
 }
 
@@ -51,6 +57,9 @@ function getStore() {
 
 decorate(Store, {
   currentUrl: observable,
+  darkTheme: observable,
+  changeCurrentUrl: action,
+  changeTheme: action,
 });
 
 export { initializeStore, getStore };

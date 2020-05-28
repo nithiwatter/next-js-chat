@@ -16,7 +16,7 @@ class Index extends Component {
   render() {
     const { isMobile, firstGridItem } = this.props;
     return (
-      <Layout isMobile={isMobile} firstGridItem={firstGridItem}>
+      <Layout {...this.props}>
         <div>
           <Head>
             <title>Index page</title>

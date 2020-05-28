@@ -27,6 +27,7 @@ const styles = (theme) => ({
 class Layout extends Component {
   state = {};
   render() {
+    console.log(this.props.user.rootStore);
     // props passed from App.getInitialProps
     const { firstGridItem, children, isMobile, classes } = this.props;
     return (
@@ -54,7 +55,11 @@ class Layout extends Component {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton size="small" style={{ marginRight: '10px' }}>
+                <IconButton
+                  size="small"
+                  style={{ marginRight: '10px' }}
+                  onClick={this.props.user.rootStore.changeTheme}
+                >
                   <Avatar>A</Avatar>
                 </IconButton>
 

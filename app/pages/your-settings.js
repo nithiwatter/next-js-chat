@@ -40,7 +40,7 @@ const styles = (theme) => ({
     margin: '4rem auto',
     borderRadius: '5px',
     border: '2px solid',
-    borderColor: theme.palette.grey[700],
+    borderColor: theme.palette.secondary.main,
     backgroundColor: theme.palette.background.paper,
   },
   icons: {
@@ -128,7 +128,7 @@ class YourSettings extends Component {
   render() {
     const { isMobile, firstGridItem, classes, theme, user } = this.props;
     return (
-      <Layout isMobile={isMobile} firstGridItem={firstGridItem}>
+      <Layout isMobile={isMobile} firstGridItem={firstGridItem} user={user}>
         <Head>
           <title>Your Settings at Async</title>
           <meta name="description" content="description" />
