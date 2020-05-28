@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { getUserApiMethod } from './api/public';
 import Router from 'next/router';
+import { StoreContext } from './context';
 
 export default function withAuth(
   WrappedComponent,
   { loginRequired, logoutRequired }
 ) {
   return class extends Component {
+    static contextType = StoreContext;
+
     static async getInitialProps(ctx) {
       const { req, res } = ctx;
       let pageComponentProps = {};
@@ -19,19 +22,17 @@ export default function withAuth(
 
       if (typeof window !== 'undefined') {
         // rendering in CSR/client needs to send cookie with CORS
-        console.log('render CSR');
         let data = await getUserApiMethod();
         user = data.user;
       } else {
         // rendering in SSR/server; the original req already has the cookie attached -> send this server-to-server to API
-        console.log('render SSR');
         if (req.headers.cookie) {
           let data = await getUserApiMethod(req.headers.cookie);
           user = data.user;
         }
       }
 
-      console.log(user);
+      console.log('-------------------------');
 
       // trying to access protected page without having a token/or with faulty token (so user is null)
       if (loginRequired && !logoutRequired && !user) {

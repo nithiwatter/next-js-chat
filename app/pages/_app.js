@@ -1,9 +1,12 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/styles';
 import { themeLight, themeDark } from '../lib/theme';
+import { getUserApiMethod } from '../lib/api/public';
+import { initializeStore, getStore } from '../lib/store/index';
 import isMobile from '../lib/isMobile';
 import App from 'next/app';
 import React from 'react';
+import { StoreContext } from '../lib/context';
 
 class MyApp extends App {
   componentDidMount() {
@@ -32,7 +35,32 @@ class MyApp extends App {
       Object.assign(pageProps, await Component.getInitialProps(ctx));
     }
 
-    return { pageProps };
+    if (getStore()) {
+      console.log('already have a store');
+      // if there is a store already present, simply return (no need to fecth user again)
+      // such as fetch successfully via the server - no need to fetch again
+      return { pageProps };
+    }
+
+    let userObj = null;
+
+    try {
+      const { user } = await getUserApiMethod();
+      userObj = user;
+      console.log(userObj);
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log('------------------END');
+    return { pageProps, user: userObj, currentUrl: ctx.asPath };
+  }
+
+  constructor(props) {
+    super(props);
+    const { user, currentUrl } = this.props;
+
+    this.rootStore = initializeStore({ user, currentUrl });
   }
 
   render() {
@@ -43,7 +71,9 @@ class MyApp extends App {
       <React.Fragment>
         <ThemeProvider theme={true ? themeDark : themeLight}>
           <CssBaseline />
-          <Component {...pageProps} />
+          <StoreContext.Provider value={this.rootStore}>
+            <Component {...pageProps} />
+          </StoreContext.Provider>
         </ThemeProvider>
       </React.Fragment>
     );

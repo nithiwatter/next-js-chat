@@ -138,7 +138,6 @@ class YourSettings extends Component {
   }
 
   render() {
-    console.log('render');
     const { isMobile, firstGridItem, classes, theme, user } = this.props;
     const { displayName, email, avatarUrl } = this.state;
     return (
@@ -205,7 +204,7 @@ class YourSettings extends Component {
                     fontSize: '2rem',
                     margin: '0 auto',
                   }}
-                  src={avatarUrl + '?' + this.state.avatarHash}
+                  src={avatarUrl}
                 >
                   A
                 </Avatar>
