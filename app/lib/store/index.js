@@ -11,6 +11,7 @@ let store;
 
 class Store {
   constructor(initialState) {
+    console.log(initialState);
     this.userStore = new User(this, { ...initialState.user });
     this.currentUrl = initialState.currentUrl;
   }
@@ -29,7 +30,7 @@ function initializeStore(initialState) {
   const _store =
     store !== null && store !== undefined
       ? store
-      : new Store({ initialState, isServer });
+      : new Store({ ...initialState, isServer });
 
   // always a new store for every SSR request
   if (isServer) {

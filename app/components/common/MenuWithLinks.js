@@ -5,8 +5,11 @@ import React, { Component } from 'react';
 import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'next/router';
 import axios from 'axios';
+import { StoreContext } from '../../lib/context';
 
 class MenuWithLinks extends Component {
+  static contextType = StoreContext;
+
   constructor(props) {
     super(props);
     this.state = { anchorEl: null };
@@ -26,6 +29,7 @@ class MenuWithLinks extends Component {
     await axios.get(`${process.env.URL_API}/api/v1/auth/log-out`, {
       withCredentials: true,
     });
+    this.context.userStore.logOut();
     Router.push('/login');
   }
 

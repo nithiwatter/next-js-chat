@@ -22,11 +22,9 @@ import SimpleForm, {
   openSimpleFormExternal,
 } from '../components/common/SimpleForm';
 import notify from '../lib/notify';
-import {
-  updateProfileApiMethod,
-  getUserBySlugApiMethod,
-} from '../lib/api/public';
+import { updateProfileApiMethod } from '../lib/api/public';
 import withAuth from '../lib/withAuth';
+import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
   title: {
@@ -68,14 +66,9 @@ const styles = (theme) => ({
 class YourSettings extends Component {
   constructor(props) {
     super(props);
-    const { user } = this.props;
     this.state = {
       disabled: true,
       selectedFile: null,
-      displayName: user.displayName,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      avatarHash: Date.now(),
     };
     this.handleSelectFile = this.handleSelectFile.bind(this);
     this.handleSubmitFile = this.handleSubmitFile.bind(this);
@@ -104,19 +97,14 @@ class YourSettings extends Component {
       selectedFile.type
     );
 
-    await updateProfileApiMethod({
+    // need to uncache image when serving
+    const { user } = this.props;
+    user.updateProfile({
       avatarUrl: response.url,
       userId: this.props.user._id,
     });
 
-    console.log('done updating');
-    notify('You successfully uploaded your new profile photo.');
-
-    this.setState({
-      avatarUrl: response.url,
-      avatarHash: Date.now(),
-      selectedFile: null,
-    });
+    notify('You successfully uploaded your new profile photo. Please refresh.');
   }
 
   async onSubmit(status, value) {
@@ -125,13 +113,13 @@ class YourSettings extends Component {
     if (value === '') return notify('A name is required');
 
     try {
-      const { updatedUser } = await updateProfileApiMethod({
+      const { user } = this.props;
+      user.updateProfile({
         name: value,
         userId: this.props.user._id,
       });
 
       notify('You successfully updated your new name.');
-      this.setState({ displayName: updatedUser.displayName });
     } catch (err) {
       console.log(err);
     }
@@ -139,7 +127,6 @@ class YourSettings extends Component {
 
   render() {
     const { isMobile, firstGridItem, classes, theme, user } = this.props;
-    const { displayName, email, avatarUrl } = this.state;
     return (
       <Layout isMobile={isMobile} firstGridItem={firstGridItem}>
         <Head>
@@ -204,7 +191,7 @@ class YourSettings extends Component {
                     fontSize: '2rem',
                     margin: '0 auto',
                   }}
-                  src={avatarUrl}
+                  src={user.avatarUrl}
                 >
                   A
                 </Avatar>
@@ -219,7 +206,7 @@ class YourSettings extends Component {
                     variant="subtitle1"
                     className={classes.description}
                   >
-                    {email}
+                    {user.email}
                   </Typography>
                 </div>
               </ListItemText>
@@ -247,7 +234,7 @@ class YourSettings extends Component {
                     variant="subtitle1"
                     className={classes.description}
                   >
-                    {displayName}
+                    {user.displayName}
                   </Typography>
                 </div>
               </ListItemText>
@@ -272,7 +259,10 @@ class YourSettings extends Component {
   }
 }
 
-export default withAuth(withStyles(styles, { withTheme: true })(YourSettings), {
-  loginRequired: true,
-  logoutRequired: false,
-});
+export default withAuth(
+  withStyles(styles, { withTheme: true })(observer(YourSettings)),
+  {
+    loginRequired: true,
+    logoutRequired: false,
+  }
+);

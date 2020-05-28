@@ -1,4 +1,5 @@
-import { decorate, observable } from 'mobx';
+import { decorate, observable, action, runInAction } from 'mobx';
+import { updateProfileApiMethod } from '../api/public';
 
 class User {
   constructor(rootStore, user) {
@@ -12,6 +13,28 @@ class User {
     this.displayName = user.displayName;
     this.avatarUrl = user.avatarUrl;
   }
+
+  logOut() {
+    this._id = null;
+    this.slug = null;
+    this.email = null;
+    this.displayName = null;
+    this.avatarUrl = null;
+  }
+
+  async updateProfile(updatedData) {
+    try {
+      const { updatedUser } = await updateProfileApiMethod(updatedData);
+      runInAction(() => {
+        this.displayName = updatedUser.displayName;
+        this.avatarUrl = updatedUser.avatarUrl;
+        this.slug = updatedUser.slug;
+        console.log(this);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
 decorate(User, {
@@ -19,6 +42,8 @@ decorate(User, {
   email: observable,
   displayName: observable,
   avatarUrl: observable,
+  logOut: action,
+  updateProfile: action,
 });
 
 export { User };

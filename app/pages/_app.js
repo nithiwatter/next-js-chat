@@ -45,14 +45,13 @@ class MyApp extends App {
     let userObj = null;
 
     try {
-      const { user } = await getUserApiMethod();
+      const { user } = await getUserApiMethod(ctx.req.headers.cookie);
       userObj = user;
       console.log(userObj);
     } catch (err) {
       console.log(err);
     }
 
-    console.log('------------------END');
     return { pageProps, user: userObj, currentUrl: ctx.asPath };
   }
 
