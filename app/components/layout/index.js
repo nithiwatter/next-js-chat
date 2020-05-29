@@ -8,6 +8,9 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Notifier from '../common/Notifier';
 import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
+import SimpleForm from '../common/SimpleForm';
+
+import Sidebar from '../common/Sidebar';
 
 const styles = (theme) => ({
   grid: {
@@ -25,9 +28,7 @@ const styles = (theme) => ({
 });
 
 class Layout extends Component {
-  state = {};
   render() {
-    console.log(this.props.user.rootStore);
     // props passed from App.getInitialProps
     const { firstGridItem, children, isMobile, classes } = this.props;
     return (
@@ -44,7 +45,7 @@ class Layout extends Component {
             sm={4}
             xs={12}
             style={{
-              paddingTop: '10px',
+              border: '1px solid red',
             }}
           >
             <div
@@ -65,6 +66,7 @@ class Layout extends Component {
 
                 <Typography variant="h6">Async</Typography>
               </div>
+
               <MenuLink
                 options={[
                   {
@@ -93,6 +95,8 @@ class Layout extends Component {
                 </IconButton>
               </MenuLink>
             </div>
+
+            <Sidebar {...this.props}></Sidebar>
           </Grid>
         ) : null}
         <Grid
@@ -105,6 +109,7 @@ class Layout extends Component {
         </Grid>
         <Notifier></Notifier>
         <Confirmer></Confirmer>
+        <SimpleForm></SimpleForm>
       </Grid>
     );
   }

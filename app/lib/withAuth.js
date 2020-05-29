@@ -80,6 +80,7 @@ export default function withAuth(
     render() {
       // isMobile and firsGridItem would have already been passed to this component by App HOC
       const user = this.context.userStore;
+      const rootStore = this.context;
 
       // prevent serving protected users when not logged in from SSR
       if (loginRequired && !logoutRequired && !user._id) {
@@ -90,7 +91,13 @@ export default function withAuth(
         return null;
       }
 
-      return <WrappedComponent {...this.props} user={user}></WrappedComponent>;
+      return (
+        <WrappedComponent
+          {...this.props}
+          user={user}
+          rootStore={rootStore}
+        ></WrappedComponent>
+      );
     }
   }
 

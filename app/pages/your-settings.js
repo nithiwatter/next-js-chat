@@ -18,9 +18,7 @@ import {
   getSignedRequestApiMethod,
   uploadUsingSignedRequestApiMethod,
 } from '../lib/api/team-member';
-import SimpleForm, {
-  openSimpleFormExternal,
-} from '../components/common/SimpleForm';
+import { openSimpleFormExternal } from '../components/common/SimpleForm';
 import notify from '../lib/notify';
 import { updateProfileApiMethod } from '../lib/api/public';
 import withAuth from '../lib/withAuth';
@@ -126,9 +124,21 @@ class YourSettings extends Component {
   }
 
   render() {
-    const { isMobile, firstGridItem, classes, theme, user } = this.props;
+    const {
+      isMobile,
+      firstGridItem,
+      classes,
+      theme,
+      user,
+      rootStore,
+    } = this.props;
     return (
-      <Layout isMobile={isMobile} firstGridItem={firstGridItem} user={user}>
+      <Layout
+        isMobile={isMobile}
+        firstGridItem={firstGridItem}
+        user={user}
+        rootStore={rootStore}
+      >
         <Head>
           <title>Your Settings at Async</title>
           <meta name="description" content="description" />
@@ -245,7 +255,6 @@ class YourSettings extends Component {
               </ListItemAvatar>
             </ListItem>
           </List>
-          <SimpleForm></SimpleForm>
           <input
             accept="image/*"
             className={classes.input}

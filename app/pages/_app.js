@@ -8,6 +8,7 @@ import App from 'next/app';
 import React from 'react';
 import { StoreContext } from '../lib/context';
 import { observer } from 'mobx-react';
+import axios from 'axios';
 
 class MyApp extends App {
   componentDidMount() {
@@ -44,6 +45,7 @@ class MyApp extends App {
     }
 
     let userObj = null;
+    let teams = null;
 
     try {
       const { user } = await getUserApiMethod(ctx.req.headers.cookie);
@@ -53,14 +55,26 @@ class MyApp extends App {
       console.log(err);
     }
 
-    return { pageProps, user: userObj, currentUrl: ctx.asPath };
+    // if there is a user, fetch all initial data regarding teams on client side
+    if (userObj) {
+      const {
+        data,
+      } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-initial-data`,
+        { userId: userObj._id }
+      );
+      teams = data.teams;
+      console.log(teams);
+    }
+
+    return { pageProps, user: userObj, teams: teams, currentUrl: ctx.asPath };
   }
 
   constructor(props) {
     super(props);
-    const { user, currentUrl } = this.props;
+    const { user, teams, currentUrl } = this.props;
 
-    this.rootStore = initializeStore({ user, currentUrl });
+    this.rootStore = initializeStore({ user, teams, currentUrl });
   }
 
   render() {

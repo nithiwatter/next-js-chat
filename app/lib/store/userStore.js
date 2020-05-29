@@ -4,7 +4,6 @@ import { updateProfileApiMethod } from '../api/public';
 class User {
   constructor(rootStore, user) {
     console.log('creating user store');
-    console.log(user);
     this.rootStore = rootStore;
 
     this._id = user._id;
