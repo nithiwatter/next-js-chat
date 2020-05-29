@@ -8,7 +8,6 @@ import { observer } from 'mobx-react';
 class ViewTeam extends Component {
   state = {};
   render() {
-    console.log(this.props);
     const { router, rootStore } = this.props;
     if (rootStore.teams.length === 0)
       return (

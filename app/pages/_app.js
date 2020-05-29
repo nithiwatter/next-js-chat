@@ -45,7 +45,8 @@ class MyApp extends App {
     }
 
     let userObj = null;
-    let teams = null;
+    let teams = [];
+    let channels = [];
 
     try {
       const { user } = await getUserApiMethod(ctx.req.headers.cookie);
@@ -64,17 +65,25 @@ class MyApp extends App {
         { userId: userObj._id }
       );
       teams = data.teams;
+      channels = data.channels;
       console.log(teams);
+      console.log(channels);
     }
 
-    return { pageProps, user: userObj, teams: teams, currentUrl: ctx.asPath };
+    return {
+      pageProps,
+      user: userObj,
+      teams,
+      channels,
+      currentUrl: ctx.asPath,
+    };
   }
 
   constructor(props) {
     super(props);
-    const { user, teams, currentUrl } = this.props;
+    const { user, teams, channels, currentUrl } = this.props;
 
-    this.rootStore = initializeStore({ user, teams, currentUrl });
+    this.rootStore = initializeStore({ user, teams, channels, currentUrl });
   }
 
   render() {

@@ -1,7 +1,8 @@
-import { decorate, observable, configure, action } from 'mobx';
+import { decorate, observable, configure, action, runInAction } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
 import { findIndex } from 'lodash';
+import axios from 'axios';
 
 // disable keeping a clone of the mob store/leaking memory when on the server side
 useStaticRendering(typeof window === 'undefined');
@@ -12,15 +13,17 @@ let store;
 
 class Store {
   constructor(initialState) {
-    console.log(initialState);
+    console.log('creating store');
     this.userStore = new User(this, { ...initialState.user });
     this.teams = initialState.teams;
+    this.channels = initialState.channels;
     this.currentTeam = null;
+    this.currentChannel = null;
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
+    if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.currentUrl = initialState.currentUrl;
     this.darkTheme = true;
     this.changeTheme = this.changeTheme.bind(this);
-    console.log(this);
   }
 
   changeCurrentUrl(currentUrl) {
@@ -33,12 +36,40 @@ class Store {
 
   addTeam(newTeam) {
     this.teams.push(newTeam);
-    console.log(this.teams);
+    this.currentTeam = newTeam;
   }
 
-  selectTeam(teamId) {
+  addChannel(newChannel) {
+    this.channels.push(newChannel);
+    this.currentChannel = newChannel;
+  }
+
+  async selectTeam(teamId) {
     const idx = findIndex(this.teams, (team) => team._id === teamId);
-    this.currentTeam = this.teams[idx];
+    const { data } = await await axios.post(
+      `${process.env.URL_API}/api/v1/team-member/get-channels`,
+      {
+        teamId: this.teams[idx]._id,
+      }
+    );
+    const channels = data.channels;
+    runInAction(() => {
+      this.currentTeam = this.teams[idx];
+      this.channels = channels;
+      if (channels.length > 0) {
+        this.currentChannel = channels[0];
+      } else {
+        this.currentChannel = null;
+      }
+    });
+  }
+
+  selectChannel(channelId) {
+    const idx = findIndex(
+      this.channels,
+      (channel) => channel._id === channelId
+    );
+    this.currentChannel = this.channels[idx];
   }
 }
 
@@ -75,10 +106,14 @@ decorate(Store, {
   darkTheme: observable,
   teams: observable,
   currentTeam: observable,
+  channels: observable,
+  currentChannel: observable,
   changeCurrentUrl: action,
   changeTheme: action,
   addTeam: action,
+  addChannel: action,
   selectTeam: action,
+  selectChannel: action,
 });
 
 export { initializeStore, getStore };

@@ -1,13 +1,18 @@
 const express = require('express');
 const Team = require('../models/Team');
+const Channel = require('../models/Channel');
 const { signRequestForUpload } = require('../aws');
 
 const router = express();
 
 router.post('/get-initial-data', async (req, res, next) => {
   try {
+    let channels = [];
     const teams = await Team.getList({ userId: req.body.userId });
-    return res.status(200).json({ teams });
+    if (teams.length > 0) {
+      channels = await Channel.getList({ teamId: teams[0]._id });
+    }
+    return res.status(200).json({ teams, channels });
   } catch (err) {
     next(err);
   }
@@ -15,7 +20,6 @@ router.post('/get-initial-data', async (req, res, next) => {
 
 router.post('/add-team', async (req, res, next) => {
   try {
-    console.log(req.body);
     const team = new Team({
       name: req.body.name,
       teamLeaderId: req.body.userId,
@@ -23,6 +27,28 @@ router.post('/add-team', async (req, res, next) => {
     });
     await team.save();
     res.status(200).json({ team });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/add-channel', async (req, res, next) => {
+  try {
+    const channel = new Channel({
+      name: req.body.name,
+      teamId: req.body.teamId,
+    });
+    await channel.save();
+    res.status(200).json({ channel });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/get-channels', async (req, res, next) => {
+  try {
+    const channels = await Channel.getList({ teamId: req.body.teamId });
+    res.status(200).json({ channels });
   } catch (err) {
     next(err);
   }

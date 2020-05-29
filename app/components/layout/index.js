@@ -41,11 +41,11 @@ class Layout extends Component {
         {firstGridItem ? (
           <Grid
             item
-            md={2}
+            md={3}
             sm={4}
             xs={12}
             style={{
-              border: '1px solid red',
+              height: '100vh',
             }}
           >
             <div
@@ -53,6 +53,7 @@ class Layout extends Component {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                height: '10vh',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -80,6 +81,11 @@ class Layout extends Component {
                     highlighterSlug: '/your-settings',
                   },
                   {
+                    text: 'View Teams',
+                    href: '/view-team',
+                    highlighterSlug: '/view-team',
+                  },
+                  {
                     separator: true,
                   },
                   {
@@ -101,7 +107,7 @@ class Layout extends Component {
         ) : null}
         <Grid
           item
-          md={firstGridItem ? 10 : 12}
+          md={firstGridItem ? 9 : 12}
           sm={firstGridItem ? 8 : 12}
           xs={12}
         >
