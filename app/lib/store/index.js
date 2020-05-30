@@ -15,6 +15,8 @@ class Store {
   constructor(initialState) {
     console.log('creating store');
     this.userStore = new User(this, { ...initialState.user });
+    this.pendingAcceptances = initialState.pendingAcceptances;
+    this.pendingInvitations = initialState.pendingInvitations;
     this.teams = initialState.teams;
     this.channels = initialState.channels;
     this.currentTeam = null;
@@ -159,6 +161,8 @@ function getStore() {
 decorate(Store, {
   currentUrl: observable,
   darkTheme: observable,
+  pendingAcceptances: observable,
+  pendingInvitations: observable,
   teams: observable,
   currentTeam: observable,
   channels: observable,

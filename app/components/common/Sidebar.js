@@ -43,19 +43,24 @@ class Sidebar extends Component {
   }
 
   async handleAddTeam(status, value) {
-    if (!status) return;
+    try {
+      if (!status) return;
 
-    if (value === '') return notify('A team name is required');
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/add-team`,
-      {
-        userId: this.props.user._id,
-        name: value,
-      }
-    );
-    console.log(data);
-    this.props.rootStore.addTeam(data.team);
-    notify('You successfully created a new team');
+      if (value === '') return notify('A team name is required');
+      const { data } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/add-team`,
+        {
+          userId: this.props.user._id,
+          name: value,
+        }
+      );
+      console.log(data);
+      this.props.rootStore.addTeam(data.team);
+      notify('You successfully created a new team');
+    } catch (err) {
+      const { data } = err.response;
+      notify(data.err);
+    }
   }
 
   async handleAddChannel(status, value) {
@@ -72,6 +77,34 @@ class Sidebar extends Component {
     console.log(data);
     this.props.rootStore.addChannel(data.channel);
     notify('You successfully created a new channel');
+  }
+
+  async handleInvite(teamId, teamName) {
+    openSimpleFormExternal({
+      onSubmit: async (status, value) => {
+        try {
+          if (!status) return;
+
+          if (value === '') return notify('An email is required');
+
+          const { data } = await axios.post(
+            `${process.env.URL_API}/api/v1/team-member/invite-to-team`,
+            {
+              userEmail: value,
+              teamId,
+              teamName,
+              inviterId: this.props.user._id,
+            }
+          );
+          console.log(data);
+        } catch (err) {
+          const { data } = err.response;
+          notify(data.err);
+        }
+      },
+      title: 'Your New Invitee Email',
+      description: 'Please enter your new invitee email.',
+    });
   }
 
   handleDeleteTeam(teamId) {
@@ -122,7 +155,6 @@ class Sidebar extends Component {
   }
 
   render() {
-    console.log('render');
     const { rootStore, classes } = this.props;
     return (
       <div className={classes.container}>
@@ -173,10 +205,10 @@ class Sidebar extends Component {
                   <IconButton
                     size="small"
                     style={{ marginRight: '0.5rem' }}
-                    // onClick={(e) => {
-                    //   e.stopPropagation();
-                    //   router.push('/view-team?team=a');
-                    // }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      this.handleInvite(team._id, team.name);
+                    }}
                   >
                     <GroupIcon></GroupIcon>
                   </IconButton>

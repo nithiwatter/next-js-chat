@@ -8,11 +8,8 @@ import { withStyles, fade } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchIcon from '@material-ui/icons/Search';
-import ChatIcon from '@material-ui/icons/Chat';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import Badge from '@material-ui/core/Badge';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import Paper from '@material-ui/core/Paper';
 
@@ -104,7 +101,7 @@ class ViewTeam extends Component {
 
     if (rootStore.teams.length === 0)
       return (
-        <Layout {...this.props}>
+        <Layout user={user} rootStore={rootStore} firstGridItem={firstGridItem}>
           <div
             style={{
               height: '100%',
@@ -124,11 +121,37 @@ class ViewTeam extends Component {
           </div>
         </Layout>
       );
+
+    if (!rootStore.currentChannel) {
+      return (
+        <Layout user={user} rootStore={rootStore} firstGridItem={firstGridItem}>
+          <div
+            style={{
+              height: '100%',
+              padding: '2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography
+              variant="h2"
+              align="center"
+              style={{ marginTop: '1rem' }}
+            >
+              You have no channel for this team yet. Create one.
+            </Typography>
+          </div>
+        </Layout>
+      );
+    }
     return (
       <Layout user={user} rootStore={rootStore} firstGridItem={firstGridItem}>
         <AppBar position="absolute" elevation={0} className={classes.root}>
           <Toolbar>
-            <Typography variant="h6">Chat</Typography>
+            <Typography variant="h6">
+              {rootStore.currentChannel.name}
+            </Typography>
             <div className={classes.grow}></div>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
@@ -142,11 +165,6 @@ class ViewTeam extends Component {
                 }}
               />
             </div>
-            <IconButton>
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
           </Toolbar>
         </AppBar>
 

@@ -10,8 +10,11 @@ import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
 import SimpleForm from '../common/SimpleForm';
 import Sidebar from '../common/Sidebar';
+import Notifications from '../common/Notifications';
 import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '@material-ui/core/Drawer';
+import Badge from '@material-ui/core/Badge';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 
 const styles = (theme) => ({
   grid: {
@@ -64,9 +67,11 @@ const styles = (theme) => ({
 class Layout extends Component {
   constructor(props) {
     super(props);
-    this.state = { open: false };
+    this.state = { open: false, openN: false };
     this.handleOpenDrawer = this.handleOpenDrawer.bind(this);
     this.handleCloseDrawer = this.handleCloseDrawer.bind(this);
+    this.handleOpenNotifications = this.handleOpenNotifications.bind(this);
+    this.handleCloseNotifications = this.handleCloseNotifications.bind(this);
   }
 
   handleOpenDrawer() {
@@ -75,6 +80,14 @@ class Layout extends Component {
 
   handleCloseDrawer() {
     this.setState({ open: false });
+  }
+
+  handleOpenNotifications() {
+    this.setState({ openN: true });
+  }
+
+  handleCloseNotifications() {
+    this.setState({ openN: false });
   }
 
   render() {
@@ -87,28 +100,22 @@ class Layout extends Component {
       rootStore,
       user,
     } = this.props;
-    const { open } = this.state;
+    const { open, openN } = this.state;
     return (
       <React.Fragment>
         <Drawer
           open={open}
           onClose={this.handleCloseDrawer}
           classes={{ paper: classes.drawer }}
-          width="90%"
         >
-          {/* <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '1rem',
-            }}
-          >
-            <Typography variant="h4">Awesome Drawer</Typography>
-            <ChatIcon></ChatIcon>
-          </div> */}
-
           <Sidebar rootStore={rootStore} user={user}></Sidebar>
+        </Drawer>
+        <Drawer
+          anchor="top"
+          open={openN}
+          onClose={this.handleCloseNotifications}
+        >
+          <Notifications rootStore={rootStore} user={user}></Notifications>
         </Drawer>
         <Grid
           container
@@ -134,6 +141,7 @@ class Layout extends Component {
                   >
                     <MenuIcon></MenuIcon>
                   </IconButton>
+
                   <IconButton
                     size="small"
                     style={{ marginRight: '0.5rem' }}
@@ -144,40 +152,56 @@ class Layout extends Component {
 
                   <Typography variant="h6">Async</Typography>
                 </div>
-
-                <MenuLink
-                  options={[
-                    {
-                      text: 'Index page',
-                      href: '/',
-                      highlighterSlugs: ['/', '/#'],
-                    },
-                    {
-                      text: 'Your Settings',
-                      href: '/your-settings',
-                      highlighterSlugs: ['/your-settings'],
-                    },
-                    {
-                      text: 'View Teams',
-                      href: '/view-team',
-                      highlighterSlugs: ['/view-team'],
-                    },
-                    {
-                      separator: true,
-                    },
-                    {
-                      text: 'Log out',
-                      href: '/logout',
-                      highlighterSlugs: [],
-                    },
-                  ]}
-                >
-                  <IconButton size="small" style={{ marginRight: '1rem' }}>
-                    <AccountCircleIcon
-                      style={{ width: '40px', height: '40px' }}
-                    ></AccountCircleIcon>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton onClick={this.handleOpenNotifications}>
+                    <Badge
+                      badgeContent={
+                        rootStore.pendingInvitations.length +
+                        rootStore.pendingAcceptances.length
+                      }
+                      color="error"
+                    >
+                      <NotificationsIcon />
+                    </Badge>
                   </IconButton>
-                </MenuLink>
+
+                  <MenuLink
+                    options={[
+                      {
+                        text: 'Index page',
+                        href: '/',
+                        highlighterSlugs: ['/', '/#'],
+                      },
+                      {
+                        text: 'Your Settings',
+                        href: '/your-settings',
+                        highlighterSlugs: ['/your-settings'],
+                      },
+                      {
+                        text: 'View Teams',
+                        href: '/view-team',
+                        highlighterSlugs: ['/view-team'],
+                      },
+                      {
+                        separator: true,
+                      },
+                      {
+                        text: 'Log out',
+                        href: '/logout',
+                        highlighterSlugs: [],
+                      },
+                    ]}
+                  >
+                    <IconButton
+                      size="small"
+                      style={{ marginRight: '1rem', marginLeft: '1rem' }}
+                    >
+                      <AccountCircleIcon
+                        style={{ width: '40px', height: '40px' }}
+                      ></AccountCircleIcon>
+                    </IconButton>
+                  </MenuLink>
+                </div>
               </div>
               <div className={classes.sidebarContainer}>
                 <Sidebar rootStore={rootStore} user={user}></Sidebar>
