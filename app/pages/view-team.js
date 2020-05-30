@@ -15,12 +15,17 @@ class ViewTeam extends Component {
           <div
             style={{
               height: '100%',
+              padding: '2rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Typography variant="h2" align="center">
+            <Typography
+              variant="h2"
+              align="center"
+              style={{ marginTop: '1rem' }}
+            >
               You have no team yet. Create one.
             </Typography>
           </div>

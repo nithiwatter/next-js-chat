@@ -10,6 +10,9 @@ import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
 import SimpleForm from '../common/SimpleForm';
 import Sidebar from '../common/Sidebar';
+import MenuIcon from '@material-ui/icons/Menu';
+import Drawer from '@material-ui/core/Drawer';
+import ChatIcon from '@material-ui/icons/Chat';
 
 const styles = (theme) => ({
   grid: {
@@ -24,15 +27,45 @@ const styles = (theme) => ({
       padding: '0px 0px 0px 10px',
     },
   },
+  menuIcon: {
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
   firstGrid: {
     height: '100vh',
     [theme.breakpoints.down('xs')]: {
       height: 'auto',
     },
   },
+  drawer: {
+    width: '90vw',
+    padding: theme.spacing(3),
+  },
+  sidebarContainer: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
 });
 
 class Layout extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { open: false };
+    this.handleOpenDrawer = this.handleOpenDrawer.bind(this);
+    this.handleCloseDrawer = this.handleCloseDrawer.bind(this);
+  }
+
+  handleOpenDrawer() {
+    this.setState({ open: true });
+  }
+
+  handleCloseDrawer() {
+    this.setState({ open: false });
+  }
+
   render() {
     // props passed from App.getInitialProps
     const {
@@ -43,85 +76,115 @@ class Layout extends Component {
       rootStore,
       user,
     } = this.props;
+    const { open } = this.state;
     return (
-      <Grid
-        container
-        justify="flex-start"
-        alignItems="stretch"
-        className={classes.grid}
-      >
-        {firstGridItem ? (
-          <Grid item md={3} sm={4} xs={12} className={classes.firstGrid}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                height: '10vh',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton
-                  size="small"
-                  style={{ marginRight: '10px' }}
-                  onClick={this.props.user.rootStore.changeTheme}
-                >
-                  <Avatar>A</Avatar>
-                </IconButton>
-
-                <Typography variant="h6">Async</Typography>
-              </div>
-
-              <MenuLink
-                options={[
-                  {
-                    text: 'Index page',
-                    href: '/',
-                    highlighterSlugs: ['/', '/#'],
-                  },
-                  {
-                    text: 'Your Settings',
-                    href: '/your-settings',
-                    highlighterSlugs: ['/your-settings'],
-                  },
-                  {
-                    text: 'View Teams',
-                    href: '/view-team',
-                    highlighterSlugs: ['/view-team'],
-                  },
-                  {
-                    separator: true,
-                  },
-                  {
-                    text: 'Log out',
-                    href: '/logout',
-                    highlighterSlugs: [],
-                  },
-                ]}
-              >
-                <IconButton size="small" style={{ marginRight: '10px' }}>
-                  <AccountCircleIcon
-                    style={{ width: '40px', height: '40px' }}
-                  ></AccountCircleIcon>
-                </IconButton>
-              </MenuLink>
-            </div>
-
-            <Sidebar rootStore={rootStore} user={user}></Sidebar>
-          </Grid>
-        ) : null}
-        <Grid
-          item
-          md={firstGridItem ? 9 : 12}
-          sm={firstGridItem ? 8 : 12}
-          xs={12}
+      <React.Fragment>
+        <Drawer
+          open={open}
+          onClose={this.handleCloseDrawer}
+          classes={{ paper: classes.drawer }}
+          width="90%"
         >
-          {children}
+          {/* <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '1rem',
+            }}
+          >
+            <Typography variant="h4">Awesome Drawer</Typography>
+            <ChatIcon></ChatIcon>
+          </div> */}
+
+          <Sidebar rootStore={rootStore} user={user}></Sidebar>
+        </Drawer>
+        <Grid
+          container
+          justify="flex-start"
+          alignItems="stretch"
+          className={classes.grid}
+        >
+          {firstGridItem ? (
+            <Grid item md={4} sm={5} xs={12} className={classes.firstGrid}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  height: '10vh',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton
+                    className={classes.menuIcon}
+                    onClick={this.handleOpenDrawer}
+                  >
+                    <MenuIcon></MenuIcon>
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    style={{ marginRight: '10px' }}
+                    onClick={this.props.user.rootStore.changeTheme}
+                  >
+                    <Avatar>A</Avatar>
+                  </IconButton>
+
+                  <Typography variant="h6">Async</Typography>
+                </div>
+
+                <MenuLink
+                  options={[
+                    {
+                      text: 'Index page',
+                      href: '/',
+                      highlighterSlugs: ['/', '/#'],
+                    },
+                    {
+                      text: 'Your Settings',
+                      href: '/your-settings',
+                      highlighterSlugs: ['/your-settings'],
+                    },
+                    {
+                      text: 'View Teams',
+                      href: '/view-team',
+                      highlighterSlugs: ['/view-team'],
+                    },
+                    {
+                      separator: true,
+                    },
+                    {
+                      text: 'Log out',
+                      href: '/logout',
+                      highlighterSlugs: [],
+                    },
+                  ]}
+                >
+                  <IconButton size="small" style={{ marginRight: '10px' }}>
+                    <AccountCircleIcon
+                      style={{ width: '40px', height: '40px' }}
+                    ></AccountCircleIcon>
+                  </IconButton>
+                </MenuLink>
+              </div>
+              <div className={classes.sidebarContainer}>
+                <Sidebar rootStore={rootStore} user={user}></Sidebar>
+              </div>
+            </Grid>
+          ) : null}
+          <Grid
+            item
+            md={firstGridItem ? 8 : 12}
+            sm={firstGridItem ? 7 : 12}
+            xs={12}
+          >
+            {children}
+          </Grid>
+          <Notifier></Notifier>
+          <Confirmer></Confirmer>
+          <SimpleForm></SimpleForm>
         </Grid>
-        <Notifier></Notifier>
-        <Confirmer></Confirmer>
-        <SimpleForm></SimpleForm>
-      </Grid>
+      </React.Fragment>
     );
   }
 }
