@@ -27,9 +27,6 @@ const styles = (theme) => ({
     height: '90vh',
   },
   name: {
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
-    },
     [theme.breakpoints.down('xs')]: {
       display: 'block',
     },
@@ -140,7 +137,6 @@ class Sidebar extends Component {
             Teams
           </Typography>
           <Button
-            variant="outlined"
             onClick={() => {
               openSimpleFormExternal({
                 onSubmit: this.handleAddTeam,

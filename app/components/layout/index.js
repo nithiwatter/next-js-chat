@@ -33,9 +33,21 @@ const styles = (theme) => ({
     },
   },
   firstGrid: {
+    position: 'relative',
+    zIndex: 1,
     height: '100vh',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    paddingRight: theme.spacing(2),
     [theme.breakpoints.down('xs')]: {
-      height: 'auto',
+      height: '10vh',
+      paddingRight: 0,
+    },
+  },
+  secondGrid: {
+    position: 'relative',
+    zIndex: 0,
+    [theme.breakpoints.down('xs')]: {
+      height: '90vh',
     },
   },
   drawer: {
@@ -177,7 +189,7 @@ class Layout extends Component {
             md={firstGridItem ? 8 : 12}
             sm={firstGridItem ? 7 : 12}
             xs={12}
-            style={{ position: 'relative' }}
+            className={classes.secondGrid}
           >
             {children}
           </Grid>

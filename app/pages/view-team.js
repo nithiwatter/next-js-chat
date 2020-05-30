@@ -14,6 +14,7 @@ import InputBase from '@material-ui/core/InputBase';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import AttachmentIcon from '@material-ui/icons/Attachment';
+import Paper from '@material-ui/core/Paper';
 
 const styles = (theme) => ({
   root: {
@@ -69,6 +70,7 @@ const styles = (theme) => ({
   },
   typeInputInput: {
     paddingLeft: theme.spacing(4),
+    color: 'white',
   },
   inputRoot: {
     color: 'inherit',
@@ -88,6 +90,10 @@ const styles = (theme) => ({
     top: 'auto',
     bottom: 0,
     backgroundColor: '#1565c0',
+  },
+  chatPane: {
+    height: '100%',
+    width: '100%',
   },
 });
 
@@ -120,11 +126,8 @@ class ViewTeam extends Component {
       );
     return (
       <Layout user={user} rootStore={rootStore} firstGridItem={firstGridItem}>
-        <AppBar position="relative" className={classes.root}>
+        <AppBar position="absolute" elevation={0} className={classes.root}>
           <Toolbar>
-            <IconButton>
-              <ChatIcon></ChatIcon>
-            </IconButton>
             <Typography variant="h6">Chat</Typography>
             <div className={classes.grow}></div>
             <div className={classes.search}>
@@ -146,7 +149,9 @@ class ViewTeam extends Component {
             </IconButton>
           </Toolbar>
         </AppBar>
-        <AppBar position="absolute" className={classes.footer}>
+
+        <Paper className={classes.chatPane} elevation={0}></Paper>
+        <AppBar position="absolute" elevation={0} className={classes.footer}>
           <Toolbar>
             <IconButton style={{ marginRight: '1rem' }}>
               <AttachmentIcon></AttachmentIcon>
