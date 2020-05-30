@@ -94,6 +94,7 @@ class Sidebar extends Component {
               teamId,
               teamName,
               inviterId: this.props.user._id,
+              inviterEmail: this.props.user.email,
             }
           );
           console.log(data);
@@ -193,6 +194,7 @@ class Sidebar extends Component {
             {rootStore.teams.map((team) => (
               <ListItem
                 button
+                disableRipple
                 key={team._id}
                 onClick={() => rootStore.selectTeam(team._id)}
                 selected={rootStore.currentTeam._id === team._id}
@@ -264,6 +266,7 @@ class Sidebar extends Component {
               <List>
                 {rootStore.channels.map((channel) => (
                   <ListItem
+                    disableRipple
                     button
                     key={channel._id}
                     selected={rootStore.currentChannel._id === channel._id}

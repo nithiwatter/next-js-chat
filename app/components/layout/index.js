@@ -196,9 +196,7 @@ class Layout extends Component {
                       size="small"
                       style={{ marginRight: '1rem', marginLeft: '1rem' }}
                     >
-                      <AccountCircleIcon
-                        style={{ width: '40px', height: '40px' }}
-                      ></AccountCircleIcon>
+                      <Avatar src={user.avatarUrl}>A</Avatar>
                     </IconButton>
                   </MenuLink>
                 </div>

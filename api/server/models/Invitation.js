@@ -9,6 +9,10 @@ const mongoSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
+  inviterEmail: {
+    type: String,
+    required: true,
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

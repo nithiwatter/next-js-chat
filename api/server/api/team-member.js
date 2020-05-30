@@ -63,6 +63,7 @@ router.post('/invite-to-team', async (req, res, next) => {
       userId: result[1]._id,
       inviterId: req.body.inviterId,
       userEmail: result[1].email,
+      inviterEmail: req.body.inviterEmail,
       teamName: req.body.teamName,
     });
 

@@ -150,7 +150,7 @@ class ViewTeam extends Component {
         <AppBar position="absolute" elevation={0} className={classes.root}>
           <Toolbar>
             <Typography variant="h6">
-              {rootStore.currentChannel.name}
+              #{rootStore.currentChannel.name}
             </Typography>
             <div className={classes.grow}></div>
             <div className={classes.search}>

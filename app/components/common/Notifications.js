@@ -28,7 +28,7 @@ class Notifications extends Component {
             </ListItemIcon>
             <ListItemText
               primary={invitation.teamName}
-              secondary={`A new pending invitation waiting for you to respond`}
+              secondary={`A new pending invitation from ${invitation.inviterEmail} waiting for you to respond`}
             />
             <ListItemIcon>
               <ThumbUpIcon></ThumbUpIcon>
