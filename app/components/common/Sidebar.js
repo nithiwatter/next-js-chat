@@ -18,7 +18,23 @@ import axios from 'axios';
 import notify from '../../lib/notify';
 import confirm from '../../lib/confirm';
 import { withRouter } from 'next/router';
+import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
+
+const styles = (theme) => ({
+  container: {
+    width: '100%',
+    height: '90vh',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  name: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+});
 
 class Sidebar extends Component {
   constructor(props) {
@@ -110,9 +126,9 @@ class Sidebar extends Component {
 
   render() {
     console.log('render');
-    const { rootStore, router } = this.props;
+    const { rootStore, classes } = this.props;
     return (
-      <div style={{ width: '100%', height: '90vh' }}>
+      <div className={classes.container}>
         <div
           style={{
             display: 'flex',
@@ -156,8 +172,8 @@ class Sidebar extends Component {
                 <ListItemAvatar>
                   <Avatar>{team.name[0].toUpperCase()}</Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={team.name} />
-                <ListItemIcon>
+                <ListItemText primary={team.name} className={classes.name} />
+                <ListItemIcon style={{ marginLeft: 'auto' }}>
                   <IconButton
                     size="small"
                     style={{ marginRight: '0.5rem' }}
@@ -225,8 +241,14 @@ class Sidebar extends Component {
                     selected={rootStore.currentChannel._id === channel._id}
                     onClick={() => rootStore.selectChannel(channel._id)}
                   >
-                    <ListItemText primary={channel.name}></ListItemText>
-                    <ListItemIcon>
+                    <ListItemAvatar>
+                      <Avatar>{channel.name[0].toUpperCase()}</Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={channel.name}
+                      className={classes.name}
+                    ></ListItemText>
+                    <ListItemIcon style={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"
                         style={{ marginRight: '0.5rem' }}
@@ -258,4 +280,4 @@ class Sidebar extends Component {
   }
 }
 
-export default withRouter(observer(Sidebar));
+export default withStyles(styles)(observer(Sidebar));

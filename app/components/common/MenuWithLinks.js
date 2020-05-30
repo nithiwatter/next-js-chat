@@ -65,8 +65,9 @@ class MenuWithLinks extends Component {
                 }
                 key={option.href}
                 style={{
-                  fontWeight:
-                    router.asPath === option.highlighterSlug ? 600 : 300,
+                  fontWeight: option.highlighterSlugs.includes(router.asPath)
+                    ? 600
+                    : 300,
                   fontSize: '14px',
                 }}
               >

@@ -12,9 +12,18 @@ class ViewTeam extends Component {
     if (rootStore.teams.length === 0)
       return (
         <Layout {...this.props}>
-          <Typography align="center" variant="h3">
-            You have no team yet. Create one.
-          </Typography>
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography variant="h2" align="center">
+              You have no team yet. Create one.
+            </Typography>
+          </div>
         </Layout>
       );
     return (

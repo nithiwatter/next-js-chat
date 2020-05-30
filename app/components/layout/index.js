@@ -9,7 +9,6 @@ import Notifier from '../common/Notifier';
 import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
 import SimpleForm from '../common/SimpleForm';
-
 import Sidebar from '../common/Sidebar';
 
 const styles = (theme) => ({
@@ -25,12 +24,25 @@ const styles = (theme) => ({
       padding: '0px 0px 0px 10px',
     },
   },
+  firstGrid: {
+    height: '100vh',
+    [theme.breakpoints.down('xs')]: {
+      height: 'auto',
+    },
+  },
 });
 
 class Layout extends Component {
   render() {
     // props passed from App.getInitialProps
-    const { firstGridItem, children, isMobile, classes } = this.props;
+    const {
+      firstGridItem,
+      children,
+      isMobile,
+      classes,
+      rootStore,
+      user,
+    } = this.props;
     return (
       <Grid
         container
@@ -39,15 +51,7 @@ class Layout extends Component {
         className={classes.grid}
       >
         {firstGridItem ? (
-          <Grid
-            item
-            md={3}
-            sm={4}
-            xs={12}
-            style={{
-              height: '100vh',
-            }}
-          >
+          <Grid item md={3} sm={4} xs={12} className={classes.firstGrid}>
             <div
               style={{
                 display: 'flex',
@@ -73,17 +77,17 @@ class Layout extends Component {
                   {
                     text: 'Index page',
                     href: '/',
-                    highlighterSlug: '/',
+                    highlighterSlugs: ['/', '/#'],
                   },
                   {
                     text: 'Your Settings',
                     href: '/your-settings',
-                    highlighterSlug: '/your-settings',
+                    highlighterSlugs: ['/your-settings'],
                   },
                   {
                     text: 'View Teams',
                     href: '/view-team',
-                    highlighterSlug: '/view-team',
+                    highlighterSlugs: ['/view-team'],
                   },
                   {
                     separator: true,
@@ -91,6 +95,7 @@ class Layout extends Component {
                   {
                     text: 'Log out',
                     href: '/logout',
+                    highlighterSlugs: [],
                   },
                 ]}
               >
@@ -102,7 +107,7 @@ class Layout extends Component {
               </MenuLink>
             </div>
 
-            <Sidebar {...this.props}></Sidebar>
+            <Sidebar rootStore={rootStore} user={user}></Sidebar>
           </Grid>
         ) : null}
         <Grid
