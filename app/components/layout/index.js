@@ -12,19 +12,18 @@ import SimpleForm from '../common/SimpleForm';
 import Sidebar from '../common/Sidebar';
 import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '@material-ui/core/Drawer';
-import ChatIcon from '@material-ui/icons/Chat';
 
 const styles = (theme) => ({
   grid: {
     width: '100vw',
     minHeight: '100vh',
     maxWidth: '100%',
-    padding: '0px 10px',
+    padding: 0,
     [theme.breakpoints.down('xs')]: {
       width: '100vw',
       maxWidth: '100%',
       minHeight: 'auto',
-      padding: '0px 0px 0px 10px',
+      padding: 0,
     },
   },
   menuIcon: {
@@ -112,6 +111,7 @@ class Layout extends Component {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  marginLeft: '1rem',
                   height: '10vh',
                 }}
               >
@@ -124,7 +124,7 @@ class Layout extends Component {
                   </IconButton>
                   <IconButton
                     size="small"
-                    style={{ marginRight: '10px' }}
+                    style={{ marginRight: '0.5rem' }}
                     onClick={this.props.user.rootStore.changeTheme}
                   >
                     <Avatar>A</Avatar>
@@ -160,7 +160,7 @@ class Layout extends Component {
                     },
                   ]}
                 >
-                  <IconButton size="small" style={{ marginRight: '10px' }}>
+                  <IconButton size="small" style={{ marginRight: '1rem' }}>
                     <AccountCircleIcon
                       style={{ width: '40px', height: '40px' }}
                     ></AccountCircleIcon>
@@ -177,6 +177,7 @@ class Layout extends Component {
             md={firstGridItem ? 8 : 12}
             sm={firstGridItem ? 7 : 12}
             xs={12}
+            style={{ position: 'relative' }}
           >
             {children}
           </Grid>
