@@ -37,6 +37,8 @@ class Store {
   addTeam(newTeam) {
     this.teams.push(newTeam);
     this.currentTeam = newTeam;
+    this.channels = [];
+    this.currentChannel = null;
   }
 
   addChannel(newChannel) {
@@ -45,6 +47,8 @@ class Store {
   }
 
   async selectTeam(teamId) {
+    // cannot click twice
+    if (teamId === this.currentTeam._id) return;
     const idx = findIndex(this.teams, (team) => team._id === teamId);
     const { data } = await await axios.post(
       `${process.env.URL_API}/api/v1/team-member/get-channels`,
@@ -70,6 +74,57 @@ class Store {
       (channel) => channel._id === channelId
     );
     this.currentChannel = this.channels[idx];
+  }
+
+  async deleteTeam(teamId) {
+    const newTeams = this.teams.filter((team) => team._id !== teamId);
+    if (teamId !== this.currentTeam._id) {
+      this.teams = newTeams;
+      return;
+    }
+    if (newTeams.length > 0) {
+      // get channels information from the first team available
+      const { data } = await await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-channels`,
+        {
+          teamId: newTeams[0]._id,
+        }
+      );
+      const channels = data.channels;
+      runInAction(() => {
+        this.teams = newTeams;
+        this.currentTeam = newTeams[0];
+        this.channels = channels;
+        if (channels.length > 0) {
+          this.currentChannel = channels[0];
+        } else {
+          this.currentChannel = null;
+        }
+      });
+    } else {
+      this.teams = [];
+      this.currentTeam = null;
+      this.channels = [];
+      this.currentChannel = null;
+    }
+  }
+
+  deleteChannel(channelId) {
+    // deleting something that is not current channel
+    const newChannels = this.channels.filter(
+      (channel) => channel._id !== channelId
+    );
+    if (channelId !== this.currentChannel._id) {
+      this.channels = newChannels;
+      return;
+    }
+    if (newChannels.length > 0) {
+      this.channels = newChannels;
+      this.currentChannel = newChannels[0];
+    } else {
+      this.channels = [];
+      this.currentChannel = null;
+    }
   }
 }
 
@@ -114,6 +169,8 @@ decorate(Store, {
   addChannel: action,
   selectTeam: action,
   selectChannel: action,
+  deleteTeam: action,
+  deleteChannel: action,
 });
 
 export { initializeStore, getStore };

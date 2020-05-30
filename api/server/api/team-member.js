@@ -54,6 +54,25 @@ router.post('/get-channels', async (req, res, next) => {
   }
 });
 
+router.post('/delete-team', async (req, res, next) => {
+  try {
+    await Team.deleteOne({ _id: req.body.teamId });
+    await Channel.deleteMany({ teamId: req.body.teamId });
+    res.status(200).json({});
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/delete-channel', async (req, res, next) => {
+  try {
+    await Channel.deleteOne({ _id: req.body.channelId });
+    res.status(200).json({});
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post(
   '/aws/get-signed-request-for-upload-to-s3',
   async (req, res, next) => {

@@ -10,11 +10,13 @@ import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
 import GroupIcon from '@material-ui/icons/Group';
 import axios from 'axios';
 import notify from '../../lib/notify';
+import confirm from '../../lib/confirm';
 import { withRouter } from 'next/router';
 import { openSimpleFormExternal } from './SimpleForm';
 
@@ -23,6 +25,8 @@ class Sidebar extends Component {
     super(props);
     this.handleAddTeam = this.handleAddTeam.bind(this);
     this.handleAddChannel = this.handleAddChannel.bind(this);
+    this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
+    this.handleDeleteChannel = this.handleDeleteChannel.bind(this);
   }
 
   async handleAddTeam(status, value) {
@@ -57,6 +61,53 @@ class Sidebar extends Component {
     notify('You successfully created a new channel');
   }
 
+  handleDeleteTeam(teamId) {
+    console.log(teamId);
+    confirm({
+      title: 'Are you sure to delete this team?',
+      message:
+        'This is a permanent action. All associated channels and messages will be deleted.',
+      onAnswer: async (answer) => {
+        if (!answer) return;
+
+        try {
+          await axios.post(
+            `${process.env.URL_API}/api/v1/team-member/delete-team`,
+            {
+              teamId,
+            }
+          );
+          this.props.rootStore.deleteTeam(teamId);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    });
+  }
+
+  handleDeleteChannel(channelId) {
+    console.log(channelId);
+    confirm({
+      title: 'Are you sure to delete this channel?',
+      message: 'This is a permanent action.',
+      onAnswer: async (answer) => {
+        if (!answer) return;
+
+        try {
+          await axios.post(
+            `${process.env.URL_API}/api/v1/team-member/delete-channel`,
+            {
+              channelId,
+            }
+          );
+          this.props.rootStore.deleteChannel(channelId);
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    });
+  }
+
   render() {
     console.log('render');
     const { rootStore, router } = this.props;
@@ -78,7 +129,7 @@ class Sidebar extends Component {
               openSimpleFormExternal({
                 onSubmit: this.handleAddTeam,
                 title: 'Your Team',
-                description: 'Please enter your new team',
+                description: 'Please enter your new team name',
               });
             }}
           >
@@ -117,7 +168,13 @@ class Sidebar extends Component {
                   >
                     <GroupIcon></GroupIcon>
                   </IconButton>
-                  <IconButton size="small" onClick={(e) => e.stopPropagation()}>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      this.handleDeleteTeam(team._id);
+                    }}
+                  >
                     <DeleteIcon></DeleteIcon>
                   </IconButton>
                 </ListItemIcon>
@@ -169,6 +226,27 @@ class Sidebar extends Component {
                     onClick={() => rootStore.selectChannel(channel._id)}
                   >
                     <ListItemText primary={channel.name}></ListItemText>
+                    <ListItemIcon>
+                      <IconButton
+                        size="small"
+                        style={{ marginRight: '0.5rem' }}
+                        // onClick={(e) => {
+                        //   e.stopPropagation();
+                        //   router.push('/view-team?team=a');
+                        // }}
+                      >
+                        <EditIcon></EditIcon>
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          this.handleDeleteChannel(channel._id);
+                        }}
+                      >
+                        <DeleteIcon></DeleteIcon>
+                      </IconButton>
+                    </ListItemIcon>
                   </ListItem>
                 ))}
               </List>

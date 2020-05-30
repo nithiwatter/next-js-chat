@@ -48,7 +48,7 @@ class SimpleForm extends Component {
       <div>
         <Dialog open={this.state.open} onClose={this.handleClose}>
           <DialogTitle id="form-dialog-title">
-            Customize Your Profile
+            Customize {this.state.title}
           </DialogTitle>
           <DialogContent>
             <DialogContentText>{this.state.description}</DialogContentText>
