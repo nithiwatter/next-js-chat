@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import List from '@material-ui/core/List';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import AppBar from '@material-ui/core/AppBar';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -26,20 +29,36 @@ const styles = (theme) => ({
     width: '100%',
     height: '90vh',
   },
-  name: {
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
-    },
+  appbar: {
+    width: '100%',
+    backgroundColor: '#2e7d32',
+    color: 'white',
+  },
+  selectedTeam: {
+    backgroundColor: '#1de9b6',
+    border: '2px solid #00bfa5',
+  },
+  selectedChannel: {
+    backgroundColor: '#c2185b',
+  },
+  indicator: {
+    backgroundColor: 'white',
   },
 });
 
 class Sidebar extends Component {
   constructor(props) {
     super(props);
+    this.state = { value: 0 };
     this.handleAddTeam = this.handleAddTeam.bind(this);
     this.handleAddChannel = this.handleAddChannel.bind(this);
     this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
     this.handleDeleteChannel = this.handleDeleteChannel.bind(this);
+    this.handleTabSwitch = this.handleTabSwitch.bind(this);
+  }
+
+  handleTabSwitch(e, newValue) {
+    this.setState({ value: newValue });
   }
 
   async handleAddTeam(status, value) {
@@ -157,81 +176,103 @@ class Sidebar extends Component {
 
   render() {
     const { rootStore, classes } = this.props;
+    const { value } = this.state;
     return (
       <div className={classes.container}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Typography variant="h6" style={{ marginLeft: '1rem' }}>
-            Teams
-          </Typography>
-          <Button
-            onClick={() => {
-              openSimpleFormExternal({
-                onSubmit: this.handleAddTeam,
-                title: 'Your Team',
-                description: 'Please enter your new team name',
-              });
+        <AppBar position="relative" elevation={0} className={classes.appbar}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Tabs
+              value={value}
+              onChange={this.handleTabSwitch}
+              variant="scrollable"
+              classes={{ indicator: classes.indicator }}
+            >
+              <Tab label="Teams" style={{ width: '10px' }} />
+              <Tab label="Channels" />
+              <Tab label="Direct Messages" />
+            </Tabs>
+          </div>
+        </AppBar>
+
+        <div hidden={value !== 0} style={{ height: '85%', overflow: 'auto' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '1rem',
             }}
           >
-            Add Team
-          </Button>
-        </div>
+            <Typography variant="h6" style={{ marginLeft: '1rem' }}>
+              Teams
+            </Typography>
+            <IconButton
+              onClick={() => {
+                openSimpleFormExternal({
+                  onSubmit: this.handleAddTeam,
+                  title: 'Your Team',
+                  description: 'Please enter your new team name',
+                });
+              }}
+              style={{ marginRight: '1rem' }}
+            >
+              <LibraryAddIcon></LibraryAddIcon>
+            </IconButton>
+          </div>
 
-        <div
-          style={{
-            maxHeight: '35%',
-            overflow: 'auto',
-            marginTop: '1rem',
-            marginBottom: '1rem',
-          }}
-        >
-          <List>
-            {rootStore.teams.map((team) => (
-              <ListItem
-                button
-                disableRipple
-                key={team._id}
-                onClick={() => rootStore.selectTeam(team._id)}
-                selected={rootStore.currentTeam._id === team._id}
-              >
-                <ListItemAvatar>
-                  <Avatar>{team.name[0].toUpperCase()}</Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={team.name} className={classes.name} />
-                <ListItemIcon style={{ marginLeft: 'auto' }}>
-                  <IconButton
-                    size="small"
-                    style={{ marginRight: '0.5rem' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.handleInvite(team._id, team.name);
-                    }}
-                  >
-                    <GroupIcon></GroupIcon>
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.handleDeleteTeam(team._id);
-                    }}
-                  >
-                    <DeleteIcon></DeleteIcon>
-                  </IconButton>
-                </ListItemIcon>
-              </ListItem>
-            ))}
-          </List>
+          <div>
+            <List>
+              {rootStore.teams.map((team) => (
+                <ListItem
+                  button
+                  disableRipple
+                  key={team._id}
+                  onClick={() => rootStore.selectTeam(team._id)}
+                  selected={rootStore.currentTeam._id === team._id}
+                >
+                  <ListItemAvatar>
+                    <Avatar
+                      variant="rounded"
+                      className={
+                        team._id === rootStore.currentTeam._id
+                          ? classes.selectedTeam
+                          : null
+                      }
+                      style={{ color: 'white' }}
+                    >
+                      {team.name[0].toUpperCase()}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={team.name} className={classes.name} />
+                  <ListItemIcon style={{ marginLeft: 'auto' }}>
+                    <IconButton
+                      size="small"
+                      style={{ marginRight: '0.5rem' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        this.handleInvite(team._id, team.name);
+                      }}
+                    >
+                      <GroupIcon></GroupIcon>
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        this.handleDeleteTeam(team._id);
+                      }}
+                    >
+                      <DeleteIcon></DeleteIcon>
+                    </IconButton>
+                  </ListItemIcon>
+                </ListItem>
+              ))}
+            </List>
+          </div>
         </div>
 
         {rootStore.teams.length > 0 ? (
-          <React.Fragment>
-            <Divider></Divider>
+          <div hidden={value !== 1} style={{ height: '85%', overflow: 'auto' }}>
             <div
               style={{
                 display: 'flex',
@@ -251,18 +292,13 @@ class Sidebar extends Component {
                     description: 'Please enter your new channel name',
                   });
                 }}
+                style={{ marginRight: '1rem' }}
               >
                 <LibraryAddIcon></LibraryAddIcon>
               </IconButton>
             </div>
 
-            <div
-              style={{
-                maxHeight: '35%',
-                overflow: 'auto',
-                marginTop: '1rem',
-              }}
-            >
+            <div>
               <List>
                 {rootStore.channels.map((channel) => (
                   <ListItem
@@ -273,7 +309,16 @@ class Sidebar extends Component {
                     onClick={() => rootStore.selectChannel(channel._id)}
                   >
                     <ListItemAvatar>
-                      <Avatar>{channel.name[0].toUpperCase()}</Avatar>
+                      <Avatar
+                        className={
+                          channel._id === rootStore.currentChannel._id
+                            ? classes.selectedChannel
+                            : null
+                        }
+                        style={{ color: 'white' }}
+                      >
+                        {channel.name[0].toUpperCase()}
+                      </Avatar>
                     </ListItemAvatar>
                     <ListItemText
                       primary={channel.name}
@@ -304,7 +349,7 @@ class Sidebar extends Component {
                 ))}
               </List>
             </div>
-          </React.Fragment>
+          </div>
         ) : null}
       </div>
     );

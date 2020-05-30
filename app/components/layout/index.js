@@ -4,7 +4,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import MenuLink from '../common/MenuWithLinks';
 import IconButton from '@material-ui/core/IconButton';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Notifier from '../common/Notifier';
 import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
@@ -40,7 +39,6 @@ const styles = (theme) => ({
     zIndex: 1,
     height: '100vh',
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-    paddingRight: theme.spacing(2),
     [theme.breakpoints.down('xs')]: {
       height: '10vh',
       paddingRight: 0,
@@ -55,11 +53,25 @@ const styles = (theme) => ({
   },
   drawer: {
     width: '90vw',
-    padding: theme.spacing(3),
   },
   sidebarContainer: {
     [theme.breakpoints.down('xs')]: {
       display: 'none',
+    },
+  },
+  badge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      border: '1px solid currentColor',
+      content: '""',
     },
   },
 });
@@ -145,12 +157,28 @@ class Layout extends Component {
                   <IconButton
                     size="small"
                     style={{ marginRight: '0.5rem' }}
-                    onClick={this.props.user.rootStore.changeTheme}
+                    onClick={rootStore.changeTheme}
                   >
-                    <Avatar>A</Avatar>
+                    {rootStore.currentTeam ? (
+                      <Avatar
+                        variant="rounded"
+                        style={{
+                          backgroundColor: '#ab47bc',
+                          color: 'white',
+                          border: '2px solid',
+                          borderColor: '#7b1fa2',
+                        }}
+                      >
+                        {rootStore.currentTeam.name[0].toUpperCase()}
+                      </Avatar>
+                    ) : (
+                      <Avatar>T</Avatar>
+                    )}
                   </IconButton>
 
-                  <Typography variant="h6">Async</Typography>
+                  <Typography variant="h6">
+                    {rootStore.darkTheme ? 'Dark' : 'Light'}
+                  </Typography>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <IconButton onClick={this.handleOpenNotifications}>
@@ -196,7 +224,28 @@ class Layout extends Component {
                       size="small"
                       style={{ marginRight: '1rem', marginLeft: '1rem' }}
                     >
-                      <Avatar src={user.avatarUrl}>A</Avatar>
+                      {/* <Badge
+                        overlap="circle"
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right',
+                        }}
+                        variant="dot"
+                        style={{ color: '#44b700' }}
+                      >
+                        <Avatar src={user.avatarUrl}>A</Avatar>
+                      </Badge> */}
+                      <Badge
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right',
+                        }}
+                        overlap="circle"
+                        variant="dot"
+                        classes={{ badge: classes.badge }}
+                      >
+                        <Avatar src={user.avatarUrl}>A</Avatar>
+                      </Badge>
                     </IconButton>
                   </MenuLink>
                 </div>
