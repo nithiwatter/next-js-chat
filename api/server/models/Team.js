@@ -10,7 +10,7 @@ const mongoSchema = new mongoose.Schema({
     required: true,
   },
   memberIds: {
-    type: [mongoose.Schema.Types.ObjectId],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     required: true,
   },
 });

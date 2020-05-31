@@ -10,11 +10,46 @@ import { observer } from 'mobx-react';
 import Typography from '@material-ui/core/Typography';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import AnnouncementIcon from '@material-ui/icons/Announcement';
+import { IconButton } from '@material-ui/core';
+import axios from 'axios';
 
 const styles = (theme) => ({});
 
 class Notifications extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.handleAccept = this.handleAccept.bind(this);
+    this.handleReject = this.handleReject.bind(this);
+  }
+
+  async handleAccept(userId, teamId, invitationId) {
+    try {
+      const { data } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/accept-invitation`,
+        {
+          invitationId,
+          teamId,
+          userId,
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async handleReject(invitationId) {
+    try {
+      const { data } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/reject-invitation`,
+        {
+          invitationId,
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   render() {
     const { classes, rootStore, user } = this.props;
     return (
@@ -31,10 +66,22 @@ class Notifications extends Component {
               secondary={`A new pending invitation from ${invitation.inviterEmail} waiting for you to respond`}
             />
             <ListItemIcon>
-              <ThumbUpIcon></ThumbUpIcon>
+              <IconButton
+                onClick={() =>
+                  this.handleAccept(
+                    invitation.userId,
+                    invitation.teamId,
+                    invitation._id
+                  )
+                }
+              >
+                <ThumbUpIcon></ThumbUpIcon>
+              </IconButton>
             </ListItemIcon>
             <ListItemIcon>
-              <ThumbDownIcon></ThumbDownIcon>
+              <IconButton onClick={() => this.handleReject(invitation._id)}>
+                <ThumbDownIcon></ThumbDownIcon>
+              </IconButton>
             </ListItemIcon>
           </ListItem>
         ))}

@@ -7,9 +7,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Button from '@material-ui/core/Button';
 import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
-import Divider from '@material-ui/core/Divider';
+import ChatIcon from '@material-ui/icons/Chat';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -18,11 +17,14 @@ import Typography from '@material-ui/core/Typography';
 import { observer } from 'mobx-react';
 import GroupIcon from '@material-ui/icons/Group';
 import axios from 'axios';
+import GifIcon from '@material-ui/icons/Gif';
 import notify from '../../lib/notify';
 import confirm from '../../lib/confirm';
 import { withRouter } from 'next/router';
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
+import Badge from '@material-ui/core/Badge';
 
 const styles = (theme) => ({
   container: {
@@ -35,14 +37,29 @@ const styles = (theme) => ({
     color: 'white',
   },
   selectedTeam: {
-    backgroundColor: '#1de9b6',
-    border: '2px solid #00bfa5',
+    backgroundColor: '#f9a825',
+    border: '2px solid #ff6f00',
   },
   selectedChannel: {
     backgroundColor: '#c2185b',
   },
   indicator: {
     backgroundColor: 'white',
+  },
+  badge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      border: '1px solid currentColor',
+      content: '""',
+    },
   },
 });
 
@@ -343,6 +360,66 @@ class Sidebar extends Component {
                         }}
                       >
                         <DeleteIcon></DeleteIcon>
+                      </IconButton>
+                    </ListItemIcon>
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+          </div>
+        ) : null}
+
+        {rootStore.teams.length > 0 ? (
+          <div hidden={value !== 2} style={{ height: '85%', overflow: 'auto' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: '1rem',
+              }}
+            >
+              <Typography variant="h6" style={{ marginLeft: '1rem' }}>
+                Currently in {rootStore.currentTeam.name}
+              </Typography>
+              <IconButton style={{ marginRight: '1rem' }}>
+                <VerifiedUserIcon></VerifiedUserIcon>
+              </IconButton>
+            </div>
+
+            <div>
+              <List>
+                {rootStore.currentUsers.map((user) => (
+                  <ListItem disableRipple button key={user._id}>
+                    <ListItemAvatar>
+                      <Badge
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right',
+                        }}
+                        overlap="circle"
+                        variant="dot"
+                        classes={{ badge: classes.badge }}
+                      >
+                        <Avatar src={user.avatarUrl} style={{ color: 'white' }}>
+                          {user.displayName[0].toUpperCase()}
+                        </Avatar>
+                      </Badge>
+                    </ListItemAvatar>
+                    <ListItemText primary={user.displayName}></ListItemText>
+                    <ListItemIcon style={{ marginLeft: 'auto' }}>
+                      <IconButton
+                        size="small"
+                        style={{ marginRight: '0.5rem' }}
+                        // onClick={(e) => {
+                        //   e.stopPropagation();
+                        //   router.push('/view-team?team=a');
+                        // }}
+                      >
+                        <ChatIcon></ChatIcon>
+                      </IconButton>
+                      <IconButton size="small">
+                        <GifIcon></GifIcon>
                       </IconButton>
                     </ListItemIcon>
                   </ListItem>

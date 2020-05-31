@@ -49,6 +49,7 @@ class MyApp extends App {
     let channels = [];
     let pendingAcceptances = [];
     let pendingInvitations = [];
+    let currentUsers = [];
 
     try {
       const { user } = await getUserApiMethod(ctx.req.headers.cookie);
@@ -70,8 +71,8 @@ class MyApp extends App {
       channels = data.channels;
       pendingAcceptances = data.pendingAcceptances;
       pendingInvitations = data.pendingInvitations;
-      console.log(teams);
-      console.log(channels);
+      currentUsers = data.currentUsers;
+      console.log(currentUsers);
     }
 
     return {
@@ -81,6 +82,7 @@ class MyApp extends App {
       channels,
       pendingAcceptances,
       pendingInvitations,
+      currentUsers,
       currentUrl: ctx.asPath,
     };
   }
@@ -93,6 +95,7 @@ class MyApp extends App {
       channels,
       pendingAcceptances,
       pendingInvitations,
+      currentUsers,
       currentUrl,
     } = this.props;
 
@@ -102,6 +105,7 @@ class MyApp extends App {
       channels,
       pendingAcceptances,
       pendingInvitations,
+      currentUsers,
       currentUrl,
     });
   }

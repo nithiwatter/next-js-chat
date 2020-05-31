@@ -224,17 +224,6 @@ class Layout extends Component {
                       size="small"
                       style={{ marginRight: '1rem', marginLeft: '1rem' }}
                     >
-                      {/* <Badge
-                        overlap="circle"
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right',
-                        }}
-                        variant="dot"
-                        style={{ color: '#44b700' }}
-                      >
-                        <Avatar src={user.avatarUrl}>A</Avatar>
-                      </Badge> */}
                       <Badge
                         anchorOrigin={{
                           vertical: 'bottom',

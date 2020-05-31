@@ -21,6 +21,7 @@ class Store {
     this.channels = initialState.channels;
     this.currentTeam = null;
     this.currentChannel = null;
+    this.currentUsers = initialState.currentUsers;
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.currentUrl = initialState.currentUrl;
@@ -52,7 +53,7 @@ class Store {
     // cannot click twice
     if (teamId === this.currentTeam._id) return;
     const idx = findIndex(this.teams, (team) => team._id === teamId);
-    const { data } = await await axios.post(
+    const { data } = await axios.post(
       `${process.env.URL_API}/api/v1/team-member/get-channels`,
       {
         teamId: this.teams[idx]._id,
@@ -163,6 +164,7 @@ decorate(Store, {
   darkTheme: observable,
   pendingAcceptances: observable,
   pendingInvitations: observable,
+  currentUsers: observable,
   teams: observable,
   currentTeam: observable,
   channels: observable,

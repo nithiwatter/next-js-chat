@@ -12,6 +12,7 @@ router.post('/get-initial-data', async (req, res, next) => {
     let channels = [];
     let pendingAcceptances = [];
     let pendingInvitations = [];
+    let currentUsers = [];
     let result;
     const teams = await Team.getList({ userId: req.body.userId });
     console.log(teams);
@@ -20,10 +21,15 @@ router.post('/get-initial-data', async (req, res, next) => {
         Channel.getList({ teamId: teams[0]._id }),
         Invitation.find({ inviterId: req.body.userId }),
         Invitation.find({ userId: req.body.userId }),
+        User.find(
+          { _id: { $in: teams[0].memberIds } },
+          '_id displayName email avatarUrl'
+        ),
       ]);
       channels = result[0];
       pendingAcceptances = result[1];
       pendingInvitations = result[2];
+      currentUsers = result[3];
     }
 
     return res.status(200).json({
@@ -31,6 +37,7 @@ router.post('/get-initial-data', async (req, res, next) => {
       channels,
       pendingAcceptances,
       pendingInvitations,
+      currentUsers,
     });
   } catch (err) {
     next(err);
@@ -69,6 +76,27 @@ router.post('/invite-to-team', async (req, res, next) => {
 
     await invitation.save();
     return res.status(200).json({ invitation });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/accept-invitation', async (req, res, next) => {
+  try {
+    const team = await Team.findById(req.body.teamId);
+    team.memberIds.push(req.body.userId);
+    await team.save();
+    await Invitation.deleteOne({ _id: req.body.invitationId });
+    return res.status(200).json({});
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/reject-invitation', async (req, res, next) => {
+  try {
+    await Invitation.deleteOne({ _id: req.body.invitationId });
+    return res.status(200).json({});
   } catch (err) {
     next(err);
   }
