@@ -6,7 +6,8 @@ const router = express.Router();
 
 router.get('/get-user', validateUser, async (req, res, next) => {
   try {
-    res.status(200).json({ user: req.user });
+    const user = await User.findById(req.userId).lean();
+    res.status(200).json({ user });
   } catch (err) {
     next(err);
   }

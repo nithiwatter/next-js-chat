@@ -50,6 +50,7 @@ class MyApp extends App {
     let pendingAcceptances = [];
     let pendingInvitations = [];
     let currentUsers = [];
+    let messages = [];
 
     try {
       const { user } = await getUserApiMethod(ctx.req.headers.cookie);
@@ -61,18 +62,17 @@ class MyApp extends App {
 
     // if there is a user, fetch all initial data regarding teams on client side
     if (userObj) {
-      const {
-        data,
-      } = await axios.post(
+      const { data } = await axios.post(
         `${process.env.URL_API}/api/v1/team-member/get-initial-data`,
-        { userId: userObj._id }
+        { userId: userObj._id },
+        { headers: { cookie: ctx.req.headers.cookie }, withCredentials: true }
       );
       teams = data.teams;
       channels = data.channels;
       pendingAcceptances = data.pendingAcceptances;
       pendingInvitations = data.pendingInvitations;
       currentUsers = data.currentUsers;
-      console.log(currentUsers);
+      messages = data.messages;
     }
 
     return {
@@ -83,6 +83,7 @@ class MyApp extends App {
       pendingAcceptances,
       pendingInvitations,
       currentUsers,
+      messages,
       currentUrl: ctx.asPath,
     };
   }
@@ -96,6 +97,7 @@ class MyApp extends App {
       pendingAcceptances,
       pendingInvitations,
       currentUsers,
+      messages,
       currentUrl,
     } = this.props;
 
@@ -106,6 +108,7 @@ class MyApp extends App {
       pendingAcceptances,
       pendingInvitations,
       currentUsers,
+      messages,
       currentUrl,
     });
   }

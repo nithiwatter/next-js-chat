@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Notifier from '../common/Notifier';
 import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
+import { observer } from 'mobx-react';
 import SimpleForm from '../common/SimpleForm';
 import Sidebar from '../common/Sidebar';
 import Notifications from '../common/Notifications';
@@ -113,6 +114,7 @@ class Layout extends Component {
       user,
     } = this.props;
     const { open, openN } = this.state;
+
     return (
       <React.Fragment>
         <Drawer
@@ -262,4 +264,4 @@ class Layout extends Component {
   }
 }
 
-export default withStyles(styles, { withTheme: true })(Layout);
+export default withStyles(styles, { withTheme: true })(observer(Layout));

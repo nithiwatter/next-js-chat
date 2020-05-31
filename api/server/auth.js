@@ -101,8 +101,7 @@ exports.validateUser = async (req, res, next) => {
     const { _id } = jwt.verify(token, process.env.JWT_SECRET_KEY);
     console.log(_id);
 
-    const user = await User.findById(_id).lean();
-    req.user = user;
+    req.userId = _id;
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') return res.json({ user: null });

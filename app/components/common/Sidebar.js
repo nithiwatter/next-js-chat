@@ -88,7 +88,8 @@ class Sidebar extends Component {
         {
           userId: this.props.user._id,
           name: value,
-        }
+        },
+        { withCredentials: true }
       );
       console.log(data);
       this.props.rootStore.addTeam(data.team);
@@ -100,19 +101,25 @@ class Sidebar extends Component {
   }
 
   async handleAddChannel(status, value) {
-    if (!status) return;
+    try {
+      if (!status) return;
 
-    if (value === '') return notify('A channel name is required');
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/add-channel`,
-      {
-        teamId: this.props.rootStore.currentTeam._id,
-        name: value,
-      }
-    );
-    console.log(data);
-    this.props.rootStore.addChannel(data.channel);
-    notify('You successfully created a new channel');
+      if (value === '') return notify('A channel name is required');
+      const { data } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/add-channel`,
+        {
+          teamId: this.props.rootStore.currentTeam._id,
+          name: value,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      this.props.rootStore.addChannel(data.channel);
+      notify('You successfully created a new channel');
+    } catch (err) {
+      const { data } = err.response;
+      notify(data.err);
+    }
   }
 
   async handleInvite(teamId, teamName) {
@@ -131,7 +138,8 @@ class Sidebar extends Component {
               teamName,
               inviterId: this.props.user._id,
               inviterEmail: this.props.user.email,
-            }
+            },
+            { withCredentials: true }
           );
           console.log(data);
         } catch (err) {
@@ -158,11 +166,13 @@ class Sidebar extends Component {
             `${process.env.URL_API}/api/v1/team-member/delete-team`,
             {
               teamId,
-            }
+            },
+            { withCredentials: true }
           );
           this.props.rootStore.deleteTeam(teamId);
         } catch (err) {
-          console.log(err);
+          const { data } = err.response;
+          notify(data.err);
         }
       },
     });
@@ -181,11 +191,13 @@ class Sidebar extends Component {
             `${process.env.URL_API}/api/v1/team-member/delete-channel`,
             {
               channelId,
-            }
+            },
+            { withCredentials: true }
           );
           this.props.rootStore.deleteChannel(channelId);
         } catch (err) {
-          console.log(err);
+          const { data } = err.response;
+          notify(data.err);
         }
       },
     });

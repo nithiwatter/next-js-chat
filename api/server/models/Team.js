@@ -17,7 +17,7 @@ const mongoSchema = new mongoose.Schema({
 
 mongoSchema.statics.getList = async function ({ userId }) {
   // return all teams whose members include this userId
-  return this.find({ memberIds: userId });
+  return this.find({ memberIds: userId }).sort('name');
 };
 
 const Team = mongoose.model('Team', mongoSchema);

@@ -13,7 +13,7 @@ const mongoSchema = new mongoose.Schema({
 
 mongoSchema.statics.getList = async function ({ teamId }) {
   // return all teams whose members include this userId
-  return this.find({ teamId });
+  return this.find({ teamId }).sort('name');
 };
 
 const Channel = mongoose.model('Channel', mongoSchema);

@@ -12,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import Paper from '@material-ui/core/Paper';
+import Messages from '../components/common/Messages';
+import axios from 'axios';
 
 const styles = (theme) => ({
   root: {
@@ -84,20 +86,64 @@ const styles = (theme) => ({
   },
   footer: {
     width: '100%',
-    top: 'auto',
-    bottom: 0,
     backgroundColor: '#1565c0',
+    gridRow: '3',
+    gridColumn: '1',
   },
   chatPane: {
     height: '100%',
     width: '100%',
   },
+  paddingTop: {
+    ...theme.mixins.toolbar,
+    gridRow: '1',
+    gridColumn: '1',
+  },
+  messageContainer: {
+    height: '100vh',
+    display: 'grid',
+    gridTemplateColumns: '1',
+    gridTemplateRows: 'auto 1fr auto',
+  },
 });
 
 class ViewTeam extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = { input: '' };
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleInputChange(e) {
+    e.preventDefault();
+    this.setState({ input: e.target.value });
+  }
+
+  async handleSubmit(e) {
+    try {
+      if (e.key === 'Enter') {
+        const { data } = await axios.post(
+          `${process.env.URL_API}/api/v1/team-member/add-message`,
+          {
+            userId: this.props.user._id,
+            text: this.state.input,
+            userEmail: this.props.user.email,
+            userDisplayName: this.props.user.displayName,
+            userAvatarUrl: this.props.user.avatarUrl,
+            channelId: this.props.rootStore.currentChannel._id,
+          },
+          { withCredentials: true }
+        );
+        this.setState({ input: '' });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
   render() {
     const { router, rootStore, user, classes, firstGridItem } = this.props;
+    const { input } = this.state;
 
     if (rootStore.teams.length === 0)
       return (
@@ -168,23 +214,37 @@ class ViewTeam extends Component {
           </Toolbar>
         </AppBar>
 
-        <Paper className={classes.chatPane} elevation={0}></Paper>
-        <AppBar position="absolute" elevation={0} className={classes.footer}>
-          <Toolbar>
-            <IconButton style={{ marginRight: '1rem' }}>
-              <AttachmentIcon></AttachmentIcon>
-            </IconButton>
-            <div className={classes.type}>
-              <InputBase
-                placeholder="Start typing…"
-                classes={{
-                  root: classes.typeInput,
-                  input: classes.typeInputInput,
-                }}
-              />
-            </div>
-          </Toolbar>
-        </AppBar>
+        <Paper className={classes.chatPane} elevation={0}>
+          <div className={classes.messageContainer}>
+            <div className={classes.paddingTop}></div>
+
+            <Messages rootStore={rootStore} user={user}></Messages>
+
+            <AppBar
+              position="relative"
+              elevation={0}
+              className={classes.footer}
+            >
+              <Toolbar>
+                <IconButton style={{ marginRight: '1rem' }}>
+                  <AttachmentIcon></AttachmentIcon>
+                </IconButton>
+                <div className={classes.type}>
+                  <InputBase
+                    placeholder="Start typing…"
+                    classes={{
+                      root: classes.typeInput,
+                      input: classes.typeInputInput,
+                    }}
+                    value={input}
+                    onChange={this.handleInputChange}
+                    onKeyPress={this.handleSubmit}
+                  />
+                </div>
+              </Toolbar>
+            </AppBar>
+          </div>
+        </Paper>
       </Layout>
     );
   }

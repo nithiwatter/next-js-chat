@@ -1,7 +1,7 @@
 import { decorate, observable, configure, action, runInAction } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
-import { findIndex } from 'lodash';
+import { findIndex, sortBy } from 'lodash';
 import axios from 'axios';
 
 // disable keeping a clone of the mob store/leaking memory when on the server side
@@ -22,6 +22,7 @@ class Store {
     this.currentTeam = null;
     this.currentChannel = null;
     this.currentUsers = initialState.currentUsers;
+    this.messages = initialState.messages;
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.currentUrl = initialState.currentUrl;
@@ -38,14 +39,33 @@ class Store {
   }
 
   addTeam(newTeam) {
-    this.teams.push(newTeam);
+    const teams = [...this.teams, newTeam];
+    this.teams = sortBy(teams, [
+      function (team) {
+        return team.name;
+      },
+    ]);
     this.currentTeam = newTeam;
     this.channels = [];
     this.currentChannel = null;
+    const currentUser = this.userStore;
+    this.currentUsers = [
+      {
+        _id: currentUser._id,
+        displayName: currentUser.displayName,
+        email: currentUser.email,
+        avatarUrl: currentUser.avatarUrl,
+      },
+    ];
   }
 
   addChannel(newChannel) {
-    this.channels.push(newChannel);
+    const channels = [...this.channels, newChannel];
+    this.channels = sortBy(channels, [
+      function (channel) {
+        return channel.name;
+      },
+    ]);
     this.currentChannel = newChannel;
   }
 
@@ -53,16 +73,37 @@ class Store {
     // cannot click twice
     if (teamId === this.currentTeam._id) return;
     const idx = findIndex(this.teams, (team) => team._id === teamId);
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/get-channels`,
-      {
-        teamId: this.teams[idx]._id,
-      }
-    );
-    const channels = data.channels;
+    const result = await Promise.all([
+      axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-channels`,
+        {
+          teamId: this.teams[idx]._id,
+        },
+        { withCredentials: true }
+      ),
+      axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-team-members`,
+        {
+          teamId: this.teams[idx]._id,
+        },
+        { withCredentials: true }
+      ),
+    ]);
+
+    let channels = result[0].data.channels;
+    let messages = result[0].data.messages;
+    channels = sortBy(channels, [
+      function (channel) {
+        return channel.name;
+      },
+    ]);
+    const currentUsers = result[1].data.currentUsers;
+
     runInAction(() => {
       this.currentTeam = this.teams[idx];
       this.channels = channels;
+      this.currentUsers = currentUsers;
+      this.messages = messages;
       if (channels.length > 0) {
         this.currentChannel = channels[0];
       } else {
@@ -71,12 +112,22 @@ class Store {
     });
   }
 
-  selectChannel(channelId) {
+  async selectChannel(channelId) {
     const idx = findIndex(
       this.channels,
       (channel) => channel._id === channelId
     );
-    this.currentChannel = this.channels[idx];
+    const { data } = await axios.post(
+      `${process.env.URL_API}/api/v1/team-member/get-messages`,
+      {
+        channelId,
+      },
+      { withCredentials: true }
+    );
+    runInAction(() => {
+      this.currentChannel = this.channels[idx];
+      this.messages = data.messages;
+    });
   }
 
   async deleteTeam(teamId) {
@@ -91,7 +142,8 @@ class Store {
         `${process.env.URL_API}/api/v1/team-member/get-channels`,
         {
           teamId: newTeams[0]._id,
-        }
+        },
+        { withCredentials: true }
       );
       const channels = data.channels;
       runInAction(() => {
@@ -128,6 +180,12 @@ class Store {
       this.channels = [];
       this.currentChannel = null;
     }
+  }
+
+  clearInvitation(invitationId) {
+    this.pendingInvitations = this.pendingInvitations.filter(
+      (invitation) => invitation._id !== invitationId
+    );
   }
 }
 
@@ -168,6 +226,7 @@ decorate(Store, {
   teams: observable,
   currentTeam: observable,
   channels: observable,
+  messages: observable,
   currentChannel: observable,
   changeCurrentUrl: action,
   changeTheme: action,
@@ -177,6 +236,7 @@ decorate(Store, {
   selectChannel: action,
   deleteTeam: action,
   deleteChannel: action,
+  clearInvitation: action,
 });
 
 export { initializeStore, getStore };

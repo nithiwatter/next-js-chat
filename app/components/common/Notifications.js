@@ -30,8 +30,10 @@ class Notifications extends Component {
           invitationId,
           teamId,
           userId,
-        }
+        },
+        { withCredentials: true }
       );
+      this.props.rootStore.clearInvitation(invitationId);
     } catch (err) {
       console.log(err);
     }
@@ -43,8 +45,10 @@ class Notifications extends Component {
         `${process.env.URL_API}/api/v1/team-member/reject-invitation`,
         {
           invitationId,
-        }
+        },
+        { withCredentials: true }
       );
+      this.props.rootStore.clearInvitation(invitationId);
     } catch (err) {
       console.log(err);
     }
