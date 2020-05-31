@@ -22,7 +22,7 @@ const styles = (theme) => ({
   bubble: {
     color: 'white',
     borderRadius: '1rem',
-    backgroundColor: '#1e88e5',
+    backgroundColor: '#2eb67d',
     fontSize: '1rem',
     padding: '0.8rem',
     width: 'auto',

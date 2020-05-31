@@ -186,7 +186,19 @@ router.post('/delete-team', async (req, res, next) => {
         .status(400)
         .json({ err: 'You are not the owner of this team.' });
 
-    await team.remove();
+    const result = await Promise.all([
+      team.remove(),
+      Channel.find({ teamId: req.body.teamId }).lean(),
+    ]);
+    const arrayOfChannelIds = [];
+
+    for (let channel of result[1]) {
+      arrayOfChannelIds.push(channel._id);
+    }
+
+    console.log(arrayOfChannelIds);
+    // deleting all referenced messages and channels
+    await Message.deleteMany({ channelId: { $in: arrayOfChannelIds } });
     await Channel.deleteMany({ teamId: req.body.teamId });
     res.status(200).json({});
   } catch (err) {

@@ -16,6 +16,12 @@ mongoSchema.statics.getList = async function ({ teamId }) {
   return this.find({ teamId }).sort('name');
 };
 
+mongoSchema.pre('remove', async function (next) {
+  console.log('hooks fired');
+  await this.model('Message').deleteMany({ channelId: this._id });
+  next();
+});
+
 const Channel = mongoose.model('Channel', mongoSchema);
 
 module.exports = Channel;

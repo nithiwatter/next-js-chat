@@ -57,6 +57,7 @@ class Store {
         avatarUrl: currentUser.avatarUrl,
       },
     ];
+    this.messages = [];
   }
 
   addChannel(newChannel) {
@@ -67,6 +68,7 @@ class Store {
       },
     ]);
     this.currentChannel = newChannel;
+    this.messages = [];
   }
 
   async selectTeam(teamId) {

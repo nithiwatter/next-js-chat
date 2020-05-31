@@ -33,6 +33,7 @@ const styles = (theme) => ({
     display: 'none',
     [theme.breakpoints.down('xs')]: {
       display: 'block',
+      marginRight: '1rem',
     },
   },
   firstGrid: {
@@ -165,10 +166,8 @@ class Layout extends Component {
                       <Avatar
                         variant="rounded"
                         style={{
-                          backgroundColor: '#ab47bc',
+                          backgroundColor: '#2eb67d',
                           color: 'white',
-                          border: '2px solid',
-                          borderColor: '#7b1fa2',
                         }}
                       >
                         {rootStore.currentTeam.name[0].toUpperCase()}

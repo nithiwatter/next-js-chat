@@ -17,7 +17,7 @@ import axios from 'axios';
 
 const styles = (theme) => ({
   root: {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#4a154b',
     color: 'white',
   },
   grow: {
@@ -86,7 +86,7 @@ const styles = (theme) => ({
   },
   footer: {
     width: '100%',
-    backgroundColor: '#1565c0',
+    backgroundColor: '#4a154b',
     gridRow: '3',
     gridColumn: '1',
   },

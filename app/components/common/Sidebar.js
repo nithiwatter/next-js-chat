@@ -33,15 +33,14 @@ const styles = (theme) => ({
   },
   appbar: {
     width: '100%',
-    backgroundColor: '#2e7d32',
+    backgroundColor: '#36c5f0',
     color: 'white',
   },
   selectedTeam: {
-    backgroundColor: '#f9a825',
-    border: '2px solid #ff6f00',
+    backgroundColor: '#ecb22e',
   },
   selectedChannel: {
-    backgroundColor: '#c2185b',
+    backgroundColor: '#e01e5a',
   },
   indicator: {
     backgroundColor: 'white',
@@ -142,6 +141,7 @@ class Sidebar extends Component {
             { withCredentials: true }
           );
           console.log(data);
+          notify('You successfully invited this person.');
         } catch (err) {
           const { data } = err.response;
           notify(data.err);
