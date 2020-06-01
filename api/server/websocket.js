@@ -61,6 +61,15 @@ exports.setUpWS = function (server) {
       socket.to(teamId).emit('deletedTeam', teamId);
     });
 
+    socket.on('add-channel', (channel) => {
+      socket.to(channel.teamId).emit('addedChannel', channel);
+    });
+
+    // [channelId, teamId]
+    socket.on('delete-channel', (channelArray) => {
+      socket.to(channelArray[1]).emit('deletedChannel', channelArray[0]);
+    });
+
     socket.on('leave-team', (teamId) => {
       console.log('leaving team');
       socket.leave(teamId);

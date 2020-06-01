@@ -30,7 +30,7 @@ class Store {
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.currentUrl = initialState.currentUrl;
-    this.darkTheme = true;
+    this.darkTheme = false;
     this.changeTheme = this.changeTheme.bind(this);
     const isServer = typeof window === 'undefined';
     this.socket === null;
@@ -80,14 +80,25 @@ class Store {
     this.socket.emit('subscribe', newTeam._id);
   }
 
-  addChannel(newChannel) {
+  addChannel(newChannel, fromSocket) {
     const channels = [...this.channels, newChannel];
     this.channels = sortBy(channels, [
       function (channel) {
         return channel.name;
       },
     ]);
-    this.currentChannel = newChannel;
+    console.log(this.channels.length);
+    console.log(this.channels[0]);
+    console.log(fromSocket);
+    // if the team currently has no channel
+    if (fromSocket && this.channels.length === 1) {
+      console.log('hello');
+      this.currentChannel = newChannel;
+    }
+    if (!fromSocket) {
+      this.currentChannel = newChannel;
+    }
+
     this.messages = [];
   }
 
@@ -190,6 +201,7 @@ class Store {
 
   deleteChannel(channelId) {
     // deleting something that is not current channel
+    console.log(this.channels);
     const newChannels = this.channels.filter(
       (channel) => channel._id !== channelId
     );
@@ -204,6 +216,7 @@ class Store {
       this.channels = [];
       this.currentChannel = null;
     }
+    console.log(this.channels);
   }
 
   invite(invitation) {

@@ -35,6 +35,18 @@ function attachListeners(socket, userId, teams) {
     socket.rootStore.deleteTeam(teamId);
   });
 
+  socket.on('addedChannel', (channel) => {
+    if (channel.teamId === socket.rootStore.currentTeam._id) {
+      console.log('yay');
+      socket.rootStore.addChannel(channel, true);
+    }
+  });
+
+  socket.on('deletedChannel', (channelId) => {
+    console.log('delete');
+    socket.rootStore.deleteChannel(channelId);
+  });
+
   socket.on('error', (err) => {
     console.log(err);
   });

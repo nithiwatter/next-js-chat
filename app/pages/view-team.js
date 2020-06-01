@@ -100,7 +100,7 @@ const styles = (theme) => ({
     gridColumn: '1',
   },
   messageContainer: {
-    height: '100vh',
+    height: '100%',
     display: 'grid',
     gridTemplateColumns: '1',
     gridTemplateRows: 'auto 1fr auto',

@@ -60,6 +60,9 @@ const styles = (theme) => ({
       content: '""',
     },
   },
+  listItem: {
+    borderRadius: 8,
+  },
 });
 
 class Sidebar extends Component {
@@ -114,6 +117,7 @@ class Sidebar extends Component {
       console.log(data);
       this.props.rootStore.addChannel(data.channel);
       notify('You successfully created a new channel');
+      this.props.rootStore.socket.emit('add-channel', data.channel);
     } catch (err) {
       const { data } = err.response;
       notify(data.err);
@@ -198,6 +202,10 @@ class Sidebar extends Component {
             { withCredentials: true }
           );
           this.props.rootStore.deleteChannel(channelId);
+          this.props.rootStore.socket.emit('delete-channel', [
+            channelId,
+            this.props.rootStore.currentTeam._id,
+          ]);
         } catch (err) {
           const { data } = err.response;
           notify(data.err);
@@ -254,7 +262,7 @@ class Sidebar extends Component {
             </IconButton>
           </div>
 
-          <div>
+          <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
             <List>
               {rootStore.teams.map((team) => (
                 <ListItem
@@ -263,6 +271,9 @@ class Sidebar extends Component {
                   key={team._id}
                   onClick={() => rootStore.selectTeam(team._id)}
                   selected={rootStore.currentTeam._id === team._id}
+                  classes={{
+                    root: classes.listItem,
+                  }}
                 >
                   <ListItemAvatar>
                     <Avatar
@@ -335,7 +346,7 @@ class Sidebar extends Component {
               </IconButton>
             </div>
 
-            <div>
+            <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
               <List>
                 {rootStore.channels.map((channel) => (
                   <ListItem
@@ -344,6 +355,9 @@ class Sidebar extends Component {
                     key={channel._id}
                     selected={rootStore.currentChannel._id === channel._id}
                     onClick={() => rootStore.selectChannel(channel._id)}
+                    classes={{
+                      root: classes.listItem,
+                    }}
                   >
                     <ListItemAvatar>
                       <Avatar
@@ -410,10 +424,17 @@ class Sidebar extends Component {
               </IconButton>
             </div>
 
-            <div>
+            <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
               <List>
                 {rootStore.currentUsers.map((user) => (
-                  <ListItem disableRipple button key={user._id}>
+                  <ListItem
+                    disableRipple
+                    button
+                    key={user._id}
+                    classes={{
+                      root: classes.listItem,
+                    }}
+                  >
                     <ListItemAvatar>
                       <Badge
                         anchorOrigin={{
