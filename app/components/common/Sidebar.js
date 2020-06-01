@@ -74,7 +74,7 @@ class Sidebar extends Component {
   }
 
   handleTabSwitch(e, newValue) {
-    this.setState({ value: newValue });
+    this.props.rootStore.changeTab(newValue);
   }
 
   async handleAddTeam(status, value) {
@@ -211,7 +211,7 @@ class Sidebar extends Component {
         <AppBar position="relative" elevation={0} className={classes.appbar}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Tabs
-              value={value}
+              value={rootStore.currentTab}
               onChange={this.handleTabSwitch}
               variant="scrollable"
               classes={{ indicator: classes.indicator }}
@@ -223,7 +223,10 @@ class Sidebar extends Component {
           </div>
         </AppBar>
 
-        <div hidden={value !== 0} style={{ height: '85%', overflow: 'auto' }}>
+        <div
+          hidden={rootStore.currentTab !== 0}
+          style={{ height: '85%', overflow: 'auto' }}
+        >
           <div
             style={{
               display: 'flex',
@@ -301,7 +304,10 @@ class Sidebar extends Component {
         </div>
 
         {rootStore.teams.length > 0 ? (
-          <div hidden={value !== 1} style={{ height: '85%', overflow: 'auto' }}>
+          <div
+            hidden={rootStore.currentTab !== 1}
+            style={{ height: '85%', overflow: 'auto' }}
+          >
             <div
               style={{
                 display: 'flex',
@@ -382,7 +388,10 @@ class Sidebar extends Component {
         ) : null}
 
         {rootStore.teams.length > 0 ? (
-          <div hidden={value !== 2} style={{ height: '85%', overflow: 'auto' }}>
+          <div
+            hidden={rootStore.currentTab !== 2}
+            style={{ height: '85%', overflow: 'auto' }}
+          >
             <div
               style={{
                 display: 'flex',
