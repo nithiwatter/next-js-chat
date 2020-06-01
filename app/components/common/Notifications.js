@@ -40,6 +40,7 @@ class Notifications extends Component {
       this.props.rootStore.socket.emit('acceptInvitation', [
         invitationId,
         teamId,
+        userId,
       ]);
     } catch (err) {
       console.log(err);
@@ -57,7 +58,10 @@ class Notifications extends Component {
         { withCredentials: true }
       );
       this.props.rootStore.clearInvitation(invitationId);
-      this.props.rootStore.socket.emit('rejectInvitation', invitationId);
+      this.props.rootStore.socket.emit('rejectInvitation', [
+        invitationId,
+        userId,
+      ]);
     } catch (err) {
       console.log(err);
     }

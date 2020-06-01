@@ -36,19 +36,34 @@ exports.setUpWS = function (server) {
       socket.to(invitation.userId).emit('invited', invitation);
     });
 
-    //[invitationId, teamId]
+    //[invitationId, teamId, userId]
     socket.on('acceptInvitation', (invitationArray) => {
       socket.to(socket.userId).emit('accepted', invitationArray);
     });
 
-    socket.on('rejectInvitation', (invitationId) => {
-      console.log('yay');
-      socket.to(socket.userId).emit('rejected', invitationId);
+    //[invitationId, userId]
+    socket.on('rejectInvitation', (invitationArray) => {
+      socket.to(socket.userId).emit('rejected', invitationArray);
+    });
+
+    socket.on('leave-inv', (userId) => {
+      console.log('leaving');
+      socket.leave(userId);
     });
 
     // initially subscribe to all possible teams when first logged in
     socket.on('subscribe', (teamId) => {
-      socket.join('teamId');
+      socket.join(teamId);
+    });
+
+    socket.on('delete-team', (teamId) => {
+      console.log('deleting');
+      socket.to(teamId).emit('deletedTeam', teamId);
+    });
+
+    socket.on('leave-team', (teamId) => {
+      console.log('leaving team');
+      socket.leave(teamId);
     });
 
     // meesageArray[0] contains the teamId, ...[1] is the message obj with channelId

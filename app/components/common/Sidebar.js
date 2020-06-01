@@ -172,6 +172,7 @@ class Sidebar extends Component {
             { withCredentials: true }
           );
           this.props.rootStore.deleteTeam(teamId);
+          this.props.rootStore.socket.emit('delete-team', teamId);
         } catch (err) {
           const { data } = err.response;
           notify(data.err);

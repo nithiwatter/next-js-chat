@@ -77,6 +77,7 @@ class Store {
       },
     ];
     this.messages = [];
+    this.socket.emit('subscribe', newTeam._id);
   }
 
   addChannel(newChannel) {
@@ -184,6 +185,7 @@ class Store {
       this.channels = [];
       this.currentChannel = null;
     }
+    this.socket.emit('leave-team', teamId);
   }
 
   deleteChannel(channelId) {
@@ -280,6 +282,7 @@ class Store {
       }
       this.messages = data.messages;
       this.currentUsers = data.currentUsers;
+      this.socket.emit('subscribe', teamId);
     });
   }
 
