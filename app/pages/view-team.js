@@ -100,10 +100,13 @@ const styles = (theme) => ({
     gridColumn: '1',
   },
   messageContainer: {
-    height: '100%',
+    height: '100vh',
     display: 'grid',
     gridTemplateColumns: '1',
     gridTemplateRows: 'auto 1fr auto',
+    [theme.breakpoints.down('xs')]: {
+      height: '90vh',
+    },
   },
 });
 
@@ -136,6 +139,10 @@ class ViewTeam extends Component {
           { withCredentials: true }
         );
         this.setState({ input: '' });
+        this.props.rootStore.socket.emit('message', [
+          this.props.rootStore.currentTeam._id,
+          data.message,
+        ]);
       }
     } catch (err) {
       console.log(err);

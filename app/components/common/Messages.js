@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { observer } from 'mobx-react';
-import dateformat from 'dateformat';
+import dateFormat from 'dateformat';
 
 const styles = (theme) => ({
   container: {
@@ -19,6 +19,21 @@ const styles = (theme) => ({
     maxWidth: '20rem',
     alignItems: 'center',
   },
+  bubbleContainerSelf: {
+    display: 'flex',
+    maxWidth: '20rem',
+    alignItems: 'center',
+    flexDirection: 'row-reverse',
+  },
+  bubbleSelf: {
+    color: 'white',
+    borderRadius: '1rem',
+    backgroundColor: '#36c5f0',
+    fontSize: '1rem',
+    padding: '0.8rem',
+    width: 'auto',
+    margin: 0,
+  },
   bubble: {
     color: 'white',
     borderRadius: '1rem',
@@ -31,8 +46,15 @@ const styles = (theme) => ({
   date: {
     margin: 0,
     marginLeft: '1rem',
+    marginRight: '1rem',
   },
   overallContainer: {
+    display: 'flex',
+    marginTop: '0.3rem',
+  },
+  overallContainerSelf: {
+    display: 'flex',
+    justifyContent: 'flex-end',
     marginTop: '0.3rem',
   },
 });
@@ -45,16 +67,37 @@ class Messages extends Component {
       <div className={classes.container}>
         <div>
           {rootStore.messages.map((message) => (
-            <div key={message._id} className={classes.overallContainer}>
-              <div className={classes.bubbleContainer}>
+            <div
+              key={message._id}
+              className={
+                user._id === message.userId
+                  ? classes.overallContainerSelf
+                  : classes.overallContainer
+              }
+            >
+              <div
+                className={
+                  user._id === message.userId
+                    ? classes.bubbleContainerSelf
+                    : classes.bubbleContainer
+                }
+              >
                 <Avatar
                   src={message.userAvatarUrl}
-                  style={{ marginRight: '1rem' }}
+                  style={{ marginRight: '1rem', marginLeft: '1rem' }}
                 ></Avatar>
 
-                <div className={classes.bubble}>{message.text}</div>
+                <div
+                  className={
+                    user._id === message.userId
+                      ? classes.bubbleSelf
+                      : classes.bubble
+                  }
+                >
+                  {message.text}
+                </div>
                 <div className={classes.date}>
-                  {dateformat(new Date(message.createdAt), 'HH:mm')}
+                  {dateFormat(new Date(message.createdAt), 'HH:MM')}
                 </div>
               </div>
             </div>
@@ -65,4 +108,4 @@ class Messages extends Component {
   }
 }
 
-export default withStyles(styles)(Messages);
+export default withStyles(styles)(observer(Messages));

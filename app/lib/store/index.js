@@ -17,6 +17,11 @@ let store;
 class Store {
   constructor(initialState) {
     console.log('creating store');
+    // for next dev refresh
+    this.teams = [];
+    this.channels = [];
+    this.currentUsers = [];
+    //
     this.userStore = new User(this, { ...initialState.user });
     this.pendingAcceptances = initialState.pendingAcceptances;
     this.pendingInvitations = initialState.pendingInvitations;
@@ -92,7 +97,6 @@ class Store {
     console.log(fromSocket);
     // if the team currently has no channel
     if (fromSocket && this.channels.length === 1) {
-      console.log('hello');
       this.currentChannel = newChannel;
     }
     if (!fromSocket) {
@@ -299,6 +303,11 @@ class Store {
     });
   }
 
+  receiveMessage(message) {
+    console.log('hi');
+    this.messages.push(message);
+  }
+
   changeTab(tabValue) {
     if (tabValue === this.currentTab) return;
     this.currentTab = tabValue;
@@ -359,6 +368,7 @@ decorate(Store, {
   newInvitation: action,
   acceptedInvitation: action,
   rejectedInvitation: action,
+  receiveMessage: action,
 });
 
 export { initializeStore, getStore };

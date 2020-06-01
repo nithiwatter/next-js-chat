@@ -75,9 +75,11 @@ exports.setUpWS = function (server) {
       socket.leave(teamId);
     });
 
-    // meesageArray[0] contains the teamId, ...[1] is the message obj with channelId
+    // [teamId, messageObj]
     socket.on('message', (messageArray) => {
-      socket.to(messageArray[0]).emit('new-message', messageArray[1]);
+      console.log('yay');
+      console.log(messageArray[0]);
+      io.to(messageArray[0]).emit('receive-message', messageArray);
     });
 
     socket.on('disconnect', () => {
