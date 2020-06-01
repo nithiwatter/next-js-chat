@@ -141,6 +141,9 @@ class Sidebar extends Component {
           );
           console.log(data);
           notify('You successfully invited this person.');
+          this.props.rootStore.invite(data.invitation);
+          // set up a ws to track if another person has accepted
+          this.props.rootStore.socket.emit('invite', data.invitation);
         } catch (err) {
           const { data } = err.response;
           notify(data.err);

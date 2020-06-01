@@ -20,6 +20,11 @@ class MyApp extends App {
     }
   }
 
+  // componentWillUnmount() {
+  //   console.log('unmount');
+  //   this.rootStore.unmount();
+  // }
+
   // runs once on the server for populating props for SSR page/then runs every time on the client during SPA navigation
   // later look into this for changes to (newer) getStatic or getServer
   static async getInitialProps({ Component, ctx }) {

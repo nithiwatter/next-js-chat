@@ -4,6 +4,8 @@ import { User } from './userStore';
 import { findIndex, sortBy } from 'lodash';
 import axios from 'axios';
 import io from 'socket.io-client';
+import attachWSListeners from '../attachWSListeners';
+import notify from '../notify';
 
 // disable keeping a clone of the mob store/leaking memory when on the server side
 useStaticRendering(typeof window === 'undefined');
@@ -30,13 +32,22 @@ class Store {
     this.currentUrl = initialState.currentUrl;
     this.darkTheme = true;
     this.changeTheme = this.changeTheme.bind(this);
-    this.socket = null;
     const isServer = typeof window === 'undefined';
-    if (!isServer) {
+    this.socket === null;
+
+    if (!isServer && this.userStore._id && !this.socket) {
       this.socket = io(process.env.URL_API);
-      console.log('Yay');
+      this.socket.rootStore = this;
+      attachWSListeners(this.socket, this.userStore._id, this.teams);
     }
   }
+
+  // unmount() {
+  //   if (this.socket !== null) {
+  //     this.socket.disconnect();
+  //     this.socket = null;
+  //   }
+  // }
 
   changeCurrentUrl(currentUrl) {
     this.currentUrl = currentUrl;
@@ -149,7 +160,7 @@ class Store {
     }
     if (newTeams.length > 0) {
       // get channels information from the first team available
-      const { data } = await await axios.post(
+      const { data } = await axios.post(
         `${process.env.URL_API}/api/v1/team-member/get-channels`,
         {
           teamId: newTeams[0]._id,
@@ -193,10 +204,83 @@ class Store {
     }
   }
 
-  clearInvitation(invitationId) {
+  invite(invitation) {
+    this.pendingAcceptances.push(invitation);
+  }
+
+  newInvitation(invitation) {
+    this.pendingInvitations.push(invitation);
+  }
+
+  clearInvitation(invitationId, acceptance) {
     this.pendingInvitations = this.pendingInvitations.filter(
       (invitation) => invitation._id !== invitationId
     );
+    if (acceptance) {
+      this.pendingAcceptances = this.pendingAcceptances.filter(
+        (invitation) => invitation._id !== invitationId
+      );
+    }
+  }
+
+  async acceptedInvitation(invitationId, teamId) {
+    for (let invitation of this.pendingAcceptances) {
+      if (invitation._id === invitationId) {
+        invitation.accepted = true;
+        break;
+      }
+    }
+    notify('Someone accepted your invitation. Please check.');
+    if (this.currentTeam._id === teamId) {
+      const { data } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-team-members`,
+        {
+          teamId,
+        },
+        { withCredentials: true }
+      );
+      runInAction(() => {
+        this.currentUsers = data.currentUsers;
+      });
+    }
+  }
+
+  rejectedInvitation(invitationId) {
+    for (let invitation of this.pendingAcceptances) {
+      if (invitation._id === invitationId) {
+        invitation.rejected = true;
+        break;
+      }
+    }
+    notify('Someone just rejected your invitation. :(');
+  }
+
+  async getAcceptedTeam(teamId) {
+    const { data } = await axios.post(
+      `${process.env.URL_API}/api/v1/team-member/get-team`,
+      {
+        teamId,
+      },
+      { withCredentials: true }
+    );
+    runInAction(() => {
+      const teams = [...this.teams];
+      teams.push(data.team);
+      this.teams = sortBy(teams, [
+        function (team) {
+          return team.name;
+        },
+      ]);
+      this.currentTeam = data.team;
+      this.channels = data.channels;
+      if (data.channels.length > 0) {
+        this.currentChannel = data.channels[0];
+      } else {
+        this.currentChannel = null;
+      }
+      this.messages = data.messages;
+      this.currentUsers = data.currentUsers;
+    });
   }
 
   changeTab(tabValue) {
@@ -255,6 +339,10 @@ decorate(Store, {
   deleteTeam: action,
   deleteChannel: action,
   clearInvitation: action,
+  invite: action,
+  newInvitation: action,
+  acceptedInvitation: action,
+  rejectedInvitation: action,
 });
 
 export { initializeStore, getStore };

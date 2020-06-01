@@ -8,6 +8,28 @@ const { signRequestForUpload } = require('../aws');
 
 const router = express();
 
+router.post('/get-team', async (req, res, next) => {
+  try {
+    const team = await Team.findById(req.body.teamId).lean();
+    if (!team) {
+      return res.status(400).json({ err: 'Sorry. This team no longer exists' });
+    }
+    const channels = await Channel.find({ teamId: req.body.teamId }).lean();
+    let messages = [];
+    let currentUsers = [];
+    if (channels.length > 0) {
+      messages = await Message.find({ channelId: channels[0]._id }).lean();
+    }
+    currentUsers = await User.find(
+      { _id: { $in: team.memberIds } },
+      '_id displayName email avatarUrl'
+    ).lean();
+    res.status(200).json({ team, channels, messages, currentUsers });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/get-initial-data', async (req, res, next) => {
   try {
     let channels = [];
@@ -106,6 +128,10 @@ router.post('/invite-to-team', async (req, res, next) => {
 
 router.post('/accept-invitation', async (req, res, next) => {
   try {
+    if (req.userId !== req.body.userId)
+      return res
+        .status(400)
+        .json({ err: 'You are not the owner of this invitation.' });
     const team = await Team.findById(req.body.teamId);
     team.memberIds.push(req.body.userId);
     await team.save();
@@ -118,6 +144,10 @@ router.post('/accept-invitation', async (req, res, next) => {
 
 router.post('/reject-invitation', async (req, res, next) => {
   try {
+    if (req.userId !== req.body.userId)
+      return res
+        .status(400)
+        .json({ err: 'You are not the owner of this invitation.' });
     await Invitation.deleteOne({ _id: req.body.invitationId });
     return res.status(200).json({});
   } catch (err) {

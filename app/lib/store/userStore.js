@@ -18,6 +18,8 @@ class User {
     this.email = null;
     this.displayName = null;
     this.avatarUrl = null;
+    this.rootStore.socket.disconnect();
+    this.rootStore.socket = null;
   }
 
   async updateProfile(updatedData) {

@@ -11,6 +11,8 @@ import Typography from '@material-ui/core/Typography';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import AnnouncementIcon from '@material-ui/icons/Announcement';
 import { IconButton } from '@material-ui/core';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
 import axios from 'axios';
 
 const styles = (theme) => ({});
@@ -34,21 +36,28 @@ class Notifications extends Component {
         { withCredentials: true }
       );
       this.props.rootStore.clearInvitation(invitationId);
+      this.props.rootStore.getAcceptedTeam(teamId);
+      this.props.rootStore.socket.emit('acceptInvitation', [
+        invitationId,
+        teamId,
+      ]);
     } catch (err) {
       console.log(err);
     }
   }
 
-  async handleReject(invitationId) {
+  async handleReject(userId, invitationId) {
     try {
       const { data } = await axios.post(
         `${process.env.URL_API}/api/v1/team-member/reject-invitation`,
         {
           invitationId,
+          userId,
         },
         { withCredentials: true }
       );
       this.props.rootStore.clearInvitation(invitationId);
+      this.props.rootStore.socket.emit('rejectInvitation', invitationId);
     } catch (err) {
       console.log(err);
     }
@@ -83,7 +92,11 @@ class Notifications extends Component {
               </IconButton>
             </ListItemIcon>
             <ListItemIcon>
-              <IconButton onClick={() => this.handleReject(invitation._id)}>
+              <IconButton
+                onClick={() =>
+                  this.handleReject(invitation.userId, invitation._id)
+                }
+              >
                 <ThumbDownIcon></ThumbDownIcon>
               </IconButton>
             </ListItemIcon>
@@ -99,6 +112,28 @@ class Notifications extends Component {
                 primary={invitation.teamName}
                 secondary={`An invitation waiting for ${invitation.userEmail} to respond`}
               />
+              {invitation.accepted ? (
+                <ListItemIcon>
+                  <IconButton
+                    onClick={() => {
+                      rootStore.clearInvitation(invitation._id, true);
+                    }}
+                  >
+                    <CheckCircleIcon></CheckCircleIcon>
+                  </IconButton>
+                </ListItemIcon>
+              ) : null}
+              {invitation.rejected ? (
+                <ListItemIcon>
+                  <IconButton
+                    onClick={() => {
+                      rootStore.clearInvitation(invitation._id, true);
+                    }}
+                  >
+                    <ErrorIcon></ErrorIcon>
+                  </IconButton>
+                </ListItemIcon>
+              ) : null}
             </ListItem>
           ))}
         </List>
