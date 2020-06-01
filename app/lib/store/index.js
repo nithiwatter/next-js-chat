@@ -3,6 +3,7 @@ import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
 import { findIndex, sortBy } from 'lodash';
 import axios from 'axios';
+import io from 'socket.io-client';
 
 // disable keeping a clone of the mob store/leaking memory when on the server side
 useStaticRendering(typeof window === 'undefined');
@@ -29,6 +30,12 @@ class Store {
     this.currentUrl = initialState.currentUrl;
     this.darkTheme = true;
     this.changeTheme = this.changeTheme.bind(this);
+    this.socket = null;
+    const isServer = typeof window === 'undefined';
+    if (!isServer) {
+      this.socket = io(process.env.URL_API);
+      console.log('Yay');
+    }
   }
 
   changeCurrentUrl(currentUrl) {

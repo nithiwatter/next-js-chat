@@ -65,7 +65,6 @@ const styles = (theme) => ({
 class Sidebar extends Component {
   constructor(props) {
     super(props);
-    this.state = { value: 0 };
     this.handleAddTeam = this.handleAddTeam.bind(this);
     this.handleAddChannel = this.handleAddChannel.bind(this);
     this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
@@ -205,7 +204,6 @@ class Sidebar extends Component {
 
   render() {
     const { rootStore, classes } = this.props;
-    const { value } = this.state;
     return (
       <div className={classes.container}>
         <AppBar position="relative" elevation={0} className={classes.appbar}>

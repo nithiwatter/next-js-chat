@@ -92,14 +92,13 @@ exports.logOut = async (req, res, next) => {
 
 exports.validateUser = async (req, res, next) => {
   try {
-    console.log(req.cookies);
+    // console.log(req.cookies);
     const token = req.cookies['async-chat-app'];
 
     // if the user does not send the token (usually when trying to access protected routes on client side)
     if (!token) return res.json({ user: null });
 
     const { _id } = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log(_id);
 
     req.userId = _id;
     next();

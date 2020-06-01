@@ -3,6 +3,8 @@ require('dotenv').config();
 const api = require('./api/index');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const http = require('http');
+const { setUpWS } = require('./websocket');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
@@ -23,7 +25,10 @@ server.use(cors({ origin: process.env.URL_APP, credentials: true }));
 
 api(server);
 
-server.listen(process.env.PORT_API, (err) => {
+const httpServer = http.createServer(server);
+setUpWS(httpServer);
+
+httpServer.listen(process.env.PORT_API, (err) => {
   if (err) {
     throw err;
   }
