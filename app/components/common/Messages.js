@@ -71,25 +71,30 @@ class Messages extends Component {
             <div
               key={message._id}
               className={
-                user._id === message.userId
+                user._id === message.userId._id || user._id === message.userId
                   ? classes.overallContainerSelf
                   : classes.overallContainer
               }
             >
               <div
                 className={
-                  user._id === message.userId
+                  user._id === message.userId._id || user._id === message.userId
                     ? classes.bubbleContainerSelf
                     : classes.bubbleContainer
                 }
               >
                 <Avatar
-                  src={message.userAvatarUrl}
+                  src={
+                    message.userId.avatarUrl
+                      ? message.userId.avatarUrl
+                      : message.userAvatarUrl
+                  }
                   style={{ marginRight: '1rem', marginLeft: '1rem' }}
                 ></Avatar>
 
                 <div
                   className={
+                    user._id === message.userId._id ||
                     user._id === message.userId
                       ? classes.bubbleSelf
                       : classes.bubble

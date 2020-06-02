@@ -25,14 +25,7 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
 import Badge from '@material-ui/core/Badge';
-import {
-  CarouselProvider,
-  Slider,
-  Slide,
-  ButtonBack,
-  ButtonNext,
-  DotGroup,
-} from 'pure-react-carousel';
+import { CarouselProvider, Slider, Slide, DotGroup } from 'pure-react-carousel';
 
 const styles = (theme) => ({
   container: {
@@ -53,6 +46,21 @@ const styles = (theme) => ({
   },
   indicator: {
     backgroundColor: 'white',
+  },
+  selfBadge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      border: '1px solid currentColor',
+      content: '""',
+    },
   },
   badge: {
     backgroundColor: 'grey',
@@ -542,7 +550,12 @@ class Sidebar extends Component {
                               }}
                               overlap="circle"
                               variant="dot"
-                              classes={{ badge: classes.badge }}
+                              classes={
+                                user._id === rootStore.userStore._id ||
+                                user.online
+                                  ? { badge: classes.selfBadge }
+                                  : { badge: classes.badge }
+                              }
                             >
                               <Avatar
                                 src={user.avatarUrl}

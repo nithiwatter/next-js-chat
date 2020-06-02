@@ -55,9 +55,9 @@ router.post('/get-initial-data', async (req, res, next) => {
       pendingInvitations = result[2];
       currentUsers = result[3];
       if (channels.length > 0) {
-        messages = await Message.find({ channelId: channels[0]._id }).sort(
-          'createdAt'
-        );
+        messages = await Message.find({ channelId: channels[0]._id })
+          .sort('createdAt')
+          .populate('userId', 'avatarUrl');
       }
     } else {
       pendingInvitations = await Invitation.find({ userId: req.body.userId });

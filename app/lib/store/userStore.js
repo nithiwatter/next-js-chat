@@ -13,11 +13,19 @@ class User {
   }
 
   logOut() {
-    this._id = null;
+    if (this.rootStore.currentTeam) {
+      this.rootStore.socket.emit('offline', [
+        this.rootStore.currentTeam._id,
+        this._id,
+      ]);
+    } else {
+      this.rootStore.socket.emit('offline', null);
+    }
     this.slug = null;
     this.email = null;
     this.displayName = null;
     this.avatarUrl = null;
+    this._id = null;
     this.rootStore.socket.disconnect();
     this.rootStore.socket = null;
   }

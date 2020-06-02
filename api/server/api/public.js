@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Message = require('../models/Message');
 const express = require('express');
 const { validateUser } = require('../auth');
 
@@ -27,7 +28,6 @@ router.post('/get-user-by-slug', async (req, res, next) => {
 router.post('/user/update-profile', async (req, res, next) => {
   try {
     const { name, userId, avatarUrl } = req.body;
-
     const updatedUser = await User.updateProfile({ name, userId, avatarUrl });
     res.status(200).json({ updatedUser });
   } catch (err) {

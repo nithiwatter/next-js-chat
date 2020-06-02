@@ -62,6 +62,29 @@ class Store {
     this.darkTheme = !this.darkTheme;
   }
 
+  onlineStatus(result) {
+    let i = 0;
+    console.log(result);
+    console.log('hello');
+    for (let user of this.currentUsers) {
+      if (result.includes(user._id)) {
+        user.online = true;
+        i++;
+      }
+
+      if (i === result.length) break;
+    }
+  }
+
+  offlineStatus(userId) {
+    for (let user of this.currentUsers) {
+      if (user._id === userId) {
+        user.online = false;
+        break;
+      }
+    }
+  }
+
   addTeam(newTeam) {
     const teams = [...this.teams, newTeam];
     this.teams = sortBy(teams, [
@@ -109,8 +132,12 @@ class Store {
   async selectTeam(teamId) {
     // cannot click twice
     if (teamId === this.currentTeam._id) return;
+    // emit offline for the previous team - do not really need to?
+    // this.socket.emit('offline', [this.currentTeam._id, this.userStore._id]);
+
     const idx = findIndex(this.teams, (team) => team._id === teamId);
     this.currentTeam = this.teams[idx];
+
     const result = await Promise.all([
       axios.post(
         `${process.env.URL_API}/api/v1/team-member/get-channels`,
@@ -146,6 +173,8 @@ class Store {
       } else {
         this.currentChannel = null;
       }
+      // emit online for the new team
+      this.socket.emit('online', [this.currentTeam._id, this.userStore._id]);
     });
   }
 
@@ -190,8 +219,10 @@ class Store {
         this.channels = channels;
         if (channels.length > 0) {
           this.currentChannel = channels[0];
+          this.messages = data.messages;
         } else {
           this.currentChannel = null;
+          this.messages = [];
         }
       });
     } else {
@@ -199,11 +230,12 @@ class Store {
       this.currentTeam = null;
       this.channels = [];
       this.currentChannel = null;
+      this.messages = [];
     }
     this.socket.emit('leave-team', teamId);
   }
 
-  deleteChannel(channelId) {
+  async deleteChannel(channelId) {
     // deleting something that is not current channel
     console.log(this.channels);
     const newChannels = this.channels.filter(
@@ -213,14 +245,28 @@ class Store {
       this.channels = newChannels;
       return;
     }
+    let messages = [];
+    let channels = [];
+    let currentChannel = null;
+
     if (newChannels.length > 0) {
-      this.channels = newChannels;
-      this.currentChannel = newChannels[0];
-    } else {
-      this.channels = [];
-      this.currentChannel = null;
+      const { data } = await axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-messages`,
+        {
+          channelId: newChannels[0]._id,
+        },
+        { withCredentials: true }
+      );
+      messages = data.messages;
+      currentChannel = newChannels[0];
+      channels = newChannels;
     }
-    console.log(this.channels);
+
+    runInAction(() => {
+      this.messages = messages;
+      this.currentChannel = currentChannel;
+      this.channels = channels;
+    });
   }
 
   invite(invitation) {
@@ -300,6 +346,7 @@ class Store {
       this.messages = data.messages;
       this.currentUsers = data.currentUsers;
       this.socket.emit('subscribe', teamId);
+      this.socket.emit('online', [data.team._id, this.userStore._id]);
     });
   }
 
@@ -376,6 +423,8 @@ decorate(Store, {
   acceptedInvitation: action,
   rejectedInvitation: action,
   receiveMessage: action,
+  onlineStatus: action,
+  offlineStatus: action,
 });
 
 export { initializeStore, getStore };

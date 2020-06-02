@@ -21,10 +21,10 @@ class MyApp extends App {
     }
   }
 
-  // componentWillUnmount() {
-  //   console.log('unmount');
-  //   this.rootStore.unmount();
-  // }
+  // offline when closing tab
+  componentWillUnmount() {
+    this.rootStore.userStore.logOut();
+  }
 
   // runs once on the server for populating props for SSR page/then runs every time on the client during SPA navigation
   // later look into this for changes to (newer) getStatic or getServer
@@ -79,7 +79,7 @@ class MyApp extends App {
       pendingInvitations = data.pendingInvitations;
       currentUsers = data.currentUsers;
       messages = data.messages;
-      console.log(channels);
+      console.log(messages);
     }
 
     return {
