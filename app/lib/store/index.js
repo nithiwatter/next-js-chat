@@ -110,6 +110,7 @@ class Store {
     // cannot click twice
     if (teamId === this.currentTeam._id) return;
     const idx = findIndex(this.teams, (team) => team._id === teamId);
+    this.currentTeam = this.teams[idx];
     const result = await Promise.all([
       axios.post(
         `${process.env.URL_API}/api/v1/team-member/get-channels`,
@@ -137,7 +138,6 @@ class Store {
     const currentUsers = result[1].data.currentUsers;
 
     runInAction(() => {
-      this.currentTeam = this.teams[idx];
       this.channels = channels;
       this.currentUsers = currentUsers;
       this.messages = messages;

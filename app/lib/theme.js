@@ -23,7 +23,7 @@ const themeDark = createMuiTheme({
         },
         '::-webkit-scrollbar-thumb': {
           borderRadius: '8px',
-          background: '#1e2124',
+          background: grey[800],
         },
       },
     },

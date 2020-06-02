@@ -7,6 +7,7 @@ export const getSignedRequestApiMethod = (data) => {
   return sendRequest(`${BASE_PATH}/aws/get-signed-request-for-upload-to-s3`, {
     method: 'post',
     data,
+    withCredentials: true,
   });
 };
 

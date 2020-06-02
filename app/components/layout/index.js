@@ -85,6 +85,9 @@ const styles = (theme) => ({
   noti: {
     backgroundColor: theme.palette.bg.main,
   },
+  sidebarHolder: {
+    paddingTop: theme.spacing(4),
+  },
 });
 
 class Layout extends Component {
@@ -132,7 +135,9 @@ class Layout extends Component {
           onClose={this.handleCloseDrawer}
           classes={{ paper: classes.drawer }}
         >
-          <Sidebar rootStore={rootStore} user={user}></Sidebar>
+          <div className={classes.sidebarHolder}>
+            <Sidebar rootStore={rootStore} user={user}></Sidebar>
+          </div>
         </Drawer>
         <Drawer
           anchor="top"

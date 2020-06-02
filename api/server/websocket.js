@@ -77,8 +77,6 @@ exports.setUpWS = function (server) {
 
     // [teamId, messageObj]
     socket.on('message', (messageArray) => {
-      console.log('yay');
-      console.log(messageArray[0]);
       io.to(messageArray[0]).emit('receive-message', messageArray);
     });
 

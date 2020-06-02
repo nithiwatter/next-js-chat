@@ -25,11 +25,20 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
 import Badge from '@material-ui/core/Badge';
+import {
+  CarouselProvider,
+  Slider,
+  Slide,
+  ButtonBack,
+  ButtonNext,
+  DotGroup,
+} from 'pure-react-carousel';
 
 const styles = (theme) => ({
   container: {
     width: '100%',
     height: '90vh',
+    overflow: 'hidden',
   },
   appbar: {
     width: '100%',
@@ -46,8 +55,8 @@ const styles = (theme) => ({
     backgroundColor: 'white',
   },
   badge: {
-    backgroundColor: '#44b700',
-    color: '#44b700',
+    backgroundColor: 'grey',
+    color: 'grey',
     boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
     '&::after': {
       position: 'absolute',
@@ -63,10 +72,44 @@ const styles = (theme) => ({
   listItem: {
     borderRadius: 8,
   },
+
   listText: {
     overflow: 'hidden',
     whiteSpace: 'noWrap',
     textOverflow: 'ellipsis',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
+  dots: {
+    display: 'flex',
+    borderRadius: 16,
+    width: '40%',
+    justifyContent: 'center',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    backgroundColor: theme.palette.bg.main,
+    '& button': {
+      height: '0.7rem',
+      width: '0.7rem',
+      borderRadius: 8,
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
+      border: 'none',
+      backgroundColor: theme.palette.blue.main,
+    },
+    '& button:focus': {
+      outline: 'none',
+    },
+    '& button:disabled': {
+      backgroundColor: theme.palette.sbg.main,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: '60%',
+    },
   },
 });
 
@@ -223,7 +266,7 @@ class Sidebar extends Component {
     const { rootStore, classes } = this.props;
     return (
       <div className={classes.container}>
-        <AppBar position="relative" elevation={0} className={classes.appbar}>
+        {/* <AppBar position="relative" elevation={0} className={classes.appbar}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Tabs
               value={rootStore.currentTab}
@@ -236,266 +279,307 @@ class Sidebar extends Component {
               <Tab label="Direct Messages" />
             </Tabs>
           </div>
-        </AppBar>
+        </AppBar> */}
 
-        <div
-          hidden={rootStore.currentTab !== 0}
-          style={{ height: '85%', overflow: 'auto' }}
+        <CarouselProvider
+          naturalSlideWidth={100}
+          naturalSlideHeight={300}
+          totalSlides={3}
         >
           <div
             style={{
+              width: '100%',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: '1rem',
+              justifyContent: 'center',
+              marginBottom: '0.6rem',
             }}
           >
-            <Typography variant="h6" style={{ marginLeft: '1rem' }}>
-              Teams
-            </Typography>
-            <IconButton
-              onClick={() => {
-                openSimpleFormExternal({
-                  onSubmit: this.handleAddTeam,
-                  title: 'Your Team',
-                  description: 'Please enter your new team name',
-                });
-              }}
-              style={{ marginRight: '1rem' }}
-            >
-              <LibraryAddIcon></LibraryAddIcon>
-            </IconButton>
+            <DotGroup className={classes.dots}></DotGroup>
           </div>
 
-          <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-            <List>
-              {rootStore.teams.map((team) => (
-                <ListItem
-                  button
-                  disableRipple
-                  key={team._id}
-                  onClick={() => rootStore.selectTeam(team._id)}
-                  selected={rootStore.currentTeam._id === team._id}
-                  classes={{
-                    root: classes.listItem,
+          <Slider style={{ height: '80vh' }}>
+            <Slide index={0}>
+              <div style={{ height: '80vh' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
-                  <ListItemAvatar>
-                    <Avatar
-                      variant="rounded"
-                      className={
-                        team._id === rootStore.currentTeam._id
-                          ? classes.selectedTeam
-                          : null
-                      }
-                      style={{ color: 'white' }}
-                    >
-                      {team.name[0].toUpperCase()}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={team.name}
-                    classes={{
-                      primary: classes.listText,
-                      secondary: classes.listText,
+                  <Typography variant="h6" style={{ marginLeft: '1rem' }}>
+                    Teams
+                  </Typography>
+                  <IconButton
+                    onClick={() => {
+                      openSimpleFormExternal({
+                        onSubmit: this.handleAddTeam,
+                        title: 'Your Team',
+                        description: 'Please enter your new team name',
+                      });
                     }}
-                  ></ListItemText>
-                  <ListItemIcon style={{ marginLeft: 'auto' }}>
-                    <IconButton
-                      size="small"
-                      style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.handleInvite(team._id, team.name);
-                      }}
-                    >
-                      <GroupIcon></GroupIcon>
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.handleDeleteTeam(team._id);
-                      }}
-                    >
-                      <DeleteIcon></DeleteIcon>
-                    </IconButton>
-                  </ListItemIcon>
-                </ListItem>
-              ))}
-            </List>
-          </div>
-        </div>
-
-        {rootStore.teams.length > 0 ? (
-          <div
-            hidden={rootStore.currentTab !== 1}
-            style={{ height: '85%', overflow: 'auto' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: '1rem',
-              }}
-            >
-              <Typography variant="h6" style={{ marginLeft: '1rem' }}>
-                {rootStore.currentTeam.name}'s Channels
-              </Typography>
-              <IconButton
-                onClick={() => {
-                  openSimpleFormExternal({
-                    onSubmit: this.handleAddChannel,
-                    title: 'Your Channel',
-                    description: 'Please enter your new channel name',
-                  });
-                }}
-                style={{ marginRight: '1rem' }}
-              >
-                <LibraryAddIcon></LibraryAddIcon>
-              </IconButton>
-            </div>
-
-            <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-              <List>
-                {rootStore.channels.map((channel) => (
-                  <ListItem
-                    disableRipple
-                    button
-                    key={channel._id}
-                    selected={rootStore.currentChannel._id === channel._id}
-                    onClick={() => rootStore.selectChannel(channel._id)}
-                    classes={{
-                      root: classes.listItem,
-                    }}
+                    style={{ marginRight: '1rem' }}
                   >
-                    <ListItemAvatar>
-                      <Avatar
-                        className={
-                          channel._id === rootStore.currentChannel._id
-                            ? classes.selectedChannel
-                            : null
-                        }
-                        variant="rounded"
-                        style={{ color: 'white' }}
-                      >
-                        {channel.name[0].toUpperCase()}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={channel.name}
-                      secondary={
-                        channel.messages
-                          ? channel.messages.text
-                          : 'No message yet'
-                      }
-                      className={classes.name}
-                      classes={{
-                        primary: classes.listText,
-                        secondary: classes.listText,
-                      }}
-                    ></ListItemText>
-                    <ListItemIcon style={{ marginLeft: 'auto' }}>
-                      <IconButton
-                        size="small"
-                        style={{ marginRight: '0.5rem' }}
-                        // onClick={(e) => {
-                        //   e.stopPropagation();
-                        //   router.push('/view-team?team=a');
-                        // }}
-                      >
-                        <EditIcon></EditIcon>
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          this.handleDeleteChannel(channel._id);
+                    <LibraryAddIcon></LibraryAddIcon>
+                  </IconButton>
+                </div>
+
+                <div
+                  style={{
+                    paddingLeft: '1rem',
+                    paddingRight: '1rem',
+                    overflowY: 'auto',
+                    height: '70vh',
+                  }}
+                >
+                  <List>
+                    {rootStore.teams.map((team) => (
+                      <ListItem
+                        button
+                        disableRipple
+                        key={team._id}
+                        onClick={() => rootStore.selectTeam(team._id)}
+                        selected={rootStore.currentTeam._id === team._id}
+                        classes={{
+                          root: classes.listItem,
                         }}
                       >
-                        <DeleteIcon></DeleteIcon>
-                      </IconButton>
-                    </ListItemIcon>
-                  </ListItem>
-                ))}
-              </List>
-            </div>
-          </div>
-        ) : null}
+                        <ListItemAvatar>
+                          <Avatar
+                            variant="rounded"
+                            className={
+                              team._id === rootStore.currentTeam._id
+                                ? classes.selectedTeam
+                                : null
+                            }
+                            style={{ color: 'white' }}
+                          >
+                            {team.name[0].toUpperCase()}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={team.name}
+                          classes={{
+                            primary: classes.listText,
+                            secondary: classes.listText,
+                          }}
+                        ></ListItemText>
+                        <ListItemIcon style={{ marginLeft: 'auto' }}>
+                          <IconButton
+                            size="small"
+                            style={{
+                              marginLeft: '0.5rem',
+                              marginRight: '0.5rem',
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              this.handleInvite(team._id, team.name);
+                            }}
+                          >
+                            <GroupIcon></GroupIcon>
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              this.handleDeleteTeam(team._id);
+                            }}
+                          >
+                            <DeleteIcon></DeleteIcon>
+                          </IconButton>
+                        </ListItemIcon>
+                      </ListItem>
+                    ))}
+                  </List>
+                </div>
+              </div>
+            </Slide>
 
-        {rootStore.teams.length > 0 ? (
-          <div
-            hidden={rootStore.currentTab !== 2}
-            style={{ height: '85%', overflow: 'auto' }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: '1rem',
-              }}
-            >
-              <Typography variant="h6" style={{ marginLeft: '1rem' }}>
-                Currently in {rootStore.currentTeam.name}
-              </Typography>
-              <IconButton style={{ marginRight: '1rem' }}>
-                <VerifiedUserIcon></VerifiedUserIcon>
-              </IconButton>
-            </div>
-
-            <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-              <List>
-                {rootStore.currentUsers.map((user) => (
-                  <ListItem
-                    disableRipple
-                    button
-                    key={user._id}
-                    classes={{
-                      root: classes.listItem,
+            <Slide index={1}>
+              {rootStore.teams.length > 0 ? (
+                <div style={{ height: '80vh' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
                     }}
                   >
-                    <ListItemAvatar>
-                      <Badge
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right',
-                        }}
-                        overlap="circle"
-                        variant="dot"
-                        classes={{ badge: classes.badge }}
-                      >
-                        <Avatar src={user.avatarUrl} style={{ color: 'white' }}>
-                          {user.displayName[0].toUpperCase()}
-                        </Avatar>
-                      </Badge>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={user.displayName}
-                      classes={{ primary: classes.listText }}
-                    ></ListItemText>
-                    <ListItemIcon style={{ marginLeft: 'auto' }}>
-                      <IconButton
-                        size="small"
-                        style={{ marginRight: '0.5rem' }}
-                        // onClick={(e) => {
-                        //   e.stopPropagation();
-                        //   router.push('/view-team?team=a');
-                        // }}
-                      >
-                        <ChatIcon></ChatIcon>
-                      </IconButton>
-                      <IconButton size="small">
-                        <GifIcon></GifIcon>
-                      </IconButton>
-                    </ListItemIcon>
-                  </ListItem>
-                ))}
-              </List>
-            </div>
-          </div>
-        ) : null}
+                    <Typography variant="h6" style={{ marginLeft: '1rem' }}>
+                      {rootStore.currentTeam.name}'s Channels
+                    </Typography>
+                    <IconButton
+                      onClick={() => {
+                        openSimpleFormExternal({
+                          onSubmit: this.handleAddChannel,
+                          title: 'Your Channel',
+                          description: 'Please enter your new channel name',
+                        });
+                      }}
+                      style={{ marginRight: '1rem' }}
+                    >
+                      <LibraryAddIcon></LibraryAddIcon>
+                    </IconButton>
+                  </div>
+
+                  <div
+                    style={{
+                      paddingLeft: '1rem',
+                      paddingRight: '1rem',
+                      overflowY: 'auto',
+                      height: '70vh',
+                    }}
+                  >
+                    <List>
+                      {rootStore.channels.map((channel) => (
+                        <ListItem
+                          disableRipple
+                          button
+                          key={channel._id}
+                          selected={
+                            rootStore.currentChannel._id === channel._id
+                          }
+                          onClick={() => rootStore.selectChannel(channel._id)}
+                          classes={{
+                            root: classes.listItem,
+                          }}
+                        >
+                          <ListItemAvatar>
+                            <Avatar
+                              className={
+                                channel._id === rootStore.currentChannel._id
+                                  ? classes.selectedChannel
+                                  : null
+                              }
+                              variant="rounded"
+                              style={{ color: 'white' }}
+                            >
+                              {channel.name[0].toUpperCase()}
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={channel.name}
+                            secondary={
+                              channel.messages
+                                ? channel.messages.text
+                                : 'No message yet'
+                            }
+                            className={classes.name}
+                            classes={{
+                              primary: classes.listText,
+                              secondary: classes.listText,
+                            }}
+                          ></ListItemText>
+                          <ListItemIcon style={{ marginLeft: 'auto' }}>
+                            <IconButton
+                              size="small"
+                              style={{ marginRight: '0.5rem' }}
+                              // onClick={(e) => {
+                              //   e.stopPropagation();
+                              //   router.push('/view-team?team=a');
+                              // }}
+                            >
+                              <EditIcon></EditIcon>
+                            </IconButton>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                this.handleDeleteChannel(channel._id);
+                              }}
+                            >
+                              <DeleteIcon></DeleteIcon>
+                            </IconButton>
+                          </ListItemIcon>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </div>
+                </div>
+              ) : null}
+            </Slide>
+            <Slide index={2}>
+              {rootStore.teams.length > 0 ? (
+                <div style={{ height: '80vh' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography variant="h6" style={{ marginLeft: '1rem' }}>
+                      Currently in {rootStore.currentTeam.name}
+                    </Typography>
+                    <IconButton style={{ marginRight: '1rem' }}>
+                      <VerifiedUserIcon></VerifiedUserIcon>
+                    </IconButton>
+                  </div>
+
+                  <div
+                    style={{
+                      paddingLeft: '1rem',
+                      paddingRight: '1rem',
+                      overflowY: 'auto',
+                      height: '70vh',
+                    }}
+                  >
+                    <List>
+                      {rootStore.currentUsers.map((user) => (
+                        <ListItem
+                          disableRipple
+                          button
+                          key={user._id}
+                          classes={{
+                            root: classes.listItem,
+                          }}
+                        >
+                          <ListItemAvatar>
+                            <Badge
+                              anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                              }}
+                              overlap="circle"
+                              variant="dot"
+                              classes={{ badge: classes.badge }}
+                            >
+                              <Avatar
+                                src={user.avatarUrl}
+                                style={{ color: 'white' }}
+                              >
+                                {user.displayName[0].toUpperCase()}
+                              </Avatar>
+                            </Badge>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={user.displayName}
+                            classes={{ primary: classes.listText }}
+                          ></ListItemText>
+                          <ListItemIcon style={{ marginLeft: 'auto' }}>
+                            <IconButton
+                              size="small"
+                              style={{ marginRight: '0.5rem' }}
+                              // onClick={(e) => {
+                              //   e.stopPropagation();
+                              //   router.push('/view-team?team=a');
+                              // }}
+                            >
+                              <ChatIcon></ChatIcon>
+                            </IconButton>
+                            <IconButton size="small">
+                              <GifIcon></GifIcon>
+                            </IconButton>
+                          </ListItemIcon>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </div>
+                </div>
+              ) : null}
+            </Slide>
+          </Slider>
+        </CarouselProvider>
       </div>
     );
   }

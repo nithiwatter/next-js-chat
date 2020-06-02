@@ -19,6 +19,7 @@
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
     "next": "^9.4.2",
+    "pure-react-carousel": "^1.27.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "socket.io-client": "^2.3.0"

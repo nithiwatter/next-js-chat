@@ -9,6 +9,7 @@ import React from 'react';
 import { StoreContext } from '../lib/context';
 import { observer } from 'mobx-react';
 import axios from 'axios';
+import 'pure-react-carousel/dist/react-carousel.es.css';
 
 class MyApp extends App {
   componentDidMount() {

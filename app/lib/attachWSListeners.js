@@ -48,7 +48,6 @@ function attachListeners(socket, userId, teams) {
   // [teamId, messageObj]
   socket.on('receive-message', (messageArray) => {
     if (messageArray[0] === socket.rootStore.currentTeam._id) {
-      console.log(1);
       socket.rootStore.receiveMessage(messageArray[1]);
     }
   });

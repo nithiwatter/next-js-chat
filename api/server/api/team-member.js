@@ -261,13 +261,14 @@ router.post(
   '/aws/get-signed-request-for-upload-to-s3',
   async (req, res, next) => {
     try {
+      console.log(req.body);
       const { fileType, prefix } = req.body;
 
       const returnData = await signRequestForUpload({
         fileType,
         prefix,
       });
-
+      console.log(returnData);
       res.status(200).json(returnData);
     } catch (err) {
       next(err);

@@ -81,6 +81,7 @@ class YourSettings extends Component {
     const { selectedFile } = this.state;
     if (selectedFile === null) return notify('A photo is required');
 
+    console.log('submitting');
     const data = {
       fileType: selectedFile.type,
       prefix: this.props.user._id,
