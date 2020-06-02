@@ -63,6 +63,11 @@ const styles = (theme) => ({
   listItem: {
     borderRadius: 8,
   },
+  listText: {
+    overflow: 'hidden',
+    whiteSpace: 'noWrap',
+    textOverflow: 'ellipsis',
+  },
 });
 
 class Sidebar extends Component {
@@ -288,11 +293,17 @@ class Sidebar extends Component {
                       {team.name[0].toUpperCase()}
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={team.name} className={classes.name} />
+                  <ListItemText
+                    primary={team.name}
+                    classes={{
+                      primary: classes.listText,
+                      secondary: classes.listText,
+                    }}
+                  ></ListItemText>
                   <ListItemIcon style={{ marginLeft: 'auto' }}>
                     <IconButton
                       size="small"
-                      style={{ marginRight: '0.5rem' }}
+                      style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
                       onClick={(e) => {
                         e.stopPropagation();
                         this.handleInvite(team._id, team.name);
@@ -374,7 +385,16 @@ class Sidebar extends Component {
                     </ListItemAvatar>
                     <ListItemText
                       primary={channel.name}
+                      secondary={
+                        channel.messages
+                          ? channel.messages.text
+                          : 'No message yet'
+                      }
                       className={classes.name}
+                      classes={{
+                        primary: classes.listText,
+                        secondary: classes.listText,
+                      }}
                     ></ListItemText>
                     <ListItemIcon style={{ marginLeft: 'auto' }}>
                       <IconButton
@@ -451,7 +471,10 @@ class Sidebar extends Component {
                         </Avatar>
                       </Badge>
                     </ListItemAvatar>
-                    <ListItemText primary={user.displayName}></ListItemText>
+                    <ListItemText
+                      primary={user.displayName}
+                      classes={{ primary: classes.listText }}
+                    ></ListItemText>
                     <ListItemIcon style={{ marginLeft: 'auto' }}>
                       <IconButton
                         size="small"

@@ -78,6 +78,7 @@ class MyApp extends App {
       pendingInvitations = data.pendingInvitations;
       currentUsers = data.currentUsers;
       messages = data.messages;
+      console.log(channels);
     }
 
     return {

@@ -304,8 +304,15 @@ class Store {
   }
 
   receiveMessage(message) {
-    console.log('hi');
-    this.messages.push(message);
+    if (message.channelId === this.currentChannel._id) {
+      this.messages.push(message);
+    }
+
+    const idx = findIndex(
+      this.channels,
+      (channel) => channel._id === message.channelId
+    );
+    this.channels[idx].messages = message;
   }
 
   changeTab(tabValue) {

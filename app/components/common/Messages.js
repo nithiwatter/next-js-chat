@@ -12,7 +12,6 @@ const styles = (theme) => ({
     overflowY: 'auto',
     gridRow: '2',
     gridColumn: '1',
-    padding: theme.spacing(2),
   },
   bubbleContainer: {
     display: 'flex',
@@ -51,11 +50,13 @@ const styles = (theme) => ({
   overallContainer: {
     display: 'flex',
     marginTop: '0.3rem',
+    marginBottom: '0.3rem',
   },
   overallContainerSelf: {
     display: 'flex',
     justifyContent: 'flex-end',
     marginTop: '0.3rem',
+    marginBottom: '0.3rem',
   },
 });
 

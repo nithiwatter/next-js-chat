@@ -14,6 +14,20 @@ const themeDark = createMuiTheme({
     background: { paper: '#36393e' },
     type: 'dark',
   },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '::-webkit-scrollbar': {
+          width: '8px',
+          height: '10px',
+        },
+        '::-webkit-scrollbar-thumb': {
+          borderRadius: '8px',
+          background: '#1e2124',
+        },
+      },
+    },
+  },
 });
 
 const themeLight = createMuiTheme({
@@ -28,6 +42,20 @@ const themeLight = createMuiTheme({
     text: { primary: grey[900] },
     type: 'light',
     background: { paper: '#f5f5f5' },
+  },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '::-webkit-scrollbar': {
+          width: '8px',
+          height: '10px',
+        },
+        '::-webkit-scrollbar-thumb': {
+          borderRadius: '8px',
+          background: '#e1e1e1',
+        },
+      },
+    },
   },
 });
 

@@ -42,21 +42,6 @@ class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
-
-          <style>
-            {`
-              a,
-              a:focus {
-                font-weight: 600;
-                color: #fff;
-                text-decoration: none;
-                outline: none;
-              }
-              a:hover,
-              button:hover {
-                opacity: 0.6;
-                cursor: pointer;`}
-          </style>
         </Head>
         <body>
           <Main />
