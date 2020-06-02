@@ -33,14 +33,14 @@ const styles = (theme) => ({
   },
   appbar: {
     width: '100%',
-    backgroundColor: '#36c5f0',
-    color: 'white',
+    backgroundColor: theme.palette.tbg.main,
+    color: theme.palette.text.primary,
   },
   selectedTeam: {
-    backgroundColor: '#ecb22e',
+    backgroundColor: theme.palette.blue.main,
   },
   selectedChannel: {
-    backgroundColor: '#e01e5a',
+    backgroundColor: theme.palette.lightgrey.main,
   },
   indicator: {
     backgroundColor: 'white',
@@ -366,6 +366,7 @@ class Sidebar extends Component {
                             ? classes.selectedChannel
                             : null
                         }
+                        variant="rounded"
                         style={{ color: 'white' }}
                       >
                         {channel.name[0].toUpperCase()}

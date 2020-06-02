@@ -133,6 +133,12 @@ router.post('/accept-invitation', async (req, res, next) => {
         .status(400)
         .json({ err: 'You are not the owner of this invitation.' });
     const team = await Team.findById(req.body.teamId);
+    if (!team) {
+      await Invitation.deleteOne({ _id: req.body.invitationId });
+      return res
+        .status(400)
+        .json({ err: 'Sorry, this team no longer exists.' });
+    }
     team.memberIds.push(req.body.userId);
     await team.save();
     await Invitation.deleteOne({ _id: req.body.invitationId });

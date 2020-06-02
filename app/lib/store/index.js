@@ -35,7 +35,7 @@ class Store {
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.currentUrl = initialState.currentUrl;
-    this.darkTheme = false;
+    this.darkTheme = true;
     this.changeTheme = this.changeTheme.bind(this);
     const isServer = typeof window === 'undefined';
     this.socket === null;

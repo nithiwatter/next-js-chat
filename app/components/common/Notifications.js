@@ -14,6 +14,7 @@ import { IconButton } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import axios from 'axios';
+import notify from '../../lib/notify';
 
 const styles = (theme) => ({});
 
@@ -43,7 +44,9 @@ class Notifications extends Component {
         userId,
       ]);
     } catch (err) {
-      console.log(err);
+      const { data } = err.response;
+      notify(data.err);
+      this.props.rootStore.clearInvitation(invitationId);
     }
   }
 

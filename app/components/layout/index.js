@@ -38,6 +38,7 @@ const styles = (theme) => ({
   },
   firstGrid: {
     position: 'relative',
+    backgroundColor: theme.palette.sbg.main,
     zIndex: 1,
     height: '100vh',
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
@@ -49,6 +50,7 @@ const styles = (theme) => ({
   secondGrid: {
     position: 'relative',
     zIndex: 0,
+    backgroundColor: theme.palette.bg.main,
     [theme.breakpoints.down('xs')]: {
       height: '90vh',
     },
@@ -75,6 +77,13 @@ const styles = (theme) => ({
       border: '1px solid currentColor',
       content: '""',
     },
+  },
+  icon: {
+    backgroundColor: theme.palette.blue.main,
+    color: 'white',
+  },
+  noti: {
+    backgroundColor: theme.palette.bg.main,
   },
 });
 
@@ -129,6 +138,7 @@ class Layout extends Component {
           anchor="top"
           open={openN}
           onClose={this.handleCloseNotifications}
+          classes={{ paper: classes.noti }}
         >
           <Notifications rootStore={rootStore} user={user}></Notifications>
         </Drawer>
@@ -139,7 +149,7 @@ class Layout extends Component {
           className={classes.grid}
         >
           {firstGridItem ? (
-            <Grid item md={4} sm={5} xs={12} className={classes.firstGrid}>
+            <Grid item md={3} sm={4} xs={12} className={classes.firstGrid}>
               <div
                 style={{
                   display: 'flex',
@@ -163,13 +173,7 @@ class Layout extends Component {
                     onClick={rootStore.changeTheme}
                   >
                     {rootStore.currentTeam ? (
-                      <Avatar
-                        variant="rounded"
-                        style={{
-                          backgroundColor: '#2eb67d',
-                          color: 'white',
-                        }}
-                      >
+                      <Avatar variant="rounded" className={classes.icon}>
                         {rootStore.currentTeam.name[0].toUpperCase()}
                       </Avatar>
                     ) : (
@@ -247,8 +251,8 @@ class Layout extends Component {
           ) : null}
           <Grid
             item
-            md={firstGridItem ? 8 : 12}
-            sm={firstGridItem ? 7 : 12}
+            md={firstGridItem ? 9 : 12}
+            sm={firstGridItem ? 8 : 12}
             xs={12}
             className={classes.secondGrid}
           >

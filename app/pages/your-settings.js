@@ -38,8 +38,8 @@ const styles = (theme) => ({
     margin: '4rem auto',
     borderRadius: '5px',
     border: '2px solid',
-    borderColor: theme.palette.secondary.main,
-    backgroundColor: theme.palette.background.paper,
+    borderColor: theme.palette.sbg.main,
+    backgroundColor: theme.palette.tbg.main,
   },
   icons: {
     width: '80px',

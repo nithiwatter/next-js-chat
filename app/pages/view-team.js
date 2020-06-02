@@ -17,8 +17,8 @@ import axios from 'axios';
 
 const styles = (theme) => ({
   root: {
-    backgroundColor: '#4a154b',
-    color: 'white',
+    backgroundColor: theme.palette.tbg.main,
+    color: theme.palette.text.primary,
   },
   grow: {
     flexGrow: 1,
@@ -54,6 +54,7 @@ const styles = (theme) => ({
       marginLeft: theme.spacing(3),
       width: 'auto',
     },
+    color: theme.palette.text.primary,
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -69,7 +70,7 @@ const styles = (theme) => ({
   },
   typeInputInput: {
     paddingLeft: theme.spacing(4),
-    color: 'white',
+    color: theme.palette.text.primary,
   },
   inputRoot: {
     color: 'inherit',
@@ -86,13 +87,14 @@ const styles = (theme) => ({
   },
   footer: {
     width: '100%',
-    backgroundColor: '#4a154b',
+    backgroundColor: theme.palette.tbg.main,
     gridRow: '3',
     gridColumn: '1',
   },
   chatPane: {
     height: '100%',
     width: '100%',
+    backgroundColor: theme.palette.bg.main,
   },
   paddingTop: {
     ...theme.mixins.toolbar,
