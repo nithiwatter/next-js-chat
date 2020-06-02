@@ -31,7 +31,7 @@ class Store {
     this.currentChannel = null;
     this.currentUsers = initialState.currentUsers;
     this.messages = initialState.messages;
-    this.currentTab = 0;
+    this.currentTab = 1;
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.currentUrl = initialState.currentUrl;
@@ -407,8 +407,8 @@ decorate(Store, {
   channels: observable,
   messages: observable,
   currentChannel: observable,
-  currentTab: observable,
-  changeTab: action,
+  // currentTab: observable,
+  // changeTab: action,
   changeCurrentUrl: action,
   changeTheme: action,
   addTeam: action,

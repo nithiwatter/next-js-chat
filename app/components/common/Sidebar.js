@@ -25,7 +25,13 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
 import Badge from '@material-ui/core/Badge';
-import { CarouselProvider, Slider, Slide, DotGroup } from 'pure-react-carousel';
+import {
+  CarouselProvider,
+  Slider,
+  Slide,
+  DotGroup,
+  Dot,
+} from 'pure-react-carousel';
 
 const styles = (theme) => ({
   container: {
@@ -293,6 +299,8 @@ class Sidebar extends Component {
           naturalSlideWidth={100}
           naturalSlideHeight={300}
           totalSlides={3}
+          infinite={true}
+          currentSlide={rootStore.currentTab}
         >
           <div
             style={{
@@ -302,7 +310,12 @@ class Sidebar extends Component {
               marginBottom: '0.6rem',
             }}
           >
-            <DotGroup className={classes.dots}></DotGroup>
+            {/* <DotGroup className={classes.dots}></DotGroup> */}
+            <div className={classes.dots}>
+              <Dot slide={0} onClick={() => rootStore.changeTab(0)}></Dot>
+              <Dot slide={1} onClick={() => rootStore.changeTab(1)}></Dot>
+              <Dot slide={2} onClick={() => rootStore.changeTab(2)}></Dot>
+            </div>
           </div>
 
           <Slider style={{ height: '80vh' }}>
