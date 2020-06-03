@@ -11,3 +11,8 @@ export function receiveMessage(message) {
   );
   this.channels[idx].messages = message;
 }
+
+export function switchToDM(userId, userDisplayName) {
+  this.DM = true;
+  this.DMUser = userDisplayName;
+}

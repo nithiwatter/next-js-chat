@@ -11,6 +11,7 @@ function sortByAlphabet(array) {
 }
 
 export function addTeam(newTeam) {
+  this.switchToGroup();
   // offline for previous team
   if (this.currentTeam) {
     this.socket.emit('offline', [this.currentTeam._id, this.userStore._id]);
@@ -35,6 +36,7 @@ export function addTeam(newTeam) {
 }
 
 export async function selectTeam(teamId) {
+  this.switchToGroup();
   // cannot click twice
   if (teamId === this.currentTeam._id) return;
 

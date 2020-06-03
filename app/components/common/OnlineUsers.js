@@ -122,10 +122,10 @@ class OnlineUsers extends Component {
                       <IconButton
                         size="small"
                         style={{ marginRight: '0.5rem' }}
-                        // onClick={(e) => {
-                        //   e.stopPropagation();
-                        //   router.push('/view-team?team=a');
-                        // }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          rootStore.switchToDM(user._id, user.displayName);
+                        }}
                       >
                         <ChatIcon></ChatIcon>
                       </IconButton>

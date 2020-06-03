@@ -4,6 +4,7 @@ import axios from 'axios';
 
 // fromSocket indicates if the function is called for the local cache or from socket
 export function addChannel(newChannel, fromSocket) {
+  this.switchToGroup();
   const channels = [...this.channels, newChannel];
   this.channels = sortBy(channels, [
     function (channel) {
@@ -25,6 +26,7 @@ export function addChannel(newChannel, fromSocket) {
 
 export async function selectChannel(channelId) {
   // cannot select twice
+  this.switchToGroup();
   if (channelId === this.currentChannel._id) return;
   const idx = findIndex(this.channels, (channel) => channel._id === channelId);
   const { data } = await axios.post(

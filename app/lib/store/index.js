@@ -1,7 +1,6 @@
 import { decorate, observable, configure, action, runInAction } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
-import { findIndex, sortBy } from 'lodash';
 import { addTeam, selectTeam, deleteTeam } from './teamMethods';
 import { addChannel, selectChannel, deleteChannel } from './channelMethods';
 import {
@@ -13,7 +12,7 @@ import {
   rejectedInvitation,
   getAcceptedTeam,
 } from './invitationMethods';
-import { receiveMessage } from './messageMethods';
+import { receiveMessage, switchToDM } from './messageMethods';
 import io from 'socket.io-client';
 import attachWSListeners from '../attachWSListeners';
 
@@ -42,6 +41,8 @@ class Store {
     this.currentUsers = initialState.currentUsers;
     this.messages = initialState.messages;
     this.currentTab = 0;
+    this.DM = false;
+    this.DMUser = '';
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.darkTheme = true;
@@ -58,6 +59,11 @@ class Store {
 
   changeTheme() {
     this.darkTheme = !this.darkTheme;
+  }
+
+  switchToGroup() {
+    this.DM = false;
+    this.DMUser = '';
   }
 
   // justone = receive only a single userId
@@ -142,6 +148,7 @@ Store.prototype.rejectedInvitation = action(rejectedInvitation);
 Store.prototype.getAcceptedTeam = action(getAcceptedTeam);
 
 Store.prototype.receiveMessage = action(receiveMessage);
+Store.prototype.switchToDM = action(switchToDM);
 
 decorate(Store, {
   currentUrl: observable,
@@ -155,11 +162,14 @@ decorate(Store, {
   messages: observable,
   currentChannel: observable,
   currentTab: observable,
+  DM: observable,
+  DMUser: observable,
   changeTab: action,
   changeTheme: action,
   receiveMessage: action,
   onlineStatus: action,
   offlineStatus: action,
+  switchToGroup: action,
 });
 
 export { initializeStore, getStore };

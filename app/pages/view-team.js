@@ -13,6 +13,7 @@ import InputBase from '@material-ui/core/InputBase';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import Paper from '@material-ui/core/Paper';
 import Messages from '../components/common/Messages';
+import DirectMessages from '../components/common/DirectMessages';
 import axios from 'axios';
 
 const styles = (theme) => ({
@@ -151,7 +152,7 @@ class ViewTeam extends Component {
     }
   }
   render() {
-    const { router, rootStore, user, classes, firstGridItem } = this.props;
+    const { rootStore, user, classes, firstGridItem } = this.props;
     const { input } = this.state;
 
     if (rootStore.teams.length === 0)
@@ -205,7 +206,9 @@ class ViewTeam extends Component {
         <AppBar position="absolute" elevation={0} className={classes.root}>
           <Toolbar>
             <Typography variant="h6">
-              #{rootStore.currentChannel.name}
+              {rootStore.DM
+                ? `#${rootStore.DMUser}`
+                : `#${rootStore.currentChannel.name}`}
             </Typography>
             <div className={classes.grow}></div>
             <div className={classes.search}>
@@ -227,7 +230,11 @@ class ViewTeam extends Component {
           <div className={classes.messageContainer}>
             <div className={classes.paddingTop}></div>
 
-            <Messages rootStore={rootStore} user={user}></Messages>
+            {rootStore.DM ? (
+              <DirectMessages></DirectMessages>
+            ) : (
+              <Messages rootStore={rootStore} user={user}></Messages>
+            )}
 
             <AppBar
               position="relative"
