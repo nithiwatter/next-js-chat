@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'next/router';
 import { observer } from 'mobx-react';
 import { withStyles, fade } from '@material-ui/core/styles';
+import LabelIcon from '@material-ui/icons/Label';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchIcon from '@material-ui/icons/Search';
@@ -13,7 +14,7 @@ import InputBase from '@material-ui/core/InputBase';
 import AttachmentIcon from '@material-ui/icons/Attachment';
 import Paper from '@material-ui/core/Paper';
 import Messages from '../components/common/Messages';
-import DirectMessages from '../components/common/DirectMessages';
+import Tags from '../components/common/Tags';
 import axios from 'axios';
 
 const styles = (theme) => ({
@@ -116,9 +117,19 @@ const styles = (theme) => ({
 class ViewTeam extends Component {
   constructor(props) {
     super(props);
-    this.state = { input: '' };
+    this.state = { input: '', open: false };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+  }
+
+  handleOpen() {
+    this.setState({ open: !this.state.open });
+  }
+
+  handleClose() {
+    this.setState({ open: false });
   }
 
   handleInputChange(e) {
@@ -172,7 +183,7 @@ class ViewTeam extends Component {
   }
   render() {
     const { rootStore, user, classes, firstGridItem } = this.props;
-    const { input } = this.state;
+    const { input, open } = this.state;
 
     if (rootStore.teams.length === 0)
       return (
@@ -251,29 +262,43 @@ class ViewTeam extends Component {
 
             <Messages rootStore={rootStore} user={user}></Messages>
 
-            <AppBar
-              position="relative"
-              elevation={0}
-              className={classes.footer}
-            >
-              <Toolbar>
-                <IconButton style={{ marginRight: '1rem' }}>
-                  <AttachmentIcon></AttachmentIcon>
-                </IconButton>
-                <div className={classes.type}>
-                  <InputBase
-                    placeholder="Start typing…"
-                    classes={{
-                      root: classes.typeInput,
-                      input: classes.typeInputInput,
-                    }}
-                    value={input}
-                    onChange={this.handleInputChange}
-                    onKeyPress={this.handleSubmit}
-                  />
-                </div>
-              </Toolbar>
-            </AppBar>
+            <div>
+              {open ? (
+                <Tags
+                  handleClose={this.handleClose}
+                  rootStore={rootStore}
+                ></Tags>
+              ) : null}
+              <AppBar
+                position="relative"
+                elevation={0}
+                className={classes.footer}
+              >
+                <Toolbar>
+                  <IconButton style={{ marginRight: '1rem' }}>
+                    <AttachmentIcon></AttachmentIcon>
+                  </IconButton>
+                  <IconButton
+                    style={{ marginRight: '1rem' }}
+                    onClick={this.handleOpen}
+                  >
+                    <LabelIcon></LabelIcon>
+                  </IconButton>
+                  <div className={classes.type}>
+                    <InputBase
+                      placeholder="Start typing…"
+                      classes={{
+                        root: classes.typeInput,
+                        input: classes.typeInputInput,
+                      }}
+                      value={input}
+                      onChange={this.handleInputChange}
+                      onKeyPress={this.handleSubmit}
+                    />
+                  </div>
+                </Toolbar>
+              </AppBar>
+            </div>
           </div>
         </Paper>
       </Layout>
