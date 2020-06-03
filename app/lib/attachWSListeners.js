@@ -6,7 +6,7 @@ function attachListeners(socket, userId, teams) {
   // subscribe to your own id (so can receive notifications for invitations)
   socket.emit('login', userId);
 
-  // subscribe to all teams
+  // subscribe to all teams (to receive notifications for messages)
   for (let team of teams) {
     socket.emit('subscribe', team._id);
   }
@@ -16,25 +16,32 @@ function attachListeners(socket, userId, teams) {
     socket.emit('online', [teams[0]._id, userId]);
   }
 
-  // need to handle this for better performance
-  socket.on('someone-is-online', (result) => {
-    console.log(result);
-    socket.rootStore.onlineStatus(result);
+  socket.on('someone-is-online', (thePersonJustOnline) => {
+    socket.rootStore.onlineStatus(thePersonJustOnline, true);
   });
 
-  socket.on('someone-is-offline', (userId) => {
-    console.log('offline');
+  // result = [ userIds... ]
+  socket.on('all-online', (result) => {
+    socket.rootStore.onlineStatus(result, false);
+  });
+
+  // { teamId: userId }
+  socket.on('someone-is-offline', (thePersonJustOffline) => {
+    socket.rootStore.offlineStatus(thePersonJustOffline);
+  });
+
+  // need to handle this better (currently broadcasted to all users)
+  socket.on('someone-is-disconnected', (userId) => {
     socket.rootStore.offlineStatus(userId);
   });
 
   socket.on('invited', (invitation) => {
-    console.log(invitation);
     socket.rootStore.newInvitation(invitation);
   });
 
   // [invitationId, teamId, userId]
   socket.on('accepted', (invitationArray) => {
-    console.log('accepted');
+    // only leave this user room if this is the last pending acceptance
     const count = countInvitations(
       invitationArray[2],
       socket.rootStore.pendingAcceptances
@@ -42,18 +49,28 @@ function attachListeners(socket, userId, teams) {
     if (count === 1) {
       socket.emit('leave-inv', invitationArray[2]);
     }
-    socket.rootStore.acceptedInvitation(invitationArray[0], invitationArray[1]);
+    socket.rootStore.acceptedInvitation(
+      invitationArray[0],
+      invitationArray[1],
+      invitationArray[2]
+    );
   });
 
   // [invitationId, userId]
   socket.on('rejected', (invitationArray) => {
-    console.log('rejected');
+    // only leave this user room if this is the last pending acceptance
+    const count = countInvitations(
+      invitationArray[1],
+      socket.rootStore.pendingAcceptances
+    );
+    if (count === 1) {
+      socket.emit('leave-inv', invitationArray[1]);
+    }
     socket.rootStore.rejectedInvitation(invitationArray[0]);
     socket.emit('leave-inv', invitationArray[1]);
   });
 
   socket.on('deletedTeam', (teamId) => {
-    console.log('from here');
     socket.rootStore.deleteTeam(teamId);
   });
 
@@ -70,7 +87,6 @@ function attachListeners(socket, userId, teams) {
   // [teamId, messageObj]
   socket.on('receive-message', (messageArray) => {
     if (messageArray[0] === socket.rootStore.currentTeam._id) {
-      console.log(messageArray[1]);
       socket.rootStore.receiveMessage(messageArray[1]);
     }
   });

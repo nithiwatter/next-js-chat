@@ -61,7 +61,6 @@ class MyApp extends App {
     try {
       const { user } = await getUserApiMethod(ctx.req.headers.cookie);
       userObj = user;
-      console.log(userObj);
     } catch (err) {
       console.log(err);
     }
@@ -79,7 +78,6 @@ class MyApp extends App {
       pendingInvitations = data.pendingInvitations;
       currentUsers = data.currentUsers;
       messages = data.messages;
-      console.log(messages);
     }
 
     return {
@@ -91,7 +89,6 @@ class MyApp extends App {
       pendingInvitations,
       currentUsers,
       messages,
-      currentUrl: ctx.asPath,
     };
   }
 
@@ -105,7 +102,6 @@ class MyApp extends App {
       pendingInvitations,
       currentUsers,
       messages,
-      currentUrl,
     } = this.props;
 
     this.rootStore = initializeStore({
@@ -116,7 +112,6 @@ class MyApp extends App {
       pendingInvitations,
       currentUsers,
       messages,
-      currentUrl,
     });
   }
 

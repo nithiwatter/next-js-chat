@@ -38,6 +38,42 @@ exports.setUpWS = function (server) {
       socket.join(userId);
     });
 
+    // initially subscribe to all possible teams when first logged in
+    socket.on('subscribe', (teamId) => {
+      socket.join(teamId);
+    });
+
+    // [teamId, userId]
+    socket.on('online', (onlineArray) => {
+      const onlineTeam = 'online-' + onlineArray[0]; // online-teamId
+      socket.join(onlineTeam);
+
+      const sockets = Object.keys(io.sockets.adapter.rooms[onlineTeam].sockets);
+      const result = getAllUserIdsInARoom(sockets, io);
+      console.log(`Cuurrently online in team ${onlineArray[0]}: `, result);
+
+      // to everyone else already online
+      socket.to(onlineTeam).emit('someone-is-online', onlineArray[1]);
+
+      // to the person just online
+      socket.emit('all-online', result);
+    });
+
+    // [teamId, userId]
+    socket.on('offline', (offlineArray) => {
+      const onlineTeam = 'online-' + offlineArray[0];
+      socket.leave(onlineTeam);
+      io.to(onlineTeam).emit('someone-is-offline', offlineArray[1]);
+    });
+
+    socket.on('disconnect', () => {
+      const nowConnected = Object.keys(io.sockets.sockets);
+      io.emit('someone-is-disconnected', socket.userId);
+      console.log(
+        `A total of ${nowConnected.length} users currently connected`
+      );
+    });
+
     // for invitation notifications
     socket.on('invite', (invitation) => {
       socket.join(invitation.userId);
@@ -55,17 +91,10 @@ exports.setUpWS = function (server) {
     });
 
     socket.on('leave-inv', (userId) => {
-      console.log('leaving');
       socket.leave(userId);
     });
 
-    // initially subscribe to all possible teams when first logged in
-    socket.on('subscribe', (teamId) => {
-      socket.join(teamId);
-    });
-
     socket.on('delete-team', (teamId) => {
-      console.log('deleting');
       socket.to(teamId).emit('deletedTeam', teamId);
     });
 
@@ -79,39 +108,13 @@ exports.setUpWS = function (server) {
     });
 
     socket.on('leave-team', (teamId) => {
-      console.log('leaving team');
+      socket.leave('online-' + teamId);
       socket.leave(teamId);
-    });
-
-    // [teamId, userId]
-    socket.on('online', (onlineArray) => {
-      const sockets = Object.keys(
-        io.sockets.adapter.rooms[onlineArray[0]].sockets
-      );
-      const result = getAllUserIdsInARoom(sockets, io);
-      console.log('Cuurrently online: ', result);
-      io.to(onlineArray[0]).emit('someone-is-online', result);
     });
 
     // [teamId, messageObj]
     socket.on('message', (messageArray) => {
       io.to(messageArray[0]).emit('receive-message', messageArray);
-    });
-
-    // [teamId, userId] || null
-    socket.on('offline', (offlineArray) => {
-      if (offlineArray) {
-        console.log('someone is logging out!');
-        io.to(offlineArray[0]).emit('someone-is-offline', offlineArray[1]);
-      }
-    });
-
-    socket.on('disconnect', () => {
-      const nowConnected = Object.keys(io.sockets.sockets);
-      io.emit('someone-is-offline', socket.userId);
-      console.log(
-        `A total of ${nowConnected.length} users currently connected`
-      );
     });
   });
 };

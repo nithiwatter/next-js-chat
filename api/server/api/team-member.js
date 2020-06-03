@@ -30,6 +30,13 @@ router.post('/get-team', async (req, res, next) => {
   }
 });
 
+router.post('/get-accepted-user', async (req, res, next) => {
+  try {
+    const user = await User.findById(req.body.userId);
+    res.status(200).json({ user });
+  } catch (err) {}
+});
+
 router.post('/get-initial-data', async (req, res, next) => {
   try {
     let channels = [];
@@ -236,6 +243,7 @@ router.post('/delete-team', async (req, res, next) => {
     // deleting all referenced messages and channels
     await Message.deleteMany({ channelId: { $in: arrayOfChannelIds } });
     await Channel.deleteMany({ teamId: req.body.teamId });
+    await Invitation.deleteMany({ teamId: req.body.teamId });
     res.status(200).json({});
   } catch (err) {
     next(err);

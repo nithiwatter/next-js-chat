@@ -118,14 +118,7 @@ class Layout extends Component {
 
   render() {
     // props passed from App.getInitialProps
-    const {
-      firstGridItem,
-      children,
-      isMobile,
-      classes,
-      rootStore,
-      user,
-    } = this.props;
+    const { firstGridItem, children, classes, rootStore, user } = this.props;
     const { open, openN } = this.state;
 
     return (
@@ -175,7 +168,7 @@ class Layout extends Component {
                   <IconButton
                     size="small"
                     style={{ marginRight: '0.5rem' }}
-                    onClick={rootStore.changeTheme}
+                    onClick={() => rootStore.changeTheme()}
                   >
                     {rootStore.currentTeam ? (
                       <Avatar variant="rounded" className={classes.icon}>

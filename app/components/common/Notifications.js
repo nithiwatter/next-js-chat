@@ -36,8 +36,9 @@ class Notifications extends Component {
         },
         { withCredentials: true }
       );
-      this.props.rootStore.clearInvitation(invitationId);
-      this.props.rootStore.getAcceptedTeam(teamId);
+      this.props.rootStore.clearPendingInvitation(invitationId);
+      // fetch all the data about this new team/then subscribing done
+      await this.props.rootStore.getAcceptedTeam(teamId);
       this.props.rootStore.socket.emit('acceptInvitation', [
         invitationId,
         teamId,
@@ -46,7 +47,7 @@ class Notifications extends Component {
     } catch (err) {
       const { data } = err.response;
       notify(data.err);
-      this.props.rootStore.clearInvitation(invitationId);
+      this.props.rootStore.clearPendingInvitation(invitationId);
     }
   }
 

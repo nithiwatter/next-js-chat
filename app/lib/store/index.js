@@ -2,10 +2,20 @@ import { decorate, observable, configure, action, runInAction } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
 import { findIndex, sortBy } from 'lodash';
-import axios from 'axios';
+import { addTeam, selectTeam, deleteTeam } from './teamMethods';
+import { addChannel, selectChannel, deleteChannel } from './channelMethods';
+import {
+  invite,
+  newInvitation,
+  clearPendingInvitation,
+  clearPendingAcceptance,
+  acceptedInvitation,
+  rejectedInvitation,
+  getAcceptedTeam,
+} from './invitationMethods';
+import { receiveMessage } from './messageMethods';
 import io from 'socket.io-client';
 import attachWSListeners from '../attachWSListeners';
-import notify from '../notify';
 
 // disable keeping a clone of the mob store/leaking memory when on the server side
 useStaticRendering(typeof window === 'undefined');
@@ -31,12 +41,11 @@ class Store {
     this.currentChannel = null;
     this.currentUsers = initialState.currentUsers;
     this.messages = initialState.messages;
-    this.currentTab = 1;
+    this.currentTab = 0;
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
-    this.currentUrl = initialState.currentUrl;
     this.darkTheme = true;
-    this.changeTheme = this.changeTheme.bind(this);
+
     const isServer = typeof window === 'undefined';
     this.socket === null;
 
@@ -47,32 +56,29 @@ class Store {
     }
   }
 
-  // unmount() {
-  //   if (this.socket !== null) {
-  //     this.socket.disconnect();
-  //     this.socket = null;
-  //   }
-  // }
-
-  changeCurrentUrl(currentUrl) {
-    this.currentUrl = currentUrl;
-  }
-
   changeTheme() {
     this.darkTheme = !this.darkTheme;
   }
 
-  onlineStatus(result) {
-    let i = 0;
-    console.log(result);
-    console.log('hello');
-    for (let user of this.currentUsers) {
-      if (result.includes(user._id)) {
-        user.online = true;
-        i++;
-      }
+  // justone = receive only a single userId
+  onlineStatus(result, justOne) {
+    if (!justOne) {
+      let i = 0;
+      for (let user of this.currentUsers) {
+        if (result.includes(user._id)) {
+          user.online = true;
+          i++;
+        }
 
-      if (i === result.length) break;
+        if (i === result.length) return;
+      }
+    } else {
+      for (let user of this.currentUsers) {
+        if (result === user._id) {
+          user.online = true;
+          return;
+        }
+      }
     }
   }
 
@@ -80,286 +86,9 @@ class Store {
     for (let user of this.currentUsers) {
       if (user._id === userId) {
         user.online = false;
-        break;
+        return;
       }
     }
-  }
-
-  addTeam(newTeam) {
-    const teams = [...this.teams, newTeam];
-    this.teams = sortBy(teams, [
-      function (team) {
-        return team.name;
-      },
-    ]);
-    this.currentTeam = newTeam;
-    this.channels = [];
-    this.currentChannel = null;
-    const currentUser = this.userStore;
-    this.currentUsers = [
-      {
-        _id: currentUser._id,
-        displayName: currentUser.displayName,
-        email: currentUser.email,
-        avatarUrl: currentUser.avatarUrl,
-      },
-    ];
-    this.messages = [];
-    this.socket.emit('subscribe', newTeam._id);
-  }
-
-  addChannel(newChannel, fromSocket) {
-    const channels = [...this.channels, newChannel];
-    this.channels = sortBy(channels, [
-      function (channel) {
-        return channel.name;
-      },
-    ]);
-    console.log(this.channels.length);
-    console.log(this.channels[0]);
-    console.log(fromSocket);
-    // if the team currently has no channel
-    if (fromSocket && this.channels.length === 1) {
-      this.currentChannel = newChannel;
-    }
-    if (!fromSocket) {
-      this.currentChannel = newChannel;
-    }
-
-    this.messages = [];
-  }
-
-  async selectTeam(teamId) {
-    // cannot click twice
-    if (teamId === this.currentTeam._id) return;
-    // emit offline for the previous team - do not really need to?
-    // this.socket.emit('offline', [this.currentTeam._id, this.userStore._id]);
-
-    const idx = findIndex(this.teams, (team) => team._id === teamId);
-    this.currentTeam = this.teams[idx];
-
-    const result = await Promise.all([
-      axios.post(
-        `${process.env.URL_API}/api/v1/team-member/get-channels`,
-        {
-          teamId: this.teams[idx]._id,
-        },
-        { withCredentials: true }
-      ),
-      axios.post(
-        `${process.env.URL_API}/api/v1/team-member/get-team-members`,
-        {
-          teamId: this.teams[idx]._id,
-        },
-        { withCredentials: true }
-      ),
-    ]);
-
-    let channels = result[0].data.channels;
-    let messages = result[0].data.messages;
-    channels = sortBy(channels, [
-      function (channel) {
-        return channel.name;
-      },
-    ]);
-    const currentUsers = result[1].data.currentUsers;
-
-    runInAction(() => {
-      this.channels = channels;
-      this.currentUsers = currentUsers;
-      this.messages = messages;
-      if (channels.length > 0) {
-        this.currentChannel = channels[0];
-      } else {
-        this.currentChannel = null;
-      }
-      // emit online for the new team
-      this.socket.emit('online', [this.currentTeam._id, this.userStore._id]);
-    });
-  }
-
-  async selectChannel(channelId) {
-    if (channelId === this.currentChannel._id) return;
-    const idx = findIndex(
-      this.channels,
-      (channel) => channel._id === channelId
-    );
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/get-messages`,
-      {
-        channelId,
-      },
-      { withCredentials: true }
-    );
-    runInAction(() => {
-      this.currentChannel = this.channels[idx];
-      this.messages = data.messages;
-    });
-  }
-
-  async deleteTeam(teamId) {
-    const newTeams = this.teams.filter((team) => team._id !== teamId);
-    if (teamId !== this.currentTeam._id) {
-      this.teams = newTeams;
-      return;
-    }
-    if (newTeams.length > 0) {
-      // get channels information from the first team available
-      const { data } = await axios.post(
-        `${process.env.URL_API}/api/v1/team-member/get-channels`,
-        {
-          teamId: newTeams[0]._id,
-        },
-        { withCredentials: true }
-      );
-      const channels = data.channels;
-      runInAction(() => {
-        this.teams = newTeams;
-        this.currentTeam = newTeams[0];
-        this.channels = channels;
-        if (channels.length > 0) {
-          this.currentChannel = channels[0];
-          this.messages = data.messages;
-        } else {
-          this.currentChannel = null;
-          this.messages = [];
-        }
-      });
-    } else {
-      this.teams = [];
-      this.currentTeam = null;
-      this.channels = [];
-      this.currentChannel = null;
-      this.messages = [];
-    }
-    this.socket.emit('leave-team', teamId);
-  }
-
-  async deleteChannel(channelId) {
-    // deleting something that is not current channel
-    console.log(this.channels);
-    const newChannels = this.channels.filter(
-      (channel) => channel._id !== channelId
-    );
-    if (channelId !== this.currentChannel._id) {
-      this.channels = newChannels;
-      return;
-    }
-    let messages = [];
-    let channels = [];
-    let currentChannel = null;
-
-    if (newChannels.length > 0) {
-      const { data } = await axios.post(
-        `${process.env.URL_API}/api/v1/team-member/get-messages`,
-        {
-          channelId: newChannels[0]._id,
-        },
-        { withCredentials: true }
-      );
-      messages = data.messages;
-      currentChannel = newChannels[0];
-      channels = newChannels;
-    }
-
-    runInAction(() => {
-      this.messages = messages;
-      this.currentChannel = currentChannel;
-      this.channels = channels;
-    });
-  }
-
-  invite(invitation) {
-    this.pendingAcceptances.push(invitation);
-  }
-
-  newInvitation(invitation) {
-    this.pendingInvitations.push(invitation);
-  }
-
-  clearInvitation(invitationId, acceptance) {
-    this.pendingInvitations = this.pendingInvitations.filter(
-      (invitation) => invitation._id !== invitationId
-    );
-    if (acceptance) {
-      this.pendingAcceptances = this.pendingAcceptances.filter(
-        (invitation) => invitation._id !== invitationId
-      );
-    }
-  }
-
-  async acceptedInvitation(invitationId, teamId) {
-    for (let invitation of this.pendingAcceptances) {
-      if (invitation._id === invitationId) {
-        invitation.accepted = true;
-        break;
-      }
-    }
-    notify('Someone accepted your invitation. Please check.');
-    if (this.currentTeam._id === teamId) {
-      const { data } = await axios.post(
-        `${process.env.URL_API}/api/v1/team-member/get-team-members`,
-        {
-          teamId,
-        },
-        { withCredentials: true }
-      );
-      runInAction(() => {
-        this.currentUsers = data.currentUsers;
-      });
-    }
-  }
-
-  rejectedInvitation(invitationId) {
-    for (let invitation of this.pendingAcceptances) {
-      if (invitation._id === invitationId) {
-        invitation.rejected = true;
-        break;
-      }
-    }
-    notify('Someone just rejected your invitation. :(');
-  }
-
-  async getAcceptedTeam(teamId) {
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/get-team`,
-      {
-        teamId,
-      },
-      { withCredentials: true }
-    );
-    runInAction(() => {
-      const teams = [...this.teams];
-      teams.push(data.team);
-      this.teams = sortBy(teams, [
-        function (team) {
-          return team.name;
-        },
-      ]);
-      this.currentTeam = data.team;
-      this.channels = data.channels;
-      if (data.channels.length > 0) {
-        this.currentChannel = data.channels[0];
-      } else {
-        this.currentChannel = null;
-      }
-      this.messages = data.messages;
-      this.currentUsers = data.currentUsers;
-      this.socket.emit('subscribe', teamId);
-      this.socket.emit('online', [data.team._id, this.userStore._id]);
-    });
-  }
-
-  receiveMessage(message) {
-    if (message.channelId === this.currentChannel._id) {
-      this.messages.push(message);
-    }
-
-    const idx = findIndex(
-      this.channels,
-      (channel) => channel._id === message.channelId
-    );
-    this.channels[idx].messages = message;
   }
 
   changeTab(tabValue) {
@@ -396,6 +125,24 @@ function getStore() {
   return store;
 }
 
+Store.prototype.addTeam = action(addTeam);
+Store.prototype.selectTeam = action(selectTeam);
+Store.prototype.deleteTeam = action(deleteTeam);
+
+Store.prototype.addChannel = action(addChannel);
+Store.prototype.selectChannel = action(selectChannel);
+Store.prototype.deleteChannel = action(deleteChannel);
+
+Store.prototype.invite = action(invite);
+Store.prototype.newInvitation = action(newInvitation);
+Store.prototype.clearPendingInvitation = action(clearPendingInvitation);
+Store.prototype.clearPendingAcceptance = action(clearPendingAcceptance);
+Store.prototype.acceptedInvitation = action(acceptedInvitation);
+Store.prototype.rejectedInvitation = action(rejectedInvitation);
+Store.prototype.getAcceptedTeam = action(getAcceptedTeam);
+
+Store.prototype.receiveMessage = action(receiveMessage);
+
 decorate(Store, {
   currentUrl: observable,
   darkTheme: observable,
@@ -409,19 +156,7 @@ decorate(Store, {
   currentChannel: observable,
   currentTab: observable,
   changeTab: action,
-  changeCurrentUrl: action,
   changeTheme: action,
-  addTeam: action,
-  addChannel: action,
-  selectTeam: action,
-  selectChannel: action,
-  deleteTeam: action,
-  deleteChannel: action,
-  clearInvitation: action,
-  invite: action,
-  newInvitation: action,
-  acceptedInvitation: action,
-  rejectedInvitation: action,
   receiveMessage: action,
   onlineStatus: action,
   offlineStatus: action,
