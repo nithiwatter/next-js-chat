@@ -5,11 +5,13 @@ import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import PageviewIcon from '@material-ui/icons/Pageview';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { openSimpleFormExternal } from './SimpleForm';
+import { openSimpleSearchExternal } from './SimpleSearch';
 import Avatar from '@material-ui/core/Avatar';
 import GroupIcon from '@material-ui/icons/Group';
 import { observer } from 'mobx-react';
@@ -50,18 +52,33 @@ class Teams extends Component {
           <Typography variant="h6" style={{ marginLeft: '1rem' }}>
             Teams
           </Typography>
-          <IconButton
-            onClick={() => {
-              openSimpleFormExternal({
-                onSubmit: this.props.handleAddTeam,
-                title: 'Your Team',
-                description: 'Please enter your new team name',
-              });
-            }}
-            style={{ marginRight: '1rem' }}
-          >
-            <LibraryAddIcon></LibraryAddIcon>
-          </IconButton>
+          <div>
+            <IconButton
+              onClick={() => {
+                openSimpleFormExternal({
+                  onSubmit: this.props.handleAddTeam,
+                  title: 'Your Team',
+                  description: 'Please enter your new team name',
+                });
+              }}
+              style={{ marginRight: '1rem' }}
+            >
+              <LibraryAddIcon></LibraryAddIcon>
+            </IconButton>
+            <IconButton
+              style={{ marginRight: '1rem' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                openSimpleSearchExternal({
+                  onSubmit: this.props.handleSearchUser,
+                  title: 'Your DM',
+                  description: 'Please enter your new DM user',
+                });
+              }}
+            >
+              <PageviewIcon></PageviewIcon>
+            </IconButton>
+          </div>
         </div>
 
         <div

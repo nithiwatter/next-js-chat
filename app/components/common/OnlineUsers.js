@@ -8,7 +8,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import IconButton from '@material-ui/core/IconButton';
 import GifIcon from '@material-ui/icons/Gif';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import { openSimpleSearchExternal } from './SimpleSearch';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
 import ChatIcon from '@material-ui/icons/Chat';
@@ -48,6 +49,17 @@ const styles = (theme) => ({
   listItem: {
     borderRadius: 8,
   },
+  listText: {
+    overflow: 'hidden',
+    whiteSpace: 'noWrap',
+    textOverflow: 'ellipsis',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'block',
+    },
+  },
 });
 
 class OnlineUsers extends Component {
@@ -72,8 +84,18 @@ class OnlineUsers extends Component {
               <Typography variant="h6" style={{ marginLeft: '1rem' }}>
                 Currently in {rootStore.currentTeam.name}
               </Typography>
-              <IconButton style={{ marginRight: '1rem' }}>
-                <VerifiedUserIcon></VerifiedUserIcon>
+              <IconButton
+                style={{ marginRight: '1rem' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openSimpleSearchExternal({
+                    onSubmit: this.props.handleSearchUser,
+                    title: 'Your DM',
+                    description: 'Please enter your new DM user',
+                  });
+                }}
+              >
+                <PageviewIcon></PageviewIcon>
               </IconButton>
             </div>
 
@@ -116,7 +138,11 @@ class OnlineUsers extends Component {
                     </ListItemAvatar>
                     <ListItemText
                       primary={user.displayName}
-                      classes={{ primary: classes.listText }}
+                      secondary={user.email}
+                      classes={{
+                        primary: classes.listText,
+                        secondary: classes.listText,
+                      }}
                     ></ListItemText>
                     <ListItemIcon style={{ marginLeft: 'auto' }}>
                       <IconButton

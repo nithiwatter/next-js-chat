@@ -43,6 +43,7 @@ class Store {
     this.currentTab = 0;
     this.DM = false;
     this.DMUser = '';
+    this.DMUserId = 0;
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.darkTheme = true;
@@ -64,6 +65,7 @@ class Store {
   switchToGroup() {
     this.DM = false;
     this.DMUser = '';
+    this.DMUserId = 0;
   }
 
   // justone = receive only a single userId
@@ -164,6 +166,7 @@ decorate(Store, {
   currentTab: observable,
   DM: observable,
   DMUser: observable,
+  DMUserId: observable,
   changeTab: action,
   changeTheme: action,
   receiveMessage: action,

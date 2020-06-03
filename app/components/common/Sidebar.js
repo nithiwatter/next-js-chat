@@ -8,6 +8,7 @@ import notify from '../../lib/notify';
 import confirm from '../../lib/confirm';
 import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
+import { openSimpleSearchExternal } from './SimpleSearch';
 import Carousel from '@brainhubeu/react-carousel';
 import { observer } from 'mobx-react';
 
@@ -22,6 +23,7 @@ const styles = (theme) => ({
 class Sidebar extends Component {
   constructor(props) {
     super(props);
+    this.handleSearchUser = this.handleSearchUser.bind(this);
     this.handleAddTeam = this.handleAddTeam.bind(this);
     this.handleAddChannel = this.handleAddChannel.bind(this);
     this.handleDeleteTeam = this.handleDeleteTeam.bind(this);
@@ -32,6 +34,14 @@ class Sidebar extends Component {
 
   handleTabSwitch(newValue) {
     this.props.rootStore.changeTab(newValue);
+  }
+
+  handleSearchUser(status, value) {
+    if (!status) return;
+
+    if (value === '') return notify('A user is required');
+
+    this.props.rootStore.switchToDM(false, false, value);
   }
 
   async handleAddTeam(status, value) {
@@ -98,7 +108,6 @@ class Sidebar extends Component {
             },
             { withCredentials: true }
           );
-          console.log(data);
           notify('You successfully invited this person.');
           this.props.rootStore.invite(data.invitation);
           // set up a ws to track if another person has accepted
@@ -141,7 +150,6 @@ class Sidebar extends Component {
   }
 
   handleDeleteChannel(channelId) {
-    console.log(channelId);
     confirm({
       title: 'Are you sure to delete this channel?',
       message: 'This is a permanent action.',
@@ -188,6 +196,7 @@ class Sidebar extends Component {
           <Teams
             rootStore={rootStore}
             handleAddTeam={this.handleAddTeam}
+            handleSearchUser={this.handleSearchUser}
             handleDeleteTeam={this.handleDeleteTeam}
             handleInvite={this.handleInvite}
           ></Teams>
@@ -196,7 +205,10 @@ class Sidebar extends Component {
             handleAddChannel={this.handleAddChannel}
             handleDeleteChannel={this.handleDeleteChannel}
           ></Channels>
-          <OnlineUsers rootStore={rootStore}></OnlineUsers>
+          <OnlineUsers
+            rootStore={rootStore}
+            handleSearchUser={this.handleSearchUser}
+          ></OnlineUsers>
         </Carousel>
       </div>
     );

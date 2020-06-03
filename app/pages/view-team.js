@@ -129,23 +129,42 @@ class ViewTeam extends Component {
   async handleSubmit(e) {
     try {
       if (e.key === 'Enter') {
-        const { data } = await axios.post(
-          `${process.env.URL_API}/api/v1/team-member/add-message`,
-          {
-            userId: this.props.user._id,
-            text: this.state.input,
-            userEmail: this.props.user.email,
-            userDisplayName: this.props.user.displayName,
-            userAvatarUrl: this.props.user.avatarUrl,
-            channelId: this.props.rootStore.currentChannel._id,
-          },
-          { withCredentials: true }
-        );
-        this.setState({ input: '' });
-        this.props.rootStore.socket.emit('message', [
-          this.props.rootStore.currentTeam._id,
-          data.message,
-        ]);
+        // for not DM/channel chat normally
+        if (!this.props.rootStore.DM) {
+          const { data } = await axios.post(
+            `${process.env.URL_API}/api/v1/team-member/add-message`,
+            {
+              userId: this.props.user._id,
+              text: this.state.input,
+              userEmail: this.props.user.email,
+              userDisplayName: this.props.user.displayName,
+              userAvatarUrl: this.props.user.avatarUrl,
+              channelId: this.props.rootStore.currentChannel._id,
+            },
+            { withCredentials: true }
+          );
+          this.setState({ input: '' });
+          this.props.rootStore.socket.emit('message', [
+            this.props.rootStore.currentTeam._id,
+            data.message,
+          ]);
+          // for DM chat
+        } else {
+          const { data } = await axios.post(
+            `${process.env.URL_API}/api/v1/team-member/add-direct-message`,
+            {
+              userId: this.props.user._id,
+              text: this.state.input,
+              userEmail: this.props.user.email,
+              userDisplayName: this.props.user.displayName,
+              userAvatarUrl: this.props.user.avatarUrl,
+              teamId: this.props.rootStore.currentTeam._id,
+              receiverId: this.props.rootStore.DMUserId,
+            },
+            { withCredentials: true }
+          );
+          this.setState({ input: '' });
+        }
       }
     } catch (err) {
       console.log(err);

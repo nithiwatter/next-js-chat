@@ -11,7 +11,6 @@ function sortByAlphabet(array) {
 }
 
 export function addTeam(newTeam) {
-  this.switchToGroup();
   // offline for previous team
   if (this.currentTeam) {
     this.socket.emit('offline', [this.currentTeam._id, this.userStore._id]);
@@ -31,12 +30,12 @@ export function addTeam(newTeam) {
     },
   ];
   this.messages = [];
+  this.switchToGroup();
   this.socket.emit('subscribe', newTeam._id); // subscribe to this new team for notifications
   this.socket.emit('online', [newTeam._id, this.userStore._id]); // should now be online for this new team
 }
 
 export async function selectTeam(teamId) {
-  this.switchToGroup();
   // cannot click twice
   if (teamId === this.currentTeam._id) return;
 
@@ -77,6 +76,7 @@ export async function selectTeam(teamId) {
     } else {
       this.currentChannel = null;
     }
+    this.switchToGroup();
     // emit online for the new team
     this.socket.emit('online', [this.currentTeam._id, this.userStore._id]);
   });

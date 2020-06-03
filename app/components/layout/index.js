@@ -9,6 +9,7 @@ import Confirmer from '../common/Confirmer';
 import { withStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import SimpleForm from '../common/SimpleForm';
+import SimpleSearch from '../common/SimpleSearch';
 import Sidebar from '../common/Sidebar';
 import Notifications from '../common/Notifications';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -259,6 +260,7 @@ class Layout extends Component {
           <Notifier></Notifier>
           <Confirmer></Confirmer>
           <SimpleForm></SimpleForm>
+          <SimpleSearch options={rootStore.currentUsers}></SimpleSearch>
         </Grid>
       </React.Fragment>
     );

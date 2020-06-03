@@ -4,6 +4,7 @@ const Channel = require('../models/Channel');
 const Invitation = require('../models/Invitation');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const DirectMessage = require('../models/DirectMessage');
 const { signRequestForUpload } = require('../aws');
 
 const router = express();
@@ -239,7 +240,6 @@ router.post('/delete-team', async (req, res, next) => {
       arrayOfChannelIds.push(channel._id);
     }
 
-    console.log(arrayOfChannelIds);
     // deleting all referenced messages and channels
     await Message.deleteMany({ channelId: { $in: arrayOfChannelIds } });
     await Channel.deleteMany({ teamId: req.body.teamId });
@@ -315,6 +315,35 @@ router.post('/add-message', async (req, res, next) => {
     });
     await message.save();
     res.status(200).json({ message });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/add-direct-message', async (req, res, next) => {
+  try {
+    const {
+      userId,
+      userEmail,
+      userDisplayName,
+      channelId,
+      userAvatarUrl,
+      text,
+      teamId,
+      receiverId,
+    } = req.body;
+    const directMessage = new DirectMessage({
+      userId,
+      userEmail,
+      userDisplayName,
+      channelId,
+      userAvatarUrl,
+      text,
+      teamId,
+      receiverId,
+    });
+    await directMessage.save();
+    res.status(200).json({ directMessage });
   } catch (err) {
     next(err);
   }
