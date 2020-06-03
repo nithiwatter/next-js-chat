@@ -295,6 +295,19 @@ router.post('/get-messages', async (req, res, next) => {
   }
 });
 
+router.post('/get-direct-messages', async (req, res, next) => {
+  try {
+    const directMessages = await DirectMessage.find({
+      userId: req.body.userId,
+      receiverId: req.body.receiverId,
+      teamId: req.body.teamId,
+    });
+    res.status(200).json({ messages: directMessages });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/add-message', async (req, res, next) => {
   try {
     const {

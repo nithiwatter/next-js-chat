@@ -26,8 +26,13 @@ export function addChannel(newChannel, fromSocket) {
 
 export async function selectChannel(channelId) {
   // cannot select twice
-  this.switchToGroup();
-  if (channelId === this.currentChannel._id) return;
+  if (this.DM) {
+    this.switchToGroup();
+  } else {
+    // check for click twice only if you are not from DM view
+    if (channelId === this.currentChannel._id) return;
+  }
+
   const idx = findIndex(this.channels, (channel) => channel._id === channelId);
   const { data } = await axios.post(
     `${process.env.URL_API}/api/v1/team-member/get-messages`,

@@ -150,7 +150,11 @@ class OnlineUsers extends Component {
                         style={{ marginRight: '0.5rem' }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          rootStore.switchToDM(user._id, user.displayName);
+                          rootStore.switchToDM(
+                            user._id,
+                            user.displayName,
+                            user.email
+                          );
                         }}
                       >
                         <ChatIcon></ChatIcon>

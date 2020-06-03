@@ -1,5 +1,8 @@
 import { findIndex } from 'lodash';
+import axios from 'axios';
+import { runInAction } from 'mobx';
 
+// need to think about handling change photos for messages
 export function receiveMessage(message) {
   if (message.channelId === this.currentChannel._id) {
     this.messages.push(message);
@@ -12,9 +15,13 @@ export function receiveMessage(message) {
   this.channels[idx].messages = message;
 }
 
-export function switchToDM(userId, userDisplayName, userEmail) {
+export async function switchToDM(userId, userDisplayName, userEmail) {
+  // cannot click twice
+  if (this.DM && this.DMUserEmail === userEmail) return;
+  console.log(this.DMUserEmail);
   this.DM = true;
   this.DMUser = userDisplayName;
+  this.DMUserEmail = userEmail;
   if (userId) {
     this.DMUserId = userId;
   } else {
@@ -25,4 +32,19 @@ export function switchToDM(userId, userDisplayName, userEmail) {
     this.DMUser = this.currentUsers[idx].displayName;
     this.DMUserId = this.currentUsers[idx]._id;
   }
+
+  // fetching messages data
+  const { data } = await axios.post(
+    `${process.env.URL_API}/api/v1/team-member/get-direct-messages`,
+    {
+      userId: this.userStore._id,
+      receiverId: this.DMUserId,
+      teamId: this.currentTeam._id,
+    },
+    { withCredentials: true }
+  );
+  runInAction(() => {
+    console.log(data.messages);
+    this.messages = data.messages;
+  });
 }

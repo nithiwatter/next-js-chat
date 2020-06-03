@@ -44,6 +44,7 @@ class Store {
     this.DM = false;
     this.DMUser = '';
     this.DMUserId = 0;
+    this.DMUserEmail = '';
     if (this.teams.length > 0) this.currentTeam = this.teams[0];
     if (this.channels.length > 0) this.currentChannel = this.channels[0];
     this.darkTheme = true;
@@ -66,6 +67,7 @@ class Store {
     this.DM = false;
     this.DMUser = '';
     this.DMUserId = 0;
+    this.DMUserEmail = '';
   }
 
   // justone = receive only a single userId
@@ -167,6 +169,7 @@ decorate(Store, {
   DM: observable,
   DMUser: observable,
   DMUserId: observable,
+  DMUserEmail: observable,
   changeTab: action,
   changeTheme: action,
   receiveMessage: action,

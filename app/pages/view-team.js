@@ -249,11 +249,7 @@ class ViewTeam extends Component {
           <div className={classes.messageContainer}>
             <div className={classes.paddingTop}></div>
 
-            {rootStore.DM ? (
-              <DirectMessages></DirectMessages>
-            ) : (
-              <Messages rootStore={rootStore} user={user}></Messages>
-            )}
+            <Messages rootStore={rootStore} user={user}></Messages>
 
             <AppBar
               position="relative"
