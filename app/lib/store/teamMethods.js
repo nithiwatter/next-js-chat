@@ -63,7 +63,7 @@ export async function selectTeam(teamId) {
   ]);
 
   let channels = result[0].data.channels;
-  let messages = result[0].data.messages;
+  const messages = result[0].data.messages;
   channels = sortByAlphabet(channels);
   const currentUsers = result[1].data.currentUsers;
 
@@ -83,6 +83,7 @@ export async function selectTeam(teamId) {
 }
 
 export async function deleteTeam(teamId) {
+  this.switchToGroup();
   const newTeams = this.teams.filter((team) => team._id !== teamId);
 
   // deleting pending acceptances if the team is no longer there
@@ -98,19 +99,32 @@ export async function deleteTeam(teamId) {
 
   if (newTeams.length > 0) {
     // get channels information from the first team available
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/get-channels`,
-      {
-        teamId: newTeams[0]._id,
-      },
-      { withCredentials: true }
-    );
-    const channels = data.channels;
+    const result = await Promise.all([
+      axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-channels`,
+        {
+          teamId: newTeams[0]._id,
+        },
+        { withCredentials: true }
+      ),
+      axios.post(
+        `${process.env.URL_API}/api/v1/team-member/get-team-members`,
+        {
+          teamId: newTeams[0]._id,
+        },
+        { withCredentials: true }
+      ),
+    ]);
+
+    let channels = result[0].data.channels;
+    channels = sortByAlphabet(channels);
+    const currentUsers = result[1].data.currentUsers;
 
     runInAction(() => {
       this.teams = newTeams;
       this.currentTeam = newTeams[0];
       this.channels = channels;
+      this.currentUsers = currentUsers;
       if (channels.length > 0) {
         this.currentChannel = channels[0];
         this.messages = data.messages;

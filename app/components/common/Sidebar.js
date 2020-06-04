@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
 import Carousel from '@brainhubeu/react-carousel';
 import { observer } from 'mobx-react';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = (theme) => ({
   container: {
@@ -185,31 +185,45 @@ class Sidebar extends Component {
           rootStore={rootStore}
           handleTabSwitch={this.handleTabSwitch}
         ></Dots>
-        <Carousel
-          draggable
-          centered
-          value={rootStore.currentTab}
-          onChange={this.handleTabSwitch}
-          animationSpeed={300}
-          keepDirectionWhenDragging={true}
-        >
-          <Teams
-            rootStore={rootStore}
-            handleAddTeam={this.handleAddTeam}
-            handleSearchUser={this.handleSearchUser}
-            handleDeleteTeam={this.handleDeleteTeam}
-            handleInvite={this.handleInvite}
-          ></Teams>
-          <Channels
-            rootStore={rootStore}
-            handleAddChannel={this.handleAddChannel}
-            handleDeleteChannel={this.handleDeleteChannel}
-          ></Channels>
-          <OnlineUsers
-            rootStore={rootStore}
-            handleSearchUser={this.handleSearchUser}
-          ></OnlineUsers>
-        </Carousel>
+
+        {rootStore.isLoading ? (
+          <div
+            style={{
+              height: '80vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress disableShrink> </CircularProgress>
+          </div>
+        ) : (
+          <Carousel
+            draggable
+            centered
+            value={rootStore.currentTab}
+            onChange={this.handleTabSwitch}
+            animationSpeed={300}
+            keepDirectionWhenDragging={true}
+          >
+            <Teams
+              rootStore={rootStore}
+              handleAddTeam={this.handleAddTeam}
+              handleSearchUser={this.handleSearchUser}
+              handleDeleteTeam={this.handleDeleteTeam}
+              handleInvite={this.handleInvite}
+            ></Teams>
+            <Channels
+              rootStore={rootStore}
+              handleAddChannel={this.handleAddChannel}
+              handleDeleteChannel={this.handleDeleteChannel}
+            ></Channels>
+            <OnlineUsers
+              rootStore={rootStore}
+              handleSearchUser={this.handleSearchUser}
+            ></OnlineUsers>
+          </Carousel>
+        )}
       </div>
     );
   }

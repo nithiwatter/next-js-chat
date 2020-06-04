@@ -58,6 +58,10 @@ class Store {
       this.socket.rootStore = this;
       attachWSListeners(this.socket, this.userStore._id, this.teams);
     }
+
+    if (!isServer) {
+      setTimeout(() => runInAction(() => (this.isLoading = false)), 1500);
+    }
   }
 
   changeTheme() {
