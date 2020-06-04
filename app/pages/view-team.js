@@ -174,6 +174,7 @@ class ViewTeam extends Component {
             },
             { withCredentials: true }
           );
+          this.props.rootStore.socket.emit('direct-message', data.message);
           this.setState({ input: '' });
         }
       }

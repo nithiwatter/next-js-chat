@@ -3,16 +3,22 @@ import axios from 'axios';
 import { runInAction } from 'mobx';
 
 // need to think about handling change photos for messages
-export function receiveMessage(message) {
-  if (message.channelId === this.currentChannel._id) {
+export function receiveMessage(message, directMessage) {
+  // for normal channel communication
+  if (!directMessage) {
+    if (message.channelId === this.currentChannel._id) {
+      this.messages.push(message);
+    }
+
+    const idx = findIndex(
+      this.channels,
+      (channel) => channel._id === message.channelId
+    );
+    this.channels[idx].messages = message;
+  } // for DM
+  else {
     this.messages.push(message);
   }
-
-  const idx = findIndex(
-    this.channels,
-    (channel) => channel._id === message.channelId
-  );
-  this.channels[idx].messages = message;
 }
 
 export async function switchToDM(userId, userDisplayName, userEmail) {
@@ -44,7 +50,6 @@ export async function switchToDM(userId, userDisplayName, userEmail) {
     { withCredentials: true }
   );
   runInAction(() => {
-    console.log(data.messages);
     this.messages = data.messages;
   });
 }

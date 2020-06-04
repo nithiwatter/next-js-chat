@@ -8,9 +8,9 @@ import notify from '../../lib/notify';
 import confirm from '../../lib/confirm';
 import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
-import { openSimpleSearchExternal } from './SimpleSearch';
 import Carousel from '@brainhubeu/react-carousel';
 import { observer } from 'mobx-react';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const styles = (theme) => ({
   container: {

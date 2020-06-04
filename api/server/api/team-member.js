@@ -298,9 +298,18 @@ router.post('/get-messages', async (req, res, next) => {
 router.post('/get-direct-messages', async (req, res, next) => {
   try {
     const directMessages = await DirectMessage.find({
-      userId: req.body.userId,
-      receiverId: req.body.receiverId,
-      teamId: req.body.teamId,
+      $or: [
+        {
+          userId: req.body.userId,
+          receiverId: req.body.receiverId,
+          teamId: req.body.teamId,
+        },
+        {
+          userId: req.body.receiverId,
+          receiverId: req.body.userId,
+          teamId: req.body.teamId,
+        },
+      ],
     });
     res.status(200).json({ messages: directMessages });
   } catch (err) {
@@ -356,7 +365,7 @@ router.post('/add-direct-message', async (req, res, next) => {
       receiverId,
     });
     await directMessage.save();
-    res.status(200).json({ directMessage });
+    res.status(200).json({ message: directMessage });
   } catch (err) {
     next(err);
   }

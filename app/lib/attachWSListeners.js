@@ -87,7 +87,21 @@ function attachListeners(socket, userId, teams) {
   // [teamId, messageObj]
   socket.on('receive-message', (messageArray) => {
     if (messageArray[0] === socket.rootStore.currentTeam._id) {
-      socket.rootStore.receiveMessage(messageArray[1]);
+      socket.rootStore.receiveMessage(messageArray[1], false);
+    }
+  });
+
+  socket.on('receive-direct-message', (message) => {
+    // need to be on DM mode
+    if (
+      message.teamId === socket.rootStore.currentTeam._id &&
+      socket.rootStore.DM &&
+      ((socket.rootStore.userStore._id === message.userId &&
+        socket.rootStore.DMUserId === message.receiverId) ||
+        (socket.rootStore.userStore._id === message.receiverId &&
+          socket.rootStore.DMUserId === message.userId))
+    ) {
+      socket.rootStore.receiveMessage(message, true);
     }
   });
 

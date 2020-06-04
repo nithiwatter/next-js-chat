@@ -31,6 +31,7 @@ class Store {
     this.channels = [];
     this.currentUsers = [];
     //
+    this.isLoading = true;
     this.userStore = new User(this, { ...initialState.user });
     this.pendingAcceptances = initialState.pendingAcceptances;
     this.pendingInvitations = initialState.pendingInvitations;
@@ -155,7 +156,7 @@ Store.prototype.receiveMessage = action(receiveMessage);
 Store.prototype.switchToDM = action(switchToDM);
 
 decorate(Store, {
-  currentUrl: observable,
+  isLoading: observable,
   darkTheme: observable,
   pendingAcceptances: observable,
   pendingInvitations: observable,

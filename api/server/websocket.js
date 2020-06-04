@@ -116,5 +116,9 @@ exports.setUpWS = function (server) {
     socket.on('message', (messageArray) => {
       io.to(messageArray[0]).emit('receive-message', messageArray);
     });
+
+    socket.on('direct-message', (message) => {
+      io.to(message.teamId).emit('receive-direct-message', message);
+    });
   });
 };
