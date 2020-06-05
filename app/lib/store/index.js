@@ -1,6 +1,7 @@
 import { decorate, observable, configure, action, runInAction } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
 import { User } from './userStore';
+import { Todos } from './todosStore';
 import { addTeam, selectTeam, deleteTeam } from './teamMethods';
 import { addChannel, selectChannel, deleteChannel } from './channelMethods';
 import {
@@ -33,6 +34,7 @@ class Store {
     //
     this.isLoading = true;
     this.userStore = new User(this, { ...initialState.user });
+    this.todosStore = new Todos(this, {});
     this.pendingAcceptances = initialState.pendingAcceptances;
     this.pendingInvitations = initialState.pendingInvitations;
     this.teams = initialState.teams;

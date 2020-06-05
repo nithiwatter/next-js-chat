@@ -118,7 +118,8 @@ class MyApp extends App {
   render() {
     // component is the active page being rendered; page props are props gotten from getInitialProps()
     const { Component, pageProps } = this.props;
-    console.log('render');
+
+    // will provide rootStore and userStore via withAuth HOC
     return (
       <React.Fragment>
         <ThemeProvider
