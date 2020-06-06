@@ -1,4 +1,4 @@
-import { decorate, observable, action, runInAction, autorun } from 'mobx';
+import { decorate, observable, action, runInAction, autorun, toJS } from 'mobx';
 
 class Todos {
   constructor(rootStore, todos) {
@@ -25,6 +25,23 @@ class Todos {
 
   submit() {
     console.log('uploading');
+    const result = [];
+    const arrayOfKeys = Object.keys(this.createdTodosItems);
+    console.log(arrayOfKeys);
+
+    // formatting to be sent to database
+    for (let key of arrayOfKeys) {
+      if (!this.createdTodosItems[key].checkbox) {
+        result.push(toJS(this.createdTodosItems[key]));
+      } else {
+        let newContent = this.createdTodosItems[key].content.map(
+          (el) => Object.values(el)[0]
+        );
+        const newObj = { checkbox: true, content: newContent };
+        result.push(newObj);
+      }
+    }
+    console.log(result);
   }
 
   editTitle(newValue) {
@@ -64,7 +81,6 @@ class Todos {
   }
 
   editListItemContent(id, idx, newValue) {
-    console.log(1);
     const key = Object.keys(this.createdTodosItems[id].content[idx])[0];
     this.createdTodosItems[id].content[idx][key] = newValue;
   }
