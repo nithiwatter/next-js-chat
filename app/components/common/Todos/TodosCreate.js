@@ -7,6 +7,7 @@ import TodosCreateContent from './TodosCreateContent';
 import TodosCreateActions from './TodosCreateActions';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
   root: {
@@ -38,6 +39,7 @@ class TodosCreate extends Component {
     this.state = { focused: false };
     this.handleOnFocus = this.handleOnFocus.bind(this);
     this.handleOffFocus = this.handleOffFocus.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   handleOnFocus() {
@@ -48,8 +50,12 @@ class TodosCreate extends Component {
     this.setState({ focused: false });
   }
 
+  handleInputChange(e) {
+    this.props.todosStore.editTitle(e.target.value);
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, todosStore } = this.props;
     const { focused } = this.state;
     return (
       <ClickAwayListener onClickAway={this.handleOffFocus}>
@@ -68,18 +74,25 @@ class TodosCreate extends Component {
             >
               <InputBase
                 placeholder="Title"
+                value={todosStore.title}
                 classes={{
                   root: classes.inputTitleWrapper,
                   input: classes.inputTitle,
                 }}
+                onChange={this.handleInputChange}
                 onFocus={this.handleOnFocus}
               ></InputBase>
             </div>
 
-            <TodosCreateContent></TodosCreateContent>
+            <TodosCreateContent todosStore={todosStore}></TodosCreateContent>
             <div className={classes.optionsWrapper}>
-              <TodosCreateActions></TodosCreateActions>
-              <Button style={{ marginLeft: 'auto' }}>Done</Button>
+              <TodosCreateActions todosStore={todosStore}></TodosCreateActions>
+              <Button
+                style={{ marginLeft: 'auto' }}
+                onClick={todosStore.submit}
+              >
+                Done
+              </Button>
             </div>
           </Collapse>
         </Paper>
@@ -88,4 +101,4 @@ class TodosCreate extends Component {
   }
 }
 
-export default withStyles(styles)(TodosCreate);
+export default withStyles(styles)(observer(TodosCreate));

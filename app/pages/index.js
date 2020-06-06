@@ -20,7 +20,7 @@ class Index extends Component {
     return (
       <Layout firstGridItem={firstGridItem} rootStore={rootStore} user={user}>
         <div className={classes.root}>
-          <TodosCreate></TodosCreate>
+          <TodosCreate todosStore={rootStore.todosStore}></TodosCreate>
         </div>
       </Layout>
     );

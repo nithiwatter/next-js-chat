@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
+import { observer } from 'mobx-react';
+import TodosListContent from './TodosListContent';
+import TodosTextContent from './TodosTextContent';
 
 const styles = (theme) => ({
   inputTextWrapper: {
@@ -8,19 +10,47 @@ const styles = (theme) => ({
   },
 });
 
+function renderTodos(todoKey, todo, todosStore) {
+  if (todo && !todo.checkbox) {
+    return (
+      <TodosTextContent
+        key={todoKey}
+        content={todo.content}
+        id={todoKey}
+        todosStore={todosStore}
+      ></TodosTextContent>
+    );
+  } else if (todo && todo.content.length !== 0) {
+    return (
+      <TodosListContent
+        key={todoKey}
+        id={todoKey}
+        todosStore={todosStore}
+        content={todo.content}
+      ></TodosListContent>
+    );
+  } else {
+    console.log(1);
+    return null;
+  }
+}
+
 class TodosCreateContent extends Component {
   state = {};
   render() {
-    const { classes } = this.props;
+    const { classes, todosStore } = this.props;
     return (
       <div>
-        <InputBase
-          placeholder="Take a note"
-          classes={{ root: classes.inputTextWrapper }}
-        ></InputBase>
+        {Object.keys(todosStore.createdTodosItems).map((todoKey) =>
+          renderTodos(
+            todoKey,
+            todosStore.createdTodosItems[todoKey],
+            todosStore
+          )
+        )}
       </div>
     );
   }
 }
 
-export default withStyles(styles)(TodosCreateContent);
+export default withStyles(styles)(observer(TodosCreateContent));

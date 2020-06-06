@@ -3,7 +3,9 @@ import PaletteIcon from '@material-ui/icons/Palette';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import LabelIcon from '@material-ui/icons/Label';
 import IconButton from '@material-ui/core/IconButton';
+import TextFieldsIcon from '@material-ui/icons/TextFields';
 import { withStyles } from '@material-ui/core/styles';
+import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
   actionsWrapper: {
@@ -18,13 +20,26 @@ const styles = (theme) => ({
 class TodosCreateActions extends Component {
   state = {};
   render() {
-    const { classes } = this.props;
+    const { classes, todosStore } = this.props;
     return (
       <div className={classes.actionsWrapper}>
         <IconButton size="small" className={classes.icon}>
           <PaletteIcon></PaletteIcon>
         </IconButton>
-        <IconButton size="small" className={classes.icon}>
+        <IconButton
+          size="small"
+          className={classes.icon}
+          onClick={todosStore.addTextContent}
+          disabled={todosStore.currentItem === 'text'}
+        >
+          <TextFieldsIcon></TextFieldsIcon>
+        </IconButton>
+        <IconButton
+          size="small"
+          className={classes.icon}
+          onClick={todosStore.addListContent}
+          disabled={todosStore.currentItem === 'list'}
+        >
           <CheckBoxIcon></CheckBoxIcon>
         </IconButton>
         <IconButton size="small" className={classes.icon}>
@@ -35,4 +50,4 @@ class TodosCreateActions extends Component {
   }
 }
 
-export default withStyles(styles)(TodosCreateActions);
+export default withStyles(styles)(observer(TodosCreateActions));
