@@ -14,6 +14,7 @@ const styles = (theme) => ({
     backgroundColor: theme.palette.blue.main,
     width: '80%',
     margin: '0 auto',
+    marginBottom: theme.spacing(2),
   },
   wrapper: {
     display: 'flex',

@@ -57,6 +57,7 @@ class MyApp extends App {
     let pendingInvitations = [];
     let currentUsers = [];
     let messages = [];
+    let notes = [];
 
     try {
       const { user } = await getUserApiMethod(ctx.req.headers.cookie);
@@ -78,6 +79,7 @@ class MyApp extends App {
       pendingInvitations = data.pendingInvitations;
       currentUsers = data.currentUsers;
       messages = data.messages;
+      notes = data.notes;
     }
 
     return {
@@ -89,6 +91,7 @@ class MyApp extends App {
       pendingInvitations,
       currentUsers,
       messages,
+      notes,
     };
   }
 
@@ -102,6 +105,7 @@ class MyApp extends App {
       pendingInvitations,
       currentUsers,
       messages,
+      notes,
     } = this.props;
 
     this.rootStore = initializeStore({
@@ -112,6 +116,7 @@ class MyApp extends App {
       pendingInvitations,
       currentUsers,
       messages,
+      notes,
     });
   }
 

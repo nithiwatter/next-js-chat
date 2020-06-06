@@ -3,12 +3,14 @@ import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
   root: {
     display: 'flex',
     width: '100%',
     padding: theme.spacing(1, 0),
+    alignItems: 'center',
   },
   inputTextWrapper: {
     paddingLeft: theme.spacing(2),
@@ -46,8 +48,9 @@ class TodosTextContent extends Component {
   }
 
   render() {
-    const { classes, content, id } = this.props;
+    const { classes, todo, id } = this.props;
     const { active } = this.state;
+
     return (
       <div
         className={classes.root}
@@ -58,7 +61,7 @@ class TodosTextContent extends Component {
           id={id}
           placeholder="Take a note"
           classes={{ root: classes.inputTextWrapper }}
-          value={content}
+          value={todo.content}
           onChange={this.handleInputChange}
           multiline
         ></InputBase>
@@ -74,4 +77,4 @@ class TodosTextContent extends Component {
   }
 }
 
-export default withStyles(styles)(TodosTextContent);
+export default withStyles(styles)(observer(TodosTextContent));

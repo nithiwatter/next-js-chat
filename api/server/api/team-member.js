@@ -5,6 +5,8 @@ const Invitation = require('../models/Invitation');
 const User = require('../models/User');
 const Message = require('../models/Message');
 const DirectMessage = require('../models/DirectMessage');
+const Note = require('../models/Note');
+const Content = require('../models/Content');
 const { signRequestForUpload } = require('../aws');
 
 const router = express();
@@ -45,6 +47,7 @@ router.post('/get-initial-data', async (req, res, next) => {
     let pendingInvitations = [];
     let currentUsers = [];
     let messages = [];
+    let notes = [];
     let result;
     const teams = await Team.getList({ userId: req.body.userId });
 
@@ -71,6 +74,9 @@ router.post('/get-initial-data', async (req, res, next) => {
       pendingInvitations = await Invitation.find({ userId: req.body.userId });
     }
 
+    notes = await Note.find({ userId: req.body.userId }).populate('content');
+    console.log(notes);
+
     return res.status(200).json({
       teams,
       channels,
@@ -78,6 +84,7 @@ router.post('/get-initial-data', async (req, res, next) => {
       pendingInvitations,
       currentUsers,
       messages,
+      notes,
     });
   } catch (err) {
     next(err);
@@ -366,6 +373,38 @@ router.post('/add-direct-message', async (req, res, next) => {
     });
     await directMessage.save();
     res.status(200).json({ message: directMessage });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/add-note', async (req, res, next) => {
+  try {
+    console.log(req.body);
+    let arr = req.body.content;
+    const result = [];
+    const ids = [];
+    for (item of arr) {
+      if (!item.checkbox) {
+        const doc = new Content({ checkbox: false, textContent: item.content });
+        ids.push(doc._id);
+        result.push(doc.save());
+      } else {
+        doc = new Content({ checkbox: true, listContent: item.content });
+        ids.push(doc._id);
+        result.push(doc.save());
+      }
+    }
+    await Promise.all(result);
+
+    const note = new Note({
+      title: req.body.title,
+      content: ids,
+      userId: req.userId,
+    });
+    await note.save();
+
+    res.json({ note });
   } catch (err) {
     next(err);
   }

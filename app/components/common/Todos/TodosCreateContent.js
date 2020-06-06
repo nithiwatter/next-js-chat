@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
-import TodosListContent from './TodosListContent';
-import TodosTextContent from './TodosTextContent';
+import TodosContentWrapper from './TodosContentWrapper';
 
 const styles = (theme) => ({
   inputTextWrapper: {
@@ -10,30 +9,30 @@ const styles = (theme) => ({
   },
 });
 
-function renderTodos(todoKey, todo, todosStore) {
-  if (todo && !todo.checkbox) {
-    return (
-      <TodosTextContent
-        key={todoKey}
-        content={todo.content}
-        id={todoKey}
-        todosStore={todosStore}
-      ></TodosTextContent>
-    );
-  } else if (todo && todo.content.length !== 0) {
-    return (
-      <TodosListContent
-        key={todoKey}
-        id={todoKey}
-        todosStore={todosStore}
-        content={todo.content}
-      ></TodosListContent>
-    );
-  } else {
-    console.log(1);
-    return null;
-  }
-}
+// function renderTodos(todoKey, todo, todosStore) {
+//   if (todo && !todo.checkbox) {
+//     return (
+//       <TodosTextContent
+//         key={todoKey}
+//         todo={todo}
+//         id={todoKey}
+//         todosStore={todosStore}
+//       ></TodosTextContent>
+//     );
+//   } else if (todo && todo.content.length !== 0) {
+//     return (
+//       <TodosListContent
+//         key={todoKey}
+//         id={todoKey}
+//         todosStore={todosStore}
+//         content={todo.content}
+//       ></TodosListContent>
+//     );
+//   } else {
+//     console.log(1);
+//     return null;
+//   }
+// }
 
 class TodosCreateContent extends Component {
   state = {};
@@ -41,13 +40,14 @@ class TodosCreateContent extends Component {
     const { classes, todosStore } = this.props;
     return (
       <div>
-        {Object.keys(todosStore.createdTodosItems).map((todoKey) =>
-          renderTodos(
-            todoKey,
-            todosStore.createdTodosItems[todoKey],
-            todosStore
-          )
-        )}
+        {Object.keys(todosStore.createdTodosItems).map((todoKey) => (
+          <TodosContentWrapper
+            key={todoKey}
+            id={todoKey}
+            todosStore={todosStore}
+            createdTodosItems={todosStore.createdTodosItems}
+          ></TodosContentWrapper>
+        ))}
       </div>
     );
   }

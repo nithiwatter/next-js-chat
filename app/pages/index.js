@@ -2,6 +2,8 @@ import Layout from '../components/layout/index';
 import React, { Component } from 'react';
 import withAuth from '../lib/withAuth';
 import TodosCreate from '../components/common/Todos/TodosCreate';
+
+import MainArea from '../components/common/Todos/MainArea';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = (theme) => ({
@@ -21,6 +23,10 @@ class Index extends Component {
       <Layout firstGridItem={firstGridItem} rootStore={rootStore} user={user}>
         <div className={classes.root}>
           <TodosCreate todosStore={rootStore.todosStore}></TodosCreate>
+          <MainArea
+            notes={rootStore.todosStore.notes}
+            todosStore={rootStore.todosStore}
+          ></MainArea>
         </div>
       </Layout>
     );

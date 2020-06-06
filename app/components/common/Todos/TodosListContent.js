@@ -4,12 +4,12 @@ import TodosListContentItem from './TodosListContentItem';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { observer } from 'mobx-react';
-import { trace } from 'mobx';
 
 const styles = (theme) => ({
   root: {
     display: 'flex',
     width: '100%',
+    alignItems: 'center',
   },
 });
 
@@ -19,7 +19,7 @@ function renderItem(item, todosStore, idx, id) {
     <TodosListContentItem
       key={key}
       todosStore={todosStore}
-      content={item[key]}
+      item={item}
       idx={idx}
       id={id}
     ></TodosListContentItem>
@@ -44,7 +44,7 @@ class TodosListContent extends Component {
   }
 
   render() {
-    const { classes, todosStore, content, id } = this.props;
+    const { classes, todosStore, todo, id } = this.props;
     const { active } = this.state;
 
     return (
@@ -54,7 +54,9 @@ class TodosListContent extends Component {
         onMouseLeave={this.handleDisactive}
       >
         <div style={{ width: '95%', paddingLeft: '2rem' }}>
-          {content.map((item, idx) => renderItem(item, todosStore, idx, id))}
+          {todo.content.map((item, idx) =>
+            renderItem(item, todosStore, idx, id)
+          )}
         </div>
         {active ? (
           <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>

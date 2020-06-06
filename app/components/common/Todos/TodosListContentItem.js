@@ -60,8 +60,9 @@ class TodosListContentItem extends Component {
   }
 
   render() {
-    const { classes, todosStore, content, id, idx } = this.props;
+    const { classes, todosStore, item, id, idx } = this.props;
     const { active } = this.state;
+    const content = Object.values(item)[0];
 
     return (
       <div
@@ -94,4 +95,4 @@ class TodosListContentItem extends Component {
   }
 }
 
-export default withStyles(styles)(TodosListContentItem);
+export default withStyles(styles)(observer(TodosListContentItem));

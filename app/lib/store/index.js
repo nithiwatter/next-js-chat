@@ -34,7 +34,7 @@ class Store {
     //
     this.isLoading = true;
     this.userStore = new User(this, { ...initialState.user });
-    this.todosStore = new Todos(this, {});
+    this.todosStore = new Todos(this, initialState.notes);
     this.pendingAcceptances = initialState.pendingAcceptances;
     this.pendingInvitations = initialState.pendingInvitations;
     this.teams = initialState.teams;
