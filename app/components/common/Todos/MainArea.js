@@ -1,29 +1,43 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import TodoNote from './TodoNote';
+import Masonry from 'react-masonry-css';
+
+const breakpointColumnsObj = {
+  default: 4,
+  1100: 3,
+  700: 2,
+  500: 1,
+};
 
 const styles = (theme) => ({
   root: {
-    border: '1px solid red',
     width: '100%',
-    // height: '70vh',
+    height: '70vh',
     // columnGap: '1.5rem',
-    columns: 4,
-    [theme.breakpoints.down('md')]: {
-      columns: 3,
-    },
-    [theme.breakpoints.down('sm')]: {
-      columns: 2,
-    },
-    [theme.breakpoints.down('xs')]: {
-      columns: 1,
-    },
+    // columns: 3,
+    // [theme.breakpoints.down('md')]: {
+    //   columnCount: 3,
+    // },
+    // [theme.breakpoints.down('sm')]: {
+    //   columnCount: 2,
+    // },
+    // [theme.breakpoints.down('xs')]: {
+    //   columnCount: 1,
+    // },
+  },
+  masonWrapper: {
+    display: 'flex',
+    marginLeft: -theme.spacing(2) /* gutter size offset */,
+    width: 'auto',
+  },
+  columnMasonWrapper: {
+    paddingLeft: theme.spacing(2) /* gutter size */,
+    backgroundClip: 'padding-box',
   },
   todoWrapper: {
-    border: '1px solid red',
-    // height: '300px',
-    width: '80%',
-    display: 'inline-block',
+    width: '100%',
+    marginBottom: theme.spacing(4),
   },
 });
 
@@ -31,15 +45,21 @@ class MainArea extends Component {
   state = {};
 
   render() {
-    const { classes, notes } = this.props;
-    console.log(notes.length);
+    const { classes, notes, todosStore } = this.props;
+
     return (
       <div className={classes.root}>
-        {notes.map((note) => (
-          <div key={note._id} className={classes.todoWrapper}>
-            {/* <TodoNote></TodoNote> */}
-          </div>
-        ))}
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className={classes.masonWrapper}
+          columnClassName={classes.columnMasonWrapper}
+        >
+          {notes.map((note) => (
+            <div key={note._id} className={classes.todoWrapper}>
+              <TodoNote note={note} todosStore={todosStore}></TodoNote>
+            </div>
+          ))}
+        </Masonry>
       </div>
     );
   }

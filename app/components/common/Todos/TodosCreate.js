@@ -12,15 +12,17 @@ import { observer } from 'mobx-react';
 const styles = (theme) => ({
   root: {
     backgroundColor: theme.palette.blue.main,
+
     width: '80%',
     margin: '0 auto',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(4),
   },
   wrapper: {
     display: 'flex',
     flexDirection: 'column',
   },
   inputTitleWrapper: {
+    color: 'white',
     padding: theme.spacing(0.5, 2),
     width: '100%',
   },

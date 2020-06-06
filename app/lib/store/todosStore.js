@@ -1,6 +1,7 @@
 import { decorate, observable, action, runInAction, autorun, toJS } from 'mobx';
 import uuid from 'react-uuid';
 import axios from 'axios';
+import { findIndex } from 'lodash';
 
 class Todos {
   constructor(rootStore, todos) {
@@ -55,6 +56,12 @@ class Todos {
     this.title = newValue;
   }
 
+  editTitleTodo(newValue, id) {
+    console.log(1);
+    let idx = this.notes.findIndex((note) => note._id === id);
+    this.notes[idx].title = newValue;
+  }
+
   addTextContent() {
     this.createdTodosItems[this.id + 1] = { checkbox: false, content: '' };
     this.id++;
@@ -104,9 +111,11 @@ class Todos {
 
 decorate(Todos, {
   title: observable,
+  notes: observable,
   editMode: observable,
   createdTodosItems: observable,
   submit: action,
+  editTitleTodo: action,
   changeTextContent: action,
   addTextContent: action,
   addListContent: action,
