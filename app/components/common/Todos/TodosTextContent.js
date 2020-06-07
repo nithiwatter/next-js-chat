@@ -68,6 +68,7 @@ class TodosTextContent extends Component {
     const { classes, todo, id, creating, content } = this.props;
     const { active } = this.state;
     console.log('text');
+    console.log(id);
     if (creating) {
       return (
         <div className={classes.root}>
@@ -103,7 +104,7 @@ class TodosTextContent extends Component {
       return (
         <div className={classes.root}>
           <InputBase
-            id={id}
+            id={id.toString()}
             placeholder="Take a note"
             classes={{ root: classes.inputTextWrapper }}
             value={content.textContent}

@@ -5,6 +5,9 @@ import LabelIcon from '@material-ui/icons/Label';
 import IconButton from '@material-ui/core/IconButton';
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import { withStyles } from '@material-ui/core/styles';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
@@ -14,37 +17,98 @@ const styles = (theme) => ({
     width: '30%',
     padding: theme.spacing(1, 0),
   },
+  actionsNarrowWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
   icon: { marginLeft: theme.spacing(2), color: 'white' },
+  narrowIcon: {
+    marginLeft: theme.spacing(1),
+    color: 'white',
+  },
+  narrowIconDone: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    color: 'white',
+  },
 });
 
 class TodosCreateActions extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = { anchorEl: null };
+    this.handleClick = this.handleClick.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+  }
+
+  handleClick(e) {
+    this.setState({ anchorEl: e.currentTarget });
+  }
+
+  handleClose() {
+    this.setState({ anchorEl: null });
+  }
+
   render() {
-    const { classes, todosStore } = this.props;
+    const { classes, todosStore, creating, mainId, mainIdx } = this.props;
+    const { anchorEl } = this.state;
     return (
-      <div className={classes.actionsWrapper}>
-        <IconButton size="small" className={classes.icon}>
+      <div
+        className={
+          creating ? classes.actionsWrapper : classes.actionsNarrowWrapper
+        }
+      >
+        <IconButton
+          size="small"
+          className={creating ? classes.icon : classes.narrowIcon}
+        >
           <PaletteIcon></PaletteIcon>
         </IconButton>
         <IconButton
           size="small"
-          className={classes.icon}
-          onClick={todosStore.addTextContent}
-          disabled={todosStore.currentItem === 'text'}
+          className={creating ? classes.icon : classes.narrowIcon}
+          onClick={() => {
+            todosStore.addTextContent(creating, mainId, mainIdx);
+          }}
         >
           <TextFieldsIcon></TextFieldsIcon>
         </IconButton>
         <IconButton
           size="small"
-          className={classes.icon}
+          className={creating ? classes.icon : classes.narrowIcon}
           onClick={todosStore.addListContent}
-          disabled={todosStore.currentItem === 'list'}
         >
           <CheckBoxIcon></CheckBoxIcon>
         </IconButton>
-        <IconButton size="small" className={classes.icon}>
+        <IconButton
+          size="small"
+          className={creating ? classes.icon : classes.narrowIcon}
+        >
           <LabelIcon></LabelIcon>
         </IconButton>
+        {creating ? null : (
+          <React.Fragment>
+            <IconButton
+              size="small"
+              className={classes.narrowIconDone}
+              onClick={this.handleClick}
+            >
+              <MenuOpenIcon></MenuOpenIcon>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={this.handleClose}
+            >
+              <MenuItem onClick={this.handleClose}>Done</MenuItem>
+              <MenuItem onClick={this.handleClose}>Pin</MenuItem>
+              <MenuItem onClick={this.handleClose}>Delete</MenuItem>
+            </Menu>
+          </React.Fragment>
+        )}
       </div>
     );
   }

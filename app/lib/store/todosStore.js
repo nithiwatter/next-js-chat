@@ -5,7 +5,6 @@ import { findIndex } from 'lodash';
 
 class Todos {
   constructor(rootStore, todos) {
-    console.log(todos[0].content);
     this.rootStore = rootStore;
     this.title = '';
     // Array of either {content: text (todos content)} or {content: array of strings (todos list)}
@@ -62,9 +61,18 @@ class Todos {
     this.notes[idx].title = newValue;
   }
 
-  addTextContent() {
-    this.createdTodosItems[this.id + 1] = { checkbox: false, content: '' };
-    this.id++;
+  addTextContent(creating, mainId, mainIdx) {
+    if (creating) {
+      this.createdTodosItems[this.id + 1] = { checkbox: false, content: '' };
+      this.id++;
+    } else {
+      this.notes[mainIdx].content.push({
+        _id: this.id,
+        checkbox: false,
+        textContent: 'a',
+      });
+      this.id++;
+    }
   }
 
   addListContent() {

@@ -13,6 +13,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { observer } from 'mobx-react';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import Fade from '@material-ui/core/Fade';
 
 const styles = (theme) => ({
   root: {
@@ -35,45 +36,61 @@ const styles = (theme) => ({
     fontWeight: 500,
     fontSize: '1.2rem',
   },
-  //   optionsWrapper: {
-  //     width: '100%',
-  //     display: 'flex',
-  //   },
+  optionsWrapper: {
+    width: '100%',
+    display: 'flex',
+    marginBottom: theme.spacing(1),
+  },
 });
 
 class TodoNote extends Component {
   constructor(props) {
     super(props);
-    this.state = { focused: false };
+    this.state = { focused: false, hovered: false };
     this.handleOnFocus = this.handleOnFocus.bind(this);
     this.handleOffFocus = this.handleOffFocus.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleHoverIn = this.handleHoverIn.bind(this);
+    this.handleHoverOut = this.handleHoverOut.bind(this);
   }
 
   handleOnFocus() {
-    this.setState({ focused: true });
+    this.setState({ focused: true, hovered: true });
   }
 
   handleOffFocus() {
-    this.setState({ focused: false });
+    this.setState({ focused: false, hovered: false });
   }
 
   handleInputChange(e) {
     this.props.todosStore.editTitleTodo(e.target.value, this.props.note._id);
   }
 
+  handleHoverIn() {
+    if (this.state.focused && !this.state.hovered) {
+      this.setState({ hovered: true });
+    }
+  }
+
+  handleHoverOut() {
+    if (this.state.focused) {
+      this.setState({ hovered: false });
+    }
+  }
+
   render() {
     const { classes, note, mainId, mainIdx, todosStore } = this.props;
-    const { focused } = this.state;
+    const { focused, hovered } = this.state;
     console.log('render', mainId);
     return (
       // <ClickAwayListener onClickAway={this.handleOffFocus}>
-      <Paper classes={{ root: classes.root }}>
-        <Collapse
-          collapsedHeight="4rem"
-          in={focused}
-          className={classes.wrapper}
-        >
+      <Paper
+        classes={{ root: classes.root }}
+        onMouseEnter={this.handleHoverIn}
+        onMouseLeave={this.handleHoverOut}
+        elevation={4}
+      >
+        <Collapse collapsedHeight="4rem" in={true} className={classes.wrapper}>
           <div
             style={{
               display: 'flex',
@@ -120,6 +137,16 @@ class TodoNote extends Component {
               ></TodosContentWrapper>
             ))}
           </div>
+          <Fade in={hovered}>
+            <div className={classes.optionsWrapper}>
+              <TodosCreateActions
+                todosStore={todosStore}
+                creating={false}
+                mainId={mainId}
+                mainIdx={mainIdx}
+              ></TodosCreateActions>
+            </div>
+          </Fade>
         </Collapse>
       </Paper>
       // </ClickAwayListener>
