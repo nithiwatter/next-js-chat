@@ -14,7 +14,7 @@ const styles = (theme) => ({
     width: '30%',
     padding: theme.spacing(1, 0),
   },
-  icon: { marginLeft: theme.spacing(2) },
+  icon: { marginLeft: theme.spacing(2), color: 'white' },
 });
 
 class TodosCreateActions extends Component {

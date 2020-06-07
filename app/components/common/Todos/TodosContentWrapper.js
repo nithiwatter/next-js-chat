@@ -6,25 +6,54 @@ class TodosContentWrapper extends Component {
   state = {};
 
   render() {
-    const { createdTodosItems, id, todosStore } = this.props;
+    const {
+      createdTodosItems,
+      id,
+      idx,
+      todosStore,
+      creating,
+      content,
+      mainId,
+      mainIdx,
+    } = this.props;
 
-    return (
-      <div>
-        {createdTodosItems[id].checkbox ? (
-          <TodosListContent
-            todosStore={todosStore}
-            id={id}
-            todo={createdTodosItems[id]}
-          ></TodosListContent>
-        ) : (
-          <TodosTextContent
-            todosStore={todosStore}
-            id={id}
-            todo={createdTodosItems[id]}
-          ></TodosTextContent>
-        )}
-      </div>
-    );
+    if (creating) {
+      return (
+        <div>
+          {createdTodosItems[id].checkbox ? (
+            <TodosListContent
+              todosStore={todosStore}
+              id={id}
+              creating={creating}
+              todo={createdTodosItems[id]}
+            ></TodosListContent>
+          ) : (
+            <TodosTextContent
+              todosStore={todosStore}
+              id={id}
+              creating={creating}
+              todo={createdTodosItems[id]}
+            ></TodosTextContent>
+          )}
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          {content.checkbox ? null : (
+            <TodosTextContent
+              creating={creating}
+              content={content}
+              mainId={mainId}
+              id={id}
+              todosStore={todosStore}
+              idx={idx}
+              mainIdx={mainIdx}
+            ></TodosTextContent>
+          )}
+        </div>
+      );
+    }
   }
 }
 

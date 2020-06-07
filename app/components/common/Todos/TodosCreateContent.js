@@ -44,6 +44,7 @@ class TodosCreateContent extends Component {
           <TodosContentWrapper
             key={todoKey}
             id={todoKey}
+            creating={true}
             todosStore={todosStore}
             createdTodosItems={todosStore.createdTodosItems}
           ></TodosContentWrapper>

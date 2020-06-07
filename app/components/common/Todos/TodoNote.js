@@ -3,6 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
+import TodosContentWrapper from './TodosContentWrapper';
 import TodosCreateContent from './TodosCreateContent';
 import TodosCreateActions from './TodosCreateActions';
 import Button from '@material-ui/core/Button';
@@ -10,13 +11,16 @@ import PinDropIcon from '@material-ui/icons/PinDrop';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { observer } from 'mobx-react';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 const styles = (theme) => ({
   root: {
-    // backgroundColor: '#f5f5f5',
+    // backgroundColor: theme.palette.tbg.main,
     border: '1px solid',
     borderColor: theme.palette.border.main,
     width: '100%',
+    borderRadius: 8,
     // margin: '0 auto',
   },
   //   wrapper: {
@@ -59,10 +63,11 @@ class TodoNote extends Component {
   }
 
   render() {
-    const { classes, note } = this.props;
+    const { classes, note, mainId, mainIdx, todosStore } = this.props;
     const { focused } = this.state;
+    console.log('render', mainId);
     return (
-      //   <ClickAwayListener onClickAway={this.handleOffFocus}>
+      // <ClickAwayListener onClickAway={this.handleOffFocus}>
       <Paper classes={{ root: classes.root }}>
         <Collapse
           collapsedHeight="4rem"
@@ -84,22 +89,40 @@ class TodoNote extends Component {
                 root: classes.inputTitleWrapper,
                 input: classes.inputTitle,
               }}
-              onFocus={this.handleOnFocus}
-              onBlur={this.handleOffFocus}
+              onFocus={!focused ? this.handleOnFocus : null}
               multiline
               rowsMax={2}
             ></InputBase>
+
             <IconButton
               size="small"
               style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
+              onClick={focused ? this.handleOffFocus : this.handleOnFocus}
             >
-              <PinDropIcon></PinDropIcon>
+              {focused ? (
+                <ArrowDropUpIcon></ArrowDropUpIcon>
+              ) : (
+                <ArrowDropDownIcon></ArrowDropDownIcon>
+              )}
             </IconButton>
           </div>
-          <div>Hello</div>
+          <div>
+            {note.content.map((el, idx) => (
+              <TodosContentWrapper
+                key={el._id}
+                creating={false}
+                idx={idx}
+                todosStore={todosStore}
+                mainId={mainId}
+                mainIdx={mainIdx}
+                id={el._id}
+                content={el}
+              ></TodosContentWrapper>
+            ))}
+          </div>
         </Collapse>
       </Paper>
-      //   </ClickAwayListener>
+      // </ClickAwayListener>
     );
   }
 }

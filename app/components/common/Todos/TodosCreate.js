@@ -91,7 +91,7 @@ class TodosCreate extends Component {
             <div className={classes.optionsWrapper}>
               <TodosCreateActions todosStore={todosStore}></TodosCreateActions>
               <Button
-                style={{ marginLeft: 'auto' }}
+                style={{ marginLeft: 'auto', color: 'white' }}
                 onClick={todosStore.submit}
               >
                 Done

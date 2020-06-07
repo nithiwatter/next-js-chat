@@ -17,6 +17,12 @@ const styles = (theme) => ({
     paddingRight: theme.spacing(2),
     width: '95%',
   },
+  icon: {
+    opacity: 0,
+  },
+  iconOnFocus: {
+    opacity: 100,
+  },
 });
 
 class TodosTextContent extends Component {
@@ -32,7 +38,13 @@ class TodosTextContent extends Component {
   handleInputChange(e) {
     const newValue = e.target.value;
     const id = e.target.id;
-    this.props.todosStore.changeTextContent(id, newValue);
+    this.props.todosStore.changeTextContent(
+      id,
+      newValue,
+      this.props.creating,
+      this.props.mainIdx,
+      this.props.idx
+    );
   }
 
   handleActive() {
@@ -44,36 +56,80 @@ class TodosTextContent extends Component {
   }
 
   handleDelete(id) {
-    this.props.todosStore.deleteContent(id);
+    this.props.todosStore.deleteContent(
+      id,
+      this.props.creating,
+      this.props.mainIdx,
+      this.props.idx
+    );
   }
 
   render() {
-    const { classes, todo, id } = this.props;
+    const { classes, todo, id, creating, content } = this.props;
     const { active } = this.state;
+    console.log('text');
+    if (creating) {
+      return (
+        <div className={classes.root}>
+          <InputBase
+            id={id}
+            placeholder="Take a note"
+            classes={{ root: classes.inputTextWrapper }}
+            value={todo.content}
+            onChange={this.handleInputChange}
+            onFocus={this.handleActive}
+            onBlur={this.handleDisactive}
+            multiline
+          ></InputBase>
 
-    return (
-      <div
-        className={classes.root}
-        onMouseOver={this.handleActive}
-        onMouseLeave={this.handleDisactive}
-      >
-        <InputBase
-          id={id}
-          placeholder="Take a note"
-          classes={{ root: classes.inputTextWrapper }}
-          value={todo.content}
-          onChange={this.handleInputChange}
-          multiline
-        ></InputBase>
-        {active ? (
-          <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
-            <IconButton size="small" onClick={() => this.handleDelete(id)}>
-              <DeleteIcon></DeleteIcon>
-            </IconButton>
-          </div>
-        ) : null}
-      </div>
-    );
+          {active ? (
+            <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
+              <IconButton
+                size="small"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                }}
+                onClick={() => {
+                  this.handleDelete(id);
+                }}
+              >
+                <DeleteIcon></DeleteIcon>
+              </IconButton>
+            </div>
+          ) : null}
+        </div>
+      );
+    } else {
+      return (
+        <div className={classes.root}>
+          <InputBase
+            id={id}
+            placeholder="Take a note"
+            classes={{ root: classes.inputTextWrapper }}
+            value={content.textContent}
+            onChange={this.handleInputChange}
+            onFocus={this.handleActive}
+            onBlur={this.handleDisactive}
+            multiline
+          ></InputBase>
+          {active ? (
+            <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
+              <IconButton
+                size="small"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                }}
+                onClick={() => {
+                  this.handleDelete(id);
+                }}
+              >
+                <DeleteIcon></DeleteIcon>
+              </IconButton>
+            </div>
+          ) : null}
+        </div>
+      );
+    }
   }
 }
 
