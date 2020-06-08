@@ -36,19 +36,19 @@ class Todos {
       result.push(toJS(this.createdTodosItems[key]));
     }
     console.log(result);
-    const { data } = await axios.post(
-      `${process.env.URL_API}/api/v1/team-member/add-note`,
-      {
-        content: result,
-        title: this.title,
-      },
-      { withCredentials: true }
-    );
-    runInAction(() => {
-      this.createdTodosItems = {};
-      this.id = -1;
-      this.title = '';
-    });
+    // const { data } = await axios.post(
+    //   `${process.env.URL_API}/api/v1/team-member/add-note`,
+    //   {
+    //     content: result,
+    //     title: this.title,
+    //   },
+    //   { withCredentials: true }
+    // );
+    // runInAction(() => {
+    //   this.createdTodosItems = {};
+    //   this.id = -1;
+    //   this.title = '';
+    // });
   }
 
   editTitle(newValue) {
@@ -77,23 +77,67 @@ class Todos {
 
   addListContent() {
     const key = uuid();
-    if (
-      (this.createdTodosItems[this.id] &&
-        !this.createdTodosItems[this.id].checkbox) ||
-      Object.keys(this.createdTodosItems).length === 0
-    ) {
+    const arrayOfKeys = Object.keys(this.createdTodosItems);
+
+    // 1) no object yet -  add a new blob of list
+    if (arrayOfKeys.length === 0) {
       this.createdTodosItems[this.id + 1] = {
         checkbox: true,
         content: [{ [key]: '' }],
       };
       this.id += 1;
-    } else {
-      this.createdTodosItems[this.id].content.push({ [key]: '' });
+      return;
     }
+
+    const latestItemStatusKey = arrayOfKeys[arrayOfKeys.length - 1];
+    if (!this.createdTodosItems[latestItemStatusKey].checkbox) {
+      this.createdTodosItems[this.id + 1] = {
+        checkbox: true,
+        content: [{ [key]: '' }],
+      };
+      this.id += 1;
+      return;
+    } else {
+      this.createdTodosItems[latestItemStatusKey].content.push({ [key]: '' });
+    }
+    // if (
+    //   (this.createdTodosItems[this.id] &&
+    //     !this.createdTodosItems[this.id].checkbox) ||
+    //   Object.keys(this.createdTodosItems).length === 0
+    // ) {
+    //   this.createdTodosItems[this.id + 1] = {
+    //     checkbox: true,
+    //     content: [{ [key]: '' }],
+    //   };
+    //   this.id += 1;
+    // } else {
+    //   this.createdTodosItems[this.id].content.push({ [key]: '' });
+    // }
   }
 
   deleteContent(id, creating, mainIdx, idx) {
     if (creating) {
+      // if deleting text between two lists
+      const arrayOfKeys = Object.keys(this.createdTodosItems);
+      const idxOfDeleted = findIndex(arrayOfKeys, (el) => el === id);
+
+      // if there are indexes behind and ahead
+      const behindKey = arrayOfKeys[idxOfDeleted - 1];
+      const afterKey = arrayOfKeys[idxOfDeleted + 1];
+      if (behindKey && afterKey) {
+        // and both of them are checkboxes
+        if (
+          this.createdTodosItems[behindKey].checkbox &&
+          this.createdTodosItems[afterKey].checkbox
+        ) {
+          const newContent = [
+            ...this.createdTodosItems[behindKey].content,
+            ...this.createdTodosItems[afterKey].content,
+          ];
+          this.createdTodosItems[behindKey].content = newContent;
+          delete this.createdTodosItems[afterKey];
+        }
+      }
       delete this.createdTodosItems[id];
     } else {
       this.notes[mainIdx].content.splice(idx, 1);

@@ -91,7 +91,7 @@ class TodosListContentItem extends Component {
     const { classes, todosStore, item, id, idx } = this.props;
     const { active, hovered } = this.state;
     const content = Object.values(item)[0];
-    console.log('list', idx);
+
     return (
       <div
         className={active ? classes.wrapperBorders : classes.wrapper}

@@ -37,7 +37,7 @@ const styles = (theme) => ({
   },
   todoWrapper: {
     width: '100%',
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(2),
   },
 });
 

@@ -38,6 +38,7 @@ class TodosCreateContent extends Component {
   state = {};
   render() {
     const { classes, todosStore } = this.props;
+
     return (
       <div>
         {Object.keys(todosStore.createdTodosItems).map((todoKey) => (
