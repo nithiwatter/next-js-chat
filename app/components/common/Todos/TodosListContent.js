@@ -28,46 +28,16 @@ function renderItem(item, todosStore, idx, id) {
 class TodosListContent extends Component {
   state = {};
 
-  constructor(props) {
-    super(props);
-    this.state = { active: false };
-    this.handleActive = this.handleActive.bind(this);
-    this.handleDisactive = this.handleDisactive.bind(this);
-  }
-
-  handleActive() {
-    this.setState({ active: true });
-  }
-
-  handleDisactive() {
-    this.setState({ active: false });
-  }
-
   render() {
     const { classes, todosStore, todo, id } = this.props;
-    const { active } = this.state;
 
     return (
-      <div
-        className={classes.root}
-        onMouseOver={this.handleActive}
-        onMouseLeave={this.handleDisactive}
-      >
-        <div style={{ width: '95%', paddingLeft: '2rem' }}>
+      <div className={classes.root}>
+        <div style={{ width: '100%' }}>
           {todo.content.map((item, idx) =>
             renderItem(item, todosStore, idx, id)
           )}
         </div>
-        {active ? (
-          <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
-            <IconButton
-              size="small"
-              onClick={() => todosStore.deleteContent(id)}
-            >
-              <DeleteIcon></DeleteIcon>
-            </IconButton>
-          </div>
-        ) : null}
       </div>
     );
   }

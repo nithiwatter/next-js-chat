@@ -69,7 +69,7 @@ class Todos {
       this.notes[mainIdx].content.push({
         _id: this.id,
         checkbox: false,
-        textContent: 'a',
+        textContent: '',
       });
       this.id++;
     }
@@ -77,11 +77,19 @@ class Todos {
 
   addListContent() {
     const key = uuid();
-    this.createdTodosItems[this.id + 1] = {
-      checkbox: true,
-      content: [{ [key]: '' }],
-    };
-    this.id += 1;
+    if (
+      (this.createdTodosItems[this.id] &&
+        !this.createdTodosItems[this.id].checkbox) ||
+      Object.keys(this.createdTodosItems).length === 0
+    ) {
+      this.createdTodosItems[this.id + 1] = {
+        checkbox: true,
+        content: [{ [key]: '' }],
+      };
+      this.id += 1;
+    } else {
+      this.createdTodosItems[this.id].content.push({ [key]: '' });
+    }
   }
 
   deleteContent(id, creating, mainIdx, idx) {
@@ -96,8 +104,6 @@ class Todos {
     if (creating) {
       this.createdTodosItems[id].content = newValue;
     } else {
-      console.log(mainIdx);
-      console.log(idx);
       this.notes[mainIdx].content[idx].textContent = newValue;
     }
   }
@@ -121,7 +127,10 @@ class Todos {
 
   deleteListItemContent(id, idx) {
     const oldArray = this.createdTodosItems[id].content;
-    if (oldArray.length === 1) return;
+    if (oldArray.length === 1) {
+      delete this.createdTodosItems[id];
+      return;
+    }
     const newArray = [...oldArray.slice(0, idx), ...oldArray.slice(idx + 1)];
     this.createdTodosItems[id].content = newArray;
   }

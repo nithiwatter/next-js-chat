@@ -64,7 +64,7 @@ class TodosCreate extends Component {
   render() {
     const { classes, todosStore } = this.props;
     const { focused } = this.state;
-    console.log('todo man');
+
     return (
       <ClickAwayListener onClickAway={this.handleOffFocus}>
         <Paper classes={{ root: classes.root }}>
@@ -78,6 +78,7 @@ class TodosCreate extends Component {
                 display: 'flex',
                 alignItems: 'center',
                 height: '3rem',
+                marginBottom: '0.1rem',
               }}
             >
               <InputBase
@@ -91,8 +92,10 @@ class TodosCreate extends Component {
                 onFocus={this.handleOnFocus}
               ></InputBase>
             </div>
+            <div>
+              <TodosCreateContent todosStore={todosStore}></TodosCreateContent>
+            </div>
 
-            <TodosCreateContent todosStore={todosStore}></TodosCreateContent>
             <div className={classes.optionsWrapper}>
               <TodosCreateActions
                 todosStore={todosStore}

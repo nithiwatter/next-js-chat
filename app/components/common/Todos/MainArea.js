@@ -46,7 +46,7 @@ class MainArea extends Component {
 
   render() {
     const { classes, notes, todosStore } = this.props;
-    console.log(1);
+
     return (
       <div className={classes.root}>
         <Masonry

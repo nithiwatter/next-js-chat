@@ -52,6 +52,8 @@ const styles = (theme) => ({
     position: 'relative',
     zIndex: 0,
     backgroundColor: theme.palette.bg.main,
+    overflowY: 'auto',
+    height: '100vh',
     [theme.breakpoints.down('xs')]: {
       height: '90vh',
     },

@@ -9,29 +9,45 @@ import { observer } from 'mobx-react';
 const styles = (theme) => ({
   wrapper: {
     display: 'flex',
-    width: '75%',
+    width: '100%',
     alignItems: 'center',
     cursor: 'text',
+    borderTop: '1px solid transparent',
+    borderBottom: '1px solid transparent',
+  },
+  wrapperBorders: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'center',
+    cursor: 'text',
+    borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
   },
   inputTextWrapper: {
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    borderRadius: 8,
-    width: '80%',
+    width: '85%',
     height: '100%',
     // '&:hover': { backgroundColor: 'rgba(255,255,255,0.08)' },
+  },
+  visible: {
+    opacity: 100,
+  },
+  invisible: {
+    opacity: 0,
   },
 });
 
 class TodosListContentItem extends Component {
   constructor(props) {
     super(props);
-    this.state = { active: false };
+    this.state = { active: false, hovered: false };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handleActive = this.handleActive.bind(this);
     this.handleDisactive = this.handleDisactive.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleHoverIn = this.handleHoverIn.bind(this);
+    this.handleHoverOut = this.handleHoverOut.bind(this);
   }
 
   handleInputChange(e) {
@@ -59,23 +75,36 @@ class TodosListContentItem extends Component {
     this.props.todosStore.deleteListItemContent(this.props.id, this.props.idx);
   }
 
+  handleHoverIn() {
+    if (!this.state.hovered) {
+      this.setState({ hovered: true });
+    }
+  }
+
+  handleHoverOut() {
+    if (this.state.hovered) {
+      this.setState({ hovered: false });
+    }
+  }
+
   render() {
     const { classes, todosStore, item, id, idx } = this.props;
-    const { active } = this.state;
+    const { active, hovered } = this.state;
     const content = Object.values(item)[0];
-
+    console.log('list', idx);
     return (
       <div
-        className={classes.wrapper}
-        onMouseOver={this.handleActive}
-        onMouseLeave={this.handleDisactive}
+        className={active ? classes.wrapperBorders : classes.wrapper}
+        onMouseOver={this.handleHoverIn}
+        onMouseLeave={this.handleHoverOut}
       >
         <CheckBox classes={{ root: classes.checkBox }}></CheckBox>
         <InputBase
           value={content}
           classes={{ root: classes.inputTextWrapper }}
           onChange={this.handleInputChange}
-          onFocus={todosStore.edit}
+          onFocus={this.handleActive}
+          onBlur={this.handleDisactive}
           onKeyDown={this.handleOnKeyDown}
           id={id + '-' + idx}
           autoFocus={content === ''}
@@ -83,13 +112,15 @@ class TodosListContentItem extends Component {
           placeholder="Write your thoughts..."
         ></InputBase>
 
-        {active ? (
-          <div style={{ marginLeft: 'auto' }}>
-            <IconButton size="small" onClick={this.handleDelete}>
-              <CloseIcon></CloseIcon>
-            </IconButton>
-          </div>
-        ) : null}
+        <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
+          <IconButton
+            size="small"
+            onClick={this.handleDelete}
+            className={hovered ? classes.visible : classes.invisible}
+          >
+            <CloseIcon></CloseIcon>
+          </IconButton>
+        </div>
       </div>
     );
   }

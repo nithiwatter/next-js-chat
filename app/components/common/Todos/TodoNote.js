@@ -22,6 +22,7 @@ const styles = (theme) => ({
     borderColor: theme.palette.border.main,
     width: '100%',
     borderRadius: 8,
+    paddingTop: theme.spacing(1),
     // margin: '0 auto',
   },
   //   wrapper: {
@@ -34,11 +35,12 @@ const styles = (theme) => ({
   },
   inputTitle: {
     fontWeight: 500,
-    fontSize: '1.2rem',
+    fontSize: '1rem',
   },
   optionsWrapper: {
     width: '100%',
     display: 'flex',
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
 });
@@ -67,13 +69,13 @@ class TodoNote extends Component {
   }
 
   handleHoverIn() {
-    if (this.state.focused && !this.state.hovered) {
+    if (!this.state.hovered) {
       this.setState({ hovered: true });
     }
   }
 
   handleHoverOut() {
-    if (this.state.focused) {
+    if (this.state.hovered) {
       this.setState({ hovered: false });
     }
   }
@@ -81,73 +83,50 @@ class TodoNote extends Component {
   render() {
     const { classes, note, mainId, mainIdx, todosStore } = this.props;
     const { focused, hovered } = this.state;
-    console.log('render', mainId);
+
     return (
       // <ClickAwayListener onClickAway={this.handleOffFocus}>
       <Paper
         classes={{ root: classes.root }}
         onMouseEnter={this.handleHoverIn}
         onMouseLeave={this.handleHoverOut}
-        elevation={4}
+        elevation={2}
       >
-        <Collapse collapsedHeight="4rem" in={true} className={classes.wrapper}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              minHeight: '4rem',
-            }}
-          >
-            <InputBase
-              placeholder="Title"
-              value={note.title}
-              onChange={this.handleInputChange}
-              classes={{
-                root: classes.inputTitleWrapper,
-                input: classes.inputTitle,
-              }}
-              onFocus={!focused ? this.handleOnFocus : null}
-              multiline
-              rowsMax={2}
-            ></InputBase>
+        <InputBase
+          placeholder="Title"
+          value={note.title}
+          onChange={this.handleInputChange}
+          classes={{
+            root: classes.inputTitleWrapper,
+            input: classes.inputTitle,
+          }}
+          multiline
+        ></InputBase>
 
-            <IconButton
-              size="small"
-              style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}
-              onClick={focused ? this.handleOffFocus : this.handleOnFocus}
-            >
-              {focused ? (
-                <ArrowDropUpIcon></ArrowDropUpIcon>
-              ) : (
-                <ArrowDropDownIcon></ArrowDropDownIcon>
-              )}
-            </IconButton>
+        <div>
+          {note.content.map((el, idx) => (
+            <TodosContentWrapper
+              key={el._id}
+              creating={false}
+              idx={idx}
+              todosStore={todosStore}
+              mainId={mainId}
+              mainIdx={mainIdx}
+              id={el._id}
+              content={el}
+            ></TodosContentWrapper>
+          ))}
+        </div>
+        <Fade in={hovered}>
+          <div className={classes.optionsWrapper}>
+            <TodosCreateActions
+              todosStore={todosStore}
+              creating={false}
+              mainId={mainId}
+              mainIdx={mainIdx}
+            ></TodosCreateActions>
           </div>
-          <div>
-            {note.content.map((el, idx) => (
-              <TodosContentWrapper
-                key={el._id}
-                creating={false}
-                idx={idx}
-                todosStore={todosStore}
-                mainId={mainId}
-                mainIdx={mainIdx}
-                id={el._id}
-                content={el}
-              ></TodosContentWrapper>
-            ))}
-          </div>
-          <Fade in={hovered}>
-            <div className={classes.optionsWrapper}>
-              <TodosCreateActions
-                todosStore={todosStore}
-                creating={false}
-                mainId={mainId}
-                mainIdx={mainIdx}
-              ></TodosCreateActions>
-            </div>
-          </Fade>
-        </Collapse>
+        </Fade>
       </Paper>
       // </ClickAwayListener>
     );

@@ -40,7 +40,17 @@ class TodosContentWrapper extends Component {
     } else {
       return (
         <div>
-          {content.checkbox ? null : (
+          {content.checkbox ? // <TodosListContent
+          //   todosStore={todosStore}
+          //   creating={creating}
+          //   id={id}
+          //   mainId={mainId}
+          //   mainIdx={mainIdx}
+          //   idx={idx}
+          //   creating={creating}
+          //   content={content}
+          // ></TodosListContent>
+          null : (
             <TodosTextContent
               creating={creating}
               content={content}
