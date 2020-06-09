@@ -7,20 +7,38 @@ class Todos {
   constructor(rootStore, todos) {
     this.rootStore = rootStore;
     this.title = '';
-    // Array of either {content: text (todos content)} or {content: array of strings (todos list)}
-    this.createdTodosItems = {};
-    // for index tracking when mapping
-    this.id = -1;
+    // { checkbox: boolean, textContent: '', listContent: [{ uuid: '', text: '' }]}
+    this.createdNote = {
+      checkbox: false,
+      textContent: '',
+      listContent: [],
+    };
     this.editMode = false;
+
     this.edit = this.edit.bind(this);
+    this.editWithList = this.editWithList.bind(this);
+    this.notEdit = this.notEdit.bind(this);
     this.notes = todos;
-    this.addTextContent = this.addTextContent.bind(this);
-    this.addListContent = this.addListContent.bind(this);
     this.submit = this.submit.bind(this);
   }
 
   edit() {
     this.editMode = true;
+  }
+
+  editWithList() {
+    if (!this.editMode && !this.createdNote.checkbox) {
+      this.editMode = true;
+      this.createdNote.checkbox = true;
+      let newListContent = this.createdNote.textContent.split('\n');
+      newListContent = newListContent.map((el) => {
+        return { _id: uuid(), text: el };
+      });
+      newListContent = newListContent.filter((el) => el.text !== '');
+      this.createdNote.listContent = newListContent;
+    } else {
+      this.editMode = true;
+    }
   }
 
   notEdit() {
@@ -55,128 +73,57 @@ class Todos {
     this.title = newValue;
   }
 
-  editTitleTodo(newValue, id) {
-    console.log(1);
-    let idx = this.notes.findIndex((note) => note._id === id);
-    this.notes[idx].title = newValue;
+  changeTextContent(newValue, creating) {
+    if (creating) {
+      this.createdNote.textContent = newValue;
+    }
   }
 
-  addTextContent(creating, mainId, mainIdx) {
-    if (creating) {
-      this.createdTodosItems[this.id + 1] = { checkbox: false, content: '' };
-      this.id++;
+  switchContent(note) {
+    if (note.checkbox) {
+      let newTextContent = note.listContent.filter((el) => el.text !== '');
+      newTextContent = newTextContent.map((el) => el.text);
+      newTextContent = newTextContent.join('\n');
+      note.textContent = newTextContent;
     } else {
-      this.notes[mainIdx].content.push({
-        _id: this.id,
-        checkbox: false,
-        textContent: '',
+      let newListContent = note.textContent.split('\n');
+      newListContent = newListContent.map((el) => {
+        return { _id: uuid(), text: el };
       });
-      this.id++;
+      newListContent = newListContent.filter((el) => el.text !== '');
+      note.listContent = newListContent;
     }
+    note.checkbox = !note.checkbox;
   }
 
-  addListContent() {
-    const key = uuid();
-    const arrayOfKeys = Object.keys(this.createdTodosItems);
-
-    // 1) no object yet -  add a new blob of list
-    if (arrayOfKeys.length === 0) {
-      this.createdTodosItems[this.id + 1] = {
-        checkbox: true,
-        content: [{ [key]: '' }],
-      };
-      this.id += 1;
+  addListItemContent(note, idx, focus) {
+    if (idx === note.listContent.length - 1) {
+      focus();
       return;
     }
-
-    const latestItemStatusKey = arrayOfKeys[arrayOfKeys.length - 1];
-    if (!this.createdTodosItems[latestItemStatusKey].checkbox) {
-      this.createdTodosItems[this.id + 1] = {
-        checkbox: true,
-        content: [{ [key]: '' }],
-      };
-      this.id += 1;
-      return;
-    } else {
-      this.createdTodosItems[latestItemStatusKey].content.push({ [key]: '' });
-    }
-    // if (
-    //   (this.createdTodosItems[this.id] &&
-    //     !this.createdTodosItems[this.id].checkbox) ||
-    //   Object.keys(this.createdTodosItems).length === 0
-    // ) {
-    //   this.createdTodosItems[this.id + 1] = {
-    //     checkbox: true,
-    //     content: [{ [key]: '' }],
-    //   };
-    //   this.id += 1;
-    // } else {
-    //   this.createdTodosItems[this.id].content.push({ [key]: '' });
-    // }
-  }
-
-  deleteContent(id, creating, mainIdx, idx) {
-    if (creating) {
-      // if deleting text between two lists
-      const arrayOfKeys = Object.keys(this.createdTodosItems);
-      const idxOfDeleted = findIndex(arrayOfKeys, (el) => el === id);
-
-      // if there are indexes behind and ahead
-      const behindKey = arrayOfKeys[idxOfDeleted - 1];
-      const afterKey = arrayOfKeys[idxOfDeleted + 1];
-      if (behindKey && afterKey) {
-        // and both of them are checkboxes
-        if (
-          this.createdTodosItems[behindKey].checkbox &&
-          this.createdTodosItems[afterKey].checkbox
-        ) {
-          const newContent = [
-            ...this.createdTodosItems[behindKey].content,
-            ...this.createdTodosItems[afterKey].content,
-          ];
-          this.createdTodosItems[behindKey].content = newContent;
-          delete this.createdTodosItems[afterKey];
-        }
-      }
-      delete this.createdTodosItems[id];
-    } else {
-      this.notes[mainIdx].content.splice(idx, 1);
-    }
-  }
-
-  changeTextContent(id, newValue, creating, mainIdx, idx) {
-    if (creating) {
-      this.createdTodosItems[id].content = newValue;
-    } else {
-      this.notes[mainIdx].content[idx].textContent = newValue;
-    }
-  }
-
-  addListItemContent(id, idx) {
     const key = uuid();
-    const oldArray = this.createdTodosItems[id].content;
+    const oldArray = note.listContent;
     const newArray = [
       ...oldArray.slice(0, idx + 1),
-      { [key]: '' },
+      { _id: key, text: '' },
       ...oldArray.slice(idx + 1),
     ];
-    this.createdTodosItems[id].content = newArray;
-    this.id++;
+    note.listContent = newArray;
   }
 
-  editListItemContent(id, idx, newValue) {
-    const key = Object.keys(this.createdTodosItems[id].content[idx])[0];
-    this.createdTodosItems[id].content[idx][key] = newValue;
+  addListItemContentViaIcon(note, newValue) {
+    const key = uuid();
+    note.listContent.push({ _id: key, text: newValue });
   }
 
-  deleteListItemContent(id, idx) {
-    const oldArray = this.createdTodosItems[id].content;
-    if (oldArray.length === 1) {
-      delete this.createdTodosItems[id];
-      return;
-    }
+  editListItemContent(note, idx, newValue) {
+    note.listContent[idx].text = newValue;
+  }
+
+  deleteListItemContent(note, idx) {
+    const oldArray = note.listContent;
     const newArray = [...oldArray.slice(0, idx), ...oldArray.slice(idx + 1)];
-    this.createdTodosItems[id].content = newArray;
+    note.listContent = newArray;
   }
 }
 
@@ -184,17 +131,17 @@ decorate(Todos, {
   title: observable,
   notes: observable,
   editMode: observable,
-  createdTodosItems: observable,
+  createdNote: observable,
   submit: action,
-  editTitleTodo: action,
   changeTextContent: action,
-  addTextContent: action,
-  addListContent: action,
+  switchContent: action,
   deleteContent: action,
   addListItemContent: action,
+  addListItemContentViaIcon: action,
   editListItemContent: action,
   deleteListItemContent: action,
   edit: action,
+  editWithList: action,
   notEdit: action,
   editTitle: action,
 });

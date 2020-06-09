@@ -54,7 +54,7 @@ class MainArea extends Component {
           className={classes.masonWrapper}
           columnClassName={classes.columnMasonWrapper}
         >
-          {notes.map((note, idx) => (
+          {/* {notes.map((note, idx) => (
             <div key={note._id} className={classes.todoWrapper}>
               <TodoNote
                 note={note}
@@ -63,7 +63,7 @@ class MainArea extends Component {
                 todosStore={todosStore}
               ></TodoNote>
             </div>
-          ))}
+          ))} */}
         </Masonry>
       </div>
     );

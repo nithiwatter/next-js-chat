@@ -1,71 +1,31 @@
 import React, { Component } from 'react';
 import TodosListContent from './TodosListContent';
 import TodosTextContent from './TodosTextContent';
+import { observer } from 'mobx-react';
 
 class TodosContentWrapper extends Component {
   state = {};
 
   render() {
-    const {
-      createdTodosItems,
-      id,
-      idx,
-      todosStore,
-      creating,
-      content,
-      mainId,
-      mainIdx,
-    } = this.props;
+    const { todosStore, note, creating } = this.props;
 
-    if (creating) {
+    if (note.checkbox) {
       return (
-        <div>
-          {createdTodosItems[id].checkbox ? (
-            <TodosListContent
-              todosStore={todosStore}
-              id={id}
-              creating={creating}
-              todo={createdTodosItems[id]}
-            ></TodosListContent>
-          ) : (
-            <TodosTextContent
-              todosStore={todosStore}
-              id={id}
-              creating={creating}
-              todo={createdTodosItems[id]}
-            ></TodosTextContent>
-          )}
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          {content.checkbox ? (
-            <TodosListContent
-              todosStore={todosStore}
-              creating={creating}
-              id={id}
-              mainId={mainId}
-              mainIdx={mainIdx}
-              idx={idx}
-              creating={creating}
-              content={content}
-            ></TodosListContent>
-          ) : (
-            <TodosTextContent
-              creating={creating}
-              content={content}
-              mainId={mainId}
-              id={id}
-              todosStore={todosStore}
-              idx={idx}
-              mainIdx={mainIdx}
-            ></TodosTextContent>
-          )}
-        </div>
+        <TodosListContent
+          todosStore={todosStore}
+          note={note}
+          creating={creating}
+        ></TodosListContent>
       );
     }
+    return (
+      <TodosTextContent
+        todosStore={todosStore}
+        note={note}
+        creating={creating}
+      ></TodosTextContent>
+    );
   }
 }
 
-export default TodosContentWrapper;
+export default observer(TodosContentWrapper);

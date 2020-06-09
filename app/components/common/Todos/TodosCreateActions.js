@@ -52,7 +52,7 @@ class TodosCreateActions extends Component {
   }
 
   render() {
-    const { classes, todosStore, creating, mainId, mainIdx } = this.props;
+    const { classes, todosStore, note, creating } = this.props;
     const { anchorEl } = this.state;
     return (
       <div
@@ -69,16 +69,16 @@ class TodosCreateActions extends Component {
         <IconButton
           size="small"
           className={creating ? classes.icon : classes.narrowIcon}
-          onClick={() => {
-            todosStore.addTextContent(creating, mainId, mainIdx);
-          }}
+          onClick={() => todosStore.switchContent(note)}
+          disabled={!note.checkbox}
         >
           <TextFieldsIcon></TextFieldsIcon>
         </IconButton>
         <IconButton
           size="small"
           className={creating ? classes.icon : classes.narrowIcon}
-          onClick={todosStore.addListContent}
+          onClick={() => todosStore.switchContent(note)}
+          disabled={note.checkbox}
         >
           <CheckBoxIcon></CheckBoxIcon>
         </IconButton>

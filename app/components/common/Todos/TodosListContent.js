@@ -1,81 +1,53 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import TodosListContentItem from './TodosListContentItem';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import TodosAddListContentItem from './TodosAddListContentItem';
 import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
   root: {
-    display: 'flex',
     width: '100%',
-    alignItems: 'center',
+  },
+  itemWrapper: {
+    width: '100%',
   },
 });
 
-function renderItem(item, todosStore, idx, id) {
-  const key = Object.keys(item)[0];
-  return (
-    <TodosListContentItem
-      key={key}
-      todosStore={todosStore}
-      item={item}
-      idx={idx}
-      id={id}
-    ></TodosListContentItem>
-  );
-}
-
-function renderItemNote(item, todosStore, mainIdx, idx, subIdx, creating) {
-  const key = Object.keys(item)[0];
-  return (
-    <TodosListContentItem
-      key={key}
-      todosStore={todosStore}
-      item={item}
-      idx={idx}
-      // id={id}
-    ></TodosListContentItem>
-  );
-}
-
 class TodosListContent extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.textInput = React.createRef();
+    this.handleOnEnterFocus = this.handleOnEnterFocus.bind(this);
+  }
+
+  handleOnEnterFocus() {
+    this.textInput.current.focus();
+  }
 
   render() {
-    const {
-      classes,
-      todosStore,
-      todo,
-      id,
-      creating,
-      mainId,
-      mainIdx,
-      idx,
-      content,
-    } = this.props;
+    const { classes, todosStore, note, creating } = this.props;
+    console.log('render');
 
-    if (creating) {
-      return (
-        <div className={classes.root}>
-          <div style={{ width: '100%' }}>
-            {todo.content.map((item, idx) =>
-              renderItem(item, todosStore, idx, id)
-            )}
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className={classes.root}>
-          <div style={{ width: '100%' }}>
-            {content.listContent.map((item, subIdx) =>
-              renderItemNote(item, todosStore, mainIdx, idx, subIdx, creating)
-            )}
-          </div>
-        </div>
-      );
-    }
+    return (
+      <div className={classes.root}>
+        {note.listContent.map((item, idx) => (
+          <TodosListContentItem
+            key={item._id}
+            item={item}
+            note={note}
+            idx={idx}
+            todosStore={todosStore}
+            creating={creating}
+            focus={this.handleOnEnterFocus}
+          ></TodosListContentItem>
+        ))}
+        <TodosAddListContentItem
+          note={note}
+          todosStore={todosStore}
+          inputRef={this.textInput}
+        ></TodosAddListContentItem>
+      </div>
+    );
   }
 }
 
