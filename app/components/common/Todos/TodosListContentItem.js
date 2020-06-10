@@ -52,6 +52,7 @@ class TodosListContentItem extends Component {
   }
 
   componentDidMount() {
+    // handling focus for multiline list element
     const textLength = this.inputRef.current.textLength;
     this.inputRef.current.focus();
     this.inputRef.current.setSelectionRange(textLength, textLength);
@@ -117,13 +118,14 @@ class TodosListContentItem extends Component {
         <CheckBox></CheckBox>
         <InputBase
           value={item.text}
-          classes={{ root: classes.inputTextWrapper }}
           multiline
+          classes={{ root: classes.inputTextWrapper }}
           onKeyDown={this.handleOnKeyDown}
           onChange={this.handleInputChange}
           onFocus={this.handleActive}
           onBlur={this.handleDisactive}
           inputRef={this.inputRef}
+          autoFocus
         ></InputBase>
 
         <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>

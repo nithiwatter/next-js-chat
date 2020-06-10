@@ -7,6 +7,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import { withStyles } from '@material-ui/core/styles';
 import TodosContentWrapper from './TodosContentWrapper';
 import TodosCreateActions from './TodosCreateActions';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { observer } from 'mobx-react';
@@ -84,11 +85,15 @@ class TodosCreate extends Component {
               ></InputBase>
               {todosStore.editMode ? null : (
                 <IconButton
-                  onClick={this}
                   onClick={todosStore.editWithList}
                   disabled={todosStore.createdNote.checkbox}
                 >
                   <CheckBoxIcon></CheckBoxIcon>
+                </IconButton>
+              )}
+              {!todosStore.editMode ? null : (
+                <IconButton>
+                  <FavoriteIcon></FavoriteIcon>
                 </IconButton>
               )}
             </div>

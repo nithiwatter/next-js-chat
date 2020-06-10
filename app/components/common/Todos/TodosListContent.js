@@ -26,7 +26,6 @@ class TodosListContent extends Component {
 
   render() {
     const { classes, todosStore, note, creating } = this.props;
-    console.log('render');
 
     return (
       <div className={classes.root}>
