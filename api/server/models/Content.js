@@ -10,7 +10,6 @@ const mongoSchema = new mongoose.Schema({
   },
   listContent: {
     type: [{}],
-    required: false,
   },
 });
 

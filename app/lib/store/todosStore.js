@@ -4,7 +4,8 @@ import axios from 'axios';
 import { findIndex } from 'lodash';
 
 class Todos {
-  constructor(rootStore, todos) {
+  constructor(rootStore, notes) {
+    console.log(notes);
     this.rootStore = rootStore;
     this.title = '';
     // { checkbox: boolean, textContent: '', listContent: [{ uuid: '', text: '' }]}
@@ -14,12 +15,17 @@ class Todos {
       listContent: [],
     };
     this.editMode = false;
+    this.editNote = false;
 
     this.edit = this.edit.bind(this);
     this.editWithList = this.editWithList.bind(this);
     this.notEdit = this.notEdit.bind(this);
-    this.notes = todos;
+    this.notes = notes;
     this.submit = this.submit.bind(this);
+  }
+
+  editNote() {
+    this.editNote = true;
   }
 
   edit() {
@@ -46,22 +52,16 @@ class Todos {
   }
 
   async submit() {
-    const result = [];
-    const arrayOfKeys = Object.keys(this.createdTodosItems);
-
-    // formatting to be sent to database
-    for (let key of arrayOfKeys) {
-      result.push(toJS(this.createdTodosItems[key]));
-    }
-    console.log(result);
-    // const { data } = await axios.post(
-    //   `${process.env.URL_API}/api/v1/team-member/add-note`,
-    //   {
-    //     content: result,
-    //     title: this.title,
-    //   },
-    //   { withCredentials: true }
-    // );
+    const content = toJS(this.createdNote);
+    const title = this.title;
+    const { data } = await axios.post(
+      `${process.env.URL_API}/api/v1/team-member/add-note`,
+      {
+        content,
+        title,
+      },
+      { withCredentials: true }
+    );
     // runInAction(() => {
     //   this.createdTodosItems = {};
     //   this.id = -1;
@@ -131,6 +131,7 @@ decorate(Todos, {
   title: observable,
   notes: observable,
   editMode: observable,
+  editNote: observable,
   createdNote: observable,
   submit: action,
   changeTextContent: action,
@@ -141,6 +142,7 @@ decorate(Todos, {
   editListItemContent: action,
   deleteListItemContent: action,
   edit: action,
+  editNote: action,
   editWithList: action,
   notEdit: action,
   editTitle: action,

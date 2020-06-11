@@ -150,7 +150,7 @@ class Layout extends Component {
           className={classes.grid}
         >
           {firstGridItem ? (
-            <Grid item md={3} sm={4} xs={12} className={classes.firstGrid}>
+            <Grid item md={4} sm={5} xs={12} className={classes.firstGrid}>
               <div
                 style={{
                   display: 'flex',
@@ -252,8 +252,8 @@ class Layout extends Component {
           ) : null}
           <Grid
             item
-            md={firstGridItem ? 9 : 12}
-            sm={firstGridItem ? 8 : 12}
+            md={firstGridItem ? 8 : 12}
+            sm={firstGridItem ? 7 : 12}
             xs={12}
             className={classes.secondGrid}
           >

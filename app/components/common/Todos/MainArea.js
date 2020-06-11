@@ -45,7 +45,7 @@ class MainArea extends Component {
   state = {};
 
   render() {
-    const { classes, notes, todosStore } = this.props;
+    const { classes, todosStore } = this.props;
 
     return (
       <div className={classes.root}>
@@ -54,16 +54,15 @@ class MainArea extends Component {
           className={classes.masonWrapper}
           columnClassName={classes.columnMasonWrapper}
         >
-          {/* {notes.map((note, idx) => (
+          {todosStore.notes.map((note, idx) => (
             <div key={note._id} className={classes.todoWrapper}>
               <TodoNote
                 note={note}
-                mainId={note._id}
                 mainIdx={idx}
                 todosStore={todosStore}
               ></TodoNote>
             </div>
-          ))} */}
+          ))}
         </Masonry>
       </div>
     );

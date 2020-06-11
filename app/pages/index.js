@@ -10,6 +10,27 @@ const styles = (theme) => ({
   root: {
     padding: theme.spacing(2),
   },
+  backdrop: {
+    width: '100vw',
+    height: '100vh',
+    position: 'fixed',
+    backgroundColor: '#e5e5e5',
+    top: 0,
+    left: 0,
+    zIndex: 100,
+    opacity: 0.75,
+  },
+  hiddenBackdrop: {
+    display: 'hidden',
+    width: '100vw',
+    height: '100vh',
+    position: 'fixed',
+    backgroundColor: '#e5e5e5',
+    top: 0,
+    left: 0,
+    zIndex: -100,
+    opacity: 0,
+  },
 });
 
 class Index extends Component {
@@ -20,15 +41,21 @@ class Index extends Component {
   render() {
     const { firstGridItem, rootStore, user, classes } = this.props;
     return (
-      <Layout firstGridItem={firstGridItem} rootStore={rootStore} user={user}>
-        <div className={classes.root}>
-          <TodosCreate todosStore={rootStore.todosStore}></TodosCreate>
-          <MainArea
-            notes={rootStore.todosStore.notes}
-            todosStore={rootStore.todosStore}
-          ></MainArea>
-        </div>
-      </Layout>
+      <React.Fragment>
+        <div
+          className={
+            rootStore.todosStore.editNote
+              ? classes.backdrop
+              : classes.hiddenBackdrop
+          }
+        ></div>
+        <Layout firstGridItem={firstGridItem} rootStore={rootStore} user={user}>
+          <div className={classes.root}>
+            <TodosCreate todosStore={rootStore.todosStore}></TodosCreate>
+            <MainArea todosStore={rootStore.todosStore}></MainArea>
+          </div>
+        </Layout>
+      </React.Fragment>
     );
   }
 }

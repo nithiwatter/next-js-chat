@@ -74,8 +74,7 @@ router.post('/get-initial-data', async (req, res, next) => {
       pendingInvitations = await Invitation.find({ userId: req.body.userId });
     }
 
-    notes = await Note.find({ userId: req.body.userId }).populate('content');
-    console.log(notes);
+    notes = await Note.find({ userId: req.body.userId }).populate('contentId');
 
     return res.status(200).json({
       teams,
@@ -380,30 +379,14 @@ router.post('/add-direct-message', async (req, res, next) => {
 
 router.post('/add-note', async (req, res, next) => {
   try {
-    console.log(req.body);
-    let arr = req.body.content;
-    const result = [];
-    const ids = [];
-    for (item of arr) {
-      if (!item.checkbox) {
-        const doc = new Content({ checkbox: false, textContent: item.content });
-        ids.push(doc._id);
-        result.push(doc.save());
-      } else {
-        doc = new Content({ checkbox: true, listContent: item.content });
-        ids.push(doc._id);
-        result.push(doc.save());
-      }
-    }
-    await Promise.all(result);
-
+    const content = new Content({ ...req.body.content });
+    await content.save();
     const note = new Note({
       title: req.body.title,
-      content: ids,
+      contentId: content._id,
       userId: req.userId,
     });
     await note.save();
-
     res.json({ note });
   } catch (err) {
     next(err);

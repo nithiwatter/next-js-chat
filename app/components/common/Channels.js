@@ -75,7 +75,7 @@ class Channels extends Component {
                 paddingLeft: '1rem',
                 paddingRight: '1rem',
                 overflowY: 'auto',
-                height: '70vh',
+                height: '75vh',
               }}
             >
               <List>

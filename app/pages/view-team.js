@@ -209,7 +209,7 @@ class ViewTeam extends Component {
         </Layout>
       );
 
-    if (!rootStore.currentChannel) {
+    if (!rootStore.currentChannel && !rootStore.DM) {
       return (
         <Layout user={user} rootStore={rootStore} firstGridItem={firstGridItem}>
           <div

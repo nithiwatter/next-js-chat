@@ -14,21 +14,25 @@ import { observer } from 'mobx-react';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Fade from '@material-ui/core/Fade';
+import Grow from '@material-ui/core/Grow';
+import Modal from '@material-ui/core/Modal';
 
 const styles = (theme) => ({
   root: {
-    // backgroundColor: theme.palette.tbg.main,
     border: '1px solid',
     borderColor: theme.palette.border.main,
     width: '100%',
     borderRadius: 8,
     paddingTop: theme.spacing(1),
-    // margin: '0 auto',
   },
-  //   wrapper: {
-  //     display: 'flex',
-  //     flexDirection: 'column',
-  //   },
+  rootPop: {
+    position: 'fixed',
+    top: '25%',
+    left: '30%',
+    borderRadius: 8,
+    width: '50vw',
+    zIndex: 100,
+  },
   inputTitleWrapper: {
     padding: theme.spacing(0.5, 2),
     width: '100%',
@@ -48,12 +52,26 @@ const styles = (theme) => ({
 class TodoNote extends Component {
   constructor(props) {
     super(props);
-    this.state = { focused: false, hovered: false };
+    this.state = { editing: false, focused: false, hovered: false };
     this.handleOnFocus = this.handleOnFocus.bind(this);
     this.handleOffFocus = this.handleOffFocus.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleHoverIn = this.handleHoverIn.bind(this);
     this.handleHoverOut = this.handleHoverOut.bind(this);
+    this.handleEditing = this.handleEditing.bind(this);
+    this.handleNotEditing = this.handleNotEditing.bind(this);
+  }
+
+  handleEditing() {
+    if (!this.state.editing) {
+      this.setState({ editing: true });
+    }
+  }
+
+  handleNotEditing() {
+    if (this.state.editing) {
+      this.setState({ editing: false });
+    }
   }
 
   handleOnFocus() {
@@ -81,43 +99,36 @@ class TodoNote extends Component {
   }
 
   render() {
-    const { classes, note, mainId, mainIdx, todosStore } = this.props;
-    const { focused, hovered } = this.state;
-
+    const { classes, note, mainIdx, todosStore } = this.props;
+    const { editing, focused, hovered } = this.state;
+    console.log('render', editing);
     return (
-      // <ClickAwayListener onClickAway={this.handleOffFocus}>
-      <Paper
-        classes={{ root: classes.root }}
-        onMouseEnter={this.handleHoverIn}
-        onMouseLeave={this.handleHoverOut}
-        elevation={2}
-      >
-        <InputBase
-          placeholder="Title"
-          value={note.title}
-          onChange={this.handleInputChange}
-          classes={{
-            root: classes.inputTitleWrapper,
-            input: classes.inputTitle,
-          }}
-          multiline
-        ></InputBase>
+      <React.Fragment>
+        <Paper
+          classes={{ root: classes.root }}
+          // onMouseEnter={this.handleHoverIn}
+          // onMouseLeave={this.handleHoverOut}
+          onClick={this.handleEditing}
+          elevation={2}
+        >
+          <InputBase
+            placeholder="Title"
+            value={note.title}
+            classes={{
+              root: classes.inputTitleWrapper,
+              input: classes.inputTitle,
+            }}
+          ></InputBase>
 
-        <div>
-          {note.content.map((el, idx) => (
+          <div>
             <TodosContentWrapper
-              key={el._id}
-              creating={false}
-              idx={idx}
               todosStore={todosStore}
-              mainId={mainId}
-              mainIdx={mainIdx}
-              id={el._id}
-              content={el}
+              note={note.contentId}
+              creating={false}
             ></TodosContentWrapper>
-          ))}
-        </div>
-        <Fade in={hovered}>
+          </div>
+
+          {/* <Fade in={hovered}>
           <div className={classes.optionsWrapper}>
             <TodosCreateActions
               todosStore={todosStore}
@@ -126,9 +137,12 @@ class TodoNote extends Component {
               mainIdx={mainIdx}
             ></TodosCreateActions>
           </div>
-        </Fade>
-      </Paper>
-      // </ClickAwayListener>
+        </Fade> */}
+        </Paper>
+        <Modal open={editing} onClose={this.handleNotEditing}>
+          <div>Hello</div>
+        </Modal>
+      </React.Fragment>
     );
   }
 }

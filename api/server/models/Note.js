@@ -11,9 +11,10 @@ const mongoSchema = new mongoose.Schema(
       required: true,
       ref: 'User',
     },
-    content: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Content' }],
+    contentId: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: 'Content',
     },
     color: {
       type: String,

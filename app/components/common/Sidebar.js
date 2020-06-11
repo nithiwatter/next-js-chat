@@ -10,13 +10,50 @@ import { withStyles } from '@material-ui/core/styles';
 import { openSimpleFormExternal } from './SimpleForm';
 import Carousel from '@brainhubeu/react-carousel';
 import { observer } from 'mobx-react';
+import GroupIcon from '@material-ui/icons/Group';
+import ChatIcon from '@material-ui/icons/Chat';
+import PersonIcon from '@material-ui/icons/Person';
+import IconButton from '@material-ui/core/IconButton';
+import NoteIcon from '@material-ui/icons/Note';
+import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = (theme) => ({
   container: {
     width: '100%',
     height: '90vh',
+    display: 'flex',
     overflow: 'hidden',
+  },
+  icons: {
+    width: '80px',
+    height: '90vh',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  icon: {
+    margin: '0 auto',
+  },
+  display: {
+    flexGrow: 1,
+    height: '90vh',
+    paddingTop: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  paper: {
+    width: '100%',
+    height: '100vh',
+    paddingTop: theme.spacing(1),
+  },
+  on: {
+    display: 'block',
+  },
+  off: {
+    display: 'none',
+  },
+  selected: {
+    color: theme.palette.blue.main,
   },
 });
 
@@ -181,49 +218,68 @@ class Sidebar extends Component {
     const { rootStore, classes } = this.props;
     return (
       <div className={classes.container}>
-        <Dots
-          rootStore={rootStore}
-          handleTabSwitch={this.handleTabSwitch}
-        ></Dots>
-
-        {rootStore.isLoading ? (
-          <div
-            style={{
-              height: '80vh',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CircularProgress disableShrink> </CircularProgress>
+        <div className={classes.icons}>
+          <div className={classes.icon}>
+            <IconButton onClick={() => this.handleTabSwitch(3)}>
+              <NoteIcon
+                className={rootStore.currentTab === 3 ? classes.selected : null}
+              ></NoteIcon>
+            </IconButton>
           </div>
-        ) : (
-          <Carousel
-            draggable
-            centered
-            value={rootStore.currentTab}
-            onChange={this.handleTabSwitch}
-            animationSpeed={300}
-            keepDirectionWhenDragging={true}
-          >
-            <Teams
-              rootStore={rootStore}
-              handleAddTeam={this.handleAddTeam}
-              handleSearchUser={this.handleSearchUser}
-              handleDeleteTeam={this.handleDeleteTeam}
-              handleInvite={this.handleInvite}
-            ></Teams>
-            <Channels
-              rootStore={rootStore}
-              handleAddChannel={this.handleAddChannel}
-              handleDeleteChannel={this.handleDeleteChannel}
-            ></Channels>
-            <OnlineUsers
-              rootStore={rootStore}
-              handleSearchUser={this.handleSearchUser}
-            ></OnlineUsers>
-          </Carousel>
-        )}
+          <div className={classes.icon}>
+            <IconButton onClick={() => this.handleTabSwitch(0)}>
+              <GroupIcon
+                className={rootStore.currentTab === 0 ? classes.selected : null}
+              ></GroupIcon>
+            </IconButton>
+          </div>
+          <div className={classes.icon}>
+            <IconButton onClick={() => this.handleTabSwitch(1)}>
+              <ChatIcon
+                className={rootStore.currentTab === 1 ? classes.selected : null}
+              ></ChatIcon>
+            </IconButton>
+          </div>
+          <div className={classes.icon}>
+            <IconButton onClick={() => this.handleTabSwitch(2)}>
+              <PersonIcon
+                className={rootStore.currentTab === 2 ? classes.selected : null}
+              ></PersonIcon>
+            </IconButton>
+          </div>
+        </div>
+        <div className={classes.display}>
+          <Paper className={classes.paper}>
+            <div
+              className={rootStore.currentTab === 0 ? classes.on : classes.off}
+            >
+              <Teams
+                rootStore={rootStore}
+                handleAddTeam={this.handleAddTeam}
+                handleSearchUser={this.handleSearchUser}
+                handleDeleteTeam={this.handleDeleteTeam}
+                handleInvite={this.handleInvite}
+              ></Teams>
+            </div>
+            <div
+              className={rootStore.currentTab === 1 ? classes.on : classes.off}
+            >
+              <Channels
+                rootStore={rootStore}
+                handleAddChannel={this.handleAddChannel}
+                handleDeleteChannel={this.handleDeleteChannel}
+              ></Channels>
+            </div>
+            <div
+              className={rootStore.currentTab === 2 ? classes.on : classes.off}
+            >
+              <OnlineUsers
+                rootStore={rootStore}
+                handleSearchUser={this.handleSearchUser}
+              ></OnlineUsers>
+            </div>
+          </Paper>
+        </div>
       </div>
     );
   }
