@@ -18,6 +18,7 @@ import Grow from '@material-ui/core/Grow';
 import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
 import { Checkbox } from '@material-ui/core';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 
 const styles = (theme) => ({
   root: {
@@ -25,8 +26,9 @@ const styles = (theme) => ({
     borderColor: theme.palette.border.main,
     width: '100%',
     borderRadius: 8,
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(1),
+    // paddingBottom: theme.spacing(1),
   },
   rootPop: {
     position: 'fixed',
@@ -47,7 +49,6 @@ const styles = (theme) => ({
   optionsWrapper: {
     width: '100%',
     marginTop: theme.spacing(1),
-    // marginBottom: theme.spacing(1),
   },
   modal: {
     display: 'flex',
@@ -56,9 +57,18 @@ const styles = (theme) => ({
   },
   title: {
     fontWeight: 700,
+    wordWrap: 'break-word',
+  },
+  mainContainer: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
   contentContainer: {
     marginTop: theme.spacing(1),
+  },
+  titleContainer: {
+    display: 'flex',
+    // alignItems: 'center',
   },
   checkboxContainer: {
     display: 'flex',
@@ -75,15 +85,18 @@ const styles = (theme) => ({
   textContainer: {
     minWidth: '0',
   },
+  show: {
+    opacity: 100,
+  },
+  hide: {
+    opacity: 0,
+  },
 });
 
 class TodoNote extends Component {
   constructor(props) {
     super(props);
     this.state = { editing: false, focused: false, hovered: false };
-    this.handleOnFocus = this.handleOnFocus.bind(this);
-    this.handleOffFocus = this.handleOffFocus.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
     this.handleHoverIn = this.handleHoverIn.bind(this);
     this.handleHoverOut = this.handleHoverOut.bind(this);
     this.handleEditing = this.handleEditing.bind(this);
@@ -102,18 +115,6 @@ class TodoNote extends Component {
     }
   }
 
-  handleOnFocus() {
-    this.setState({ focused: true, hovered: true });
-  }
-
-  handleOffFocus() {
-    this.setState({ focused: false, hovered: false });
-  }
-
-  handleInputChange(e) {
-    this.props.todosStore.editTitleTodo(e.target.value, this.props.note._id);
-  }
-
   handleHoverIn() {
     if (!this.state.hovered) {
       this.setState({ hovered: true });
@@ -121,7 +122,6 @@ class TodoNote extends Component {
   }
 
   handleHoverOut() {
-    console.log('hover out');
     if (this.state.hovered) {
       this.setState({ hovered: false });
     }
@@ -129,7 +129,7 @@ class TodoNote extends Component {
 
   render() {
     const { classes, note, mainIdx, todosStore } = this.props;
-    const { editing, focused, hovered } = this.state;
+    const { editing, hovered } = this.state;
     let content;
 
     if (note.contentId.checkbox) {
@@ -153,29 +153,35 @@ class TodoNote extends Component {
         </Typography>
       );
     }
-    console.log('render');
+
     return (
       <React.Fragment>
         <Paper
           classes={{ root: classes.root }}
-          onMouseOver={this.handleHoverIn}
+          onMouseEnter={this.handleHoverIn}
           onMouseLeave={this.handleHoverOut}
           onClick={this.handleEditing}
-          elevation={2}
+          elevation={hovered ? 4 : 0}
         >
-          <Typography className={classes.title} variant="body1">
-            {note.title}
-          </Typography>
+          <div className={classes.mainContainer}>
+            <div className={classes.titleContainer}>
+              <div style={{ minWidth: 0 }}>
+                <Typography className={classes.title} variant="body1">
+                  {note.title}
+                </Typography>
+              </div>
 
-          <div className={classes.contentContainer}>{content}</div>
+              <Fade in={hovered}>
+                <div style={{ marginLeft: 'auto' }}>
+                  <IconButton size="small">
+                    <FavoriteIcon></FavoriteIcon>
+                  </IconButton>
+                </div>
+              </Fade>
+            </div>
 
-          {/* <div>
-            <TodosContentWrapper
-              todosStore={todosStore}
-              note={note.contentId}
-              creating={false}
-            ></TodosContentWrapper>
-          </div> */}
+            <div className={classes.contentContainer}>{content}</div>
+          </div>
 
           <Fade in={hovered}>
             <div className={classes.optionsWrapper}>
@@ -193,9 +199,13 @@ class TodoNote extends Component {
           onClose={this.handleNotEditing}
           className={classes.modal}
         >
-          <Paper
-            style={{ height: '80px', width: '80px', outline: 'none' }}
-          ></Paper>
+          <Paper style={{ outline: 'none' }}>
+            <TodosContentWrapper
+              todosStore={todosStore}
+              note={note.contentId}
+              creating={false}
+            ></TodosContentWrapper>
+          </Paper>
         </Modal>
       </React.Fragment>
     );

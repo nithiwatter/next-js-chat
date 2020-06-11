@@ -7,7 +7,7 @@ import TextFieldsIcon from '@material-ui/icons/TextFields';
 import { withStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MenuOpenIcon from '@material-ui/icons/MenuOpen';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { observer } from 'mobx-react';
 
 const styles = (theme) => ({
@@ -22,15 +22,14 @@ const styles = (theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   icon: { marginLeft: theme.spacing(2), color: 'white' },
   narrowIcon: {
-    marginLeft: theme.spacing(1),
     color: 'white',
   },
   narrowIconDone: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
     color: 'white',
   },
 });
@@ -50,10 +49,8 @@ class TodosCreateActions extends Component {
 
   handleClose(e) {
     e.stopPropagation();
-    console.log('yesy');
     this.setState({ anchorEl: null });
     this.props.handleHoverOut();
-    console.log(2);
   }
 
   render() {
@@ -70,7 +67,7 @@ class TodosCreateActions extends Component {
           size="small"
           className={creating ? classes.icon : classes.narrowIcon}
         >
-          <PaletteIcon></PaletteIcon>
+          <PaletteIcon fontSize={creating ? 'default' : 'small'}></PaletteIcon>
         </IconButton>
         <IconButton
           size="small"
@@ -78,7 +75,9 @@ class TodosCreateActions extends Component {
           onClick={() => todosStore.switchContent(note)}
           disabled={!note.checkbox}
         >
-          <TextFieldsIcon></TextFieldsIcon>
+          <TextFieldsIcon
+            fontSize={creating ? 'default' : 'small'}
+          ></TextFieldsIcon>
         </IconButton>
         <IconButton
           size="small"
@@ -86,13 +85,15 @@ class TodosCreateActions extends Component {
           onClick={() => todosStore.switchContent(note)}
           disabled={note.checkbox}
         >
-          <CheckBoxIcon></CheckBoxIcon>
+          <CheckBoxIcon fontSize={creating ? 'default' : 'small'}>
+            {' '}
+          </CheckBoxIcon>
         </IconButton>
         <IconButton
           size="small"
           className={creating ? classes.icon : classes.narrowIcon}
         >
-          <LabelIcon></LabelIcon>
+          <LabelIcon fontSize={creating ? 'default' : 'small'}></LabelIcon>
         </IconButton>
         {creating ? null : (
           <React.Fragment>
@@ -101,7 +102,7 @@ class TodosCreateActions extends Component {
               className={classes.narrowIconDone}
               onClick={this.handleClick}
             >
-              <MenuOpenIcon></MenuOpenIcon>
+              <MoreHorizIcon fontSize="small"></MoreHorizIcon>
             </IconButton>
             <Menu
               anchorEl={anchorEl}
