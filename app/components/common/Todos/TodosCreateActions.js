@@ -44,16 +44,22 @@ class TodosCreateActions extends Component {
   }
 
   handleClick(e) {
+    e.stopPropagation();
     this.setState({ anchorEl: e.currentTarget });
   }
 
-  handleClose() {
+  handleClose(e) {
+    e.stopPropagation();
+    console.log('yesy');
     this.setState({ anchorEl: null });
+    this.props.handleHoverOut();
+    console.log(2);
   }
 
   render() {
     const { classes, todosStore, note, creating } = this.props;
     const { anchorEl } = this.state;
+
     return (
       <div
         className={

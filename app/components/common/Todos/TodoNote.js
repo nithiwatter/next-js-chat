@@ -16,6 +16,8 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Fade from '@material-ui/core/Fade';
 import Grow from '@material-ui/core/Grow';
 import Modal from '@material-ui/core/Modal';
+import Typography from '@material-ui/core/Typography';
+import { Checkbox } from '@material-ui/core';
 
 const styles = (theme) => ({
   root: {
@@ -23,7 +25,8 @@ const styles = (theme) => ({
     borderColor: theme.palette.border.main,
     width: '100%',
     borderRadius: 8,
-    paddingTop: theme.spacing(1),
+    padding: theme.spacing(2),
+    paddingBottom: theme.spacing(1),
   },
   rootPop: {
     position: 'fixed',
@@ -43,9 +46,34 @@ const styles = (theme) => ({
   },
   optionsWrapper: {
     width: '100%',
-    display: 'flex',
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    // marginBottom: theme.spacing(1),
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontWeight: 700,
+  },
+  contentContainer: {
+    marginTop: theme.spacing(1),
+  },
+  checkboxContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  checkbox: {
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  },
+  text: {
+    wordWrap: 'break-word',
+  },
+  textContainer: {
+    minWidth: '0',
   },
 });
 
@@ -93,6 +121,7 @@ class TodoNote extends Component {
   }
 
   handleHoverOut() {
+    console.log('hover out');
     if (this.state.hovered) {
       this.setState({ hovered: false });
     }
@@ -101,46 +130,72 @@ class TodoNote extends Component {
   render() {
     const { classes, note, mainIdx, todosStore } = this.props;
     const { editing, focused, hovered } = this.state;
-    console.log('render', editing);
+    let content;
+
+    if (note.contentId.checkbox) {
+      content = note.contentId.listContent.map((el) => (
+        <div key={el._id} className={classes.checkboxContainer}>
+          <Checkbox
+            size="small"
+            onClick={(e) => e.stopPropagation()}
+          ></Checkbox>
+          <div className={classes.textContainer}>
+            <Typography variant="body2" className={classes.text}>
+              {el.text}
+            </Typography>
+          </div>
+        </div>
+      ));
+    } else {
+      content = (
+        <Typography variant="body2" className={classes.text}>
+          {note.contentId.textContent}
+        </Typography>
+      );
+    }
+    console.log('render');
     return (
       <React.Fragment>
         <Paper
           classes={{ root: classes.root }}
-          // onMouseEnter={this.handleHoverIn}
-          // onMouseLeave={this.handleHoverOut}
+          onMouseOver={this.handleHoverIn}
+          onMouseLeave={this.handleHoverOut}
           onClick={this.handleEditing}
           elevation={2}
         >
-          <InputBase
-            placeholder="Title"
-            value={note.title}
-            classes={{
-              root: classes.inputTitleWrapper,
-              input: classes.inputTitle,
-            }}
-          ></InputBase>
+          <Typography className={classes.title} variant="body1">
+            {note.title}
+          </Typography>
 
-          <div>
+          <div className={classes.contentContainer}>{content}</div>
+
+          {/* <div>
             <TodosContentWrapper
               todosStore={todosStore}
               note={note.contentId}
               creating={false}
             ></TodosContentWrapper>
-          </div>
+          </div> */}
 
-          {/* <Fade in={hovered}>
-          <div className={classes.optionsWrapper}>
-            <TodosCreateActions
-              todosStore={todosStore}
-              creating={false}
-              mainId={mainId}
-              mainIdx={mainIdx}
-            ></TodosCreateActions>
-          </div>
-        </Fade> */}
+          <Fade in={hovered}>
+            <div className={classes.optionsWrapper}>
+              <TodosCreateActions
+                todosStore={todosStore}
+                creating={false}
+                note={note.contentId}
+                handleHoverOut={this.handleHoverOut}
+              ></TodosCreateActions>
+            </div>
+          </Fade>
         </Paper>
-        <Modal open={editing} onClose={this.handleNotEditing}>
-          <div>Hello</div>
+        <Modal
+          open={editing}
+          onClose={this.handleNotEditing}
+          className={classes.modal}
+        >
+          <Paper
+            style={{ height: '80px', width: '80px', outline: 'none' }}
+          ></Paper>
         </Modal>
       </React.Fragment>
     );
