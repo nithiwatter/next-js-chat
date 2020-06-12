@@ -44,6 +44,7 @@ const styles = (theme) => ({
 class TodosTextContent extends Component {
   constructor(props) {
     super(props);
+    this.inputRef = React.createRef();
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
@@ -63,6 +64,7 @@ class TodosTextContent extends Component {
           classes={{ root: classes.inputTextWrapper }}
           value={note.textContent}
           onChange={this.handleInputChange}
+          inputRef={this.inputRef}
           multiline
         ></InputBase>
       </div>

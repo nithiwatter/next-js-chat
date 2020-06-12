@@ -16,11 +16,11 @@ class Todos {
     };
     this.editMode = false;
     this.editNote = false;
+    this.notes = notes;
 
     this.edit = this.edit.bind(this);
     this.editWithList = this.editWithList.bind(this);
     this.notEdit = this.notEdit.bind(this);
-    this.notes = notes;
     this.submit = this.submit.bind(this);
   }
 

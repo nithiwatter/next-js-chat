@@ -1,20 +1,11 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import Collapse from '@material-ui/core/Collapse';
 import { withStyles } from '@material-ui/core/styles';
-import TodosContentWrapper from './TodosContentWrapper';
-import TodosCreateContent from './TodosCreateContent';
+import TodosPopup from './TodosPopup';
 import TodosCreateActions from './TodosCreateActions';
-import Button from '@material-ui/core/Button';
-import PinDropIcon from '@material-ui/icons/PinDrop';
 import IconButton from '@material-ui/core/IconButton';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { observer } from 'mobx-react';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Fade from '@material-ui/core/Fade';
-import Grow from '@material-ui/core/Grow';
 import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
 import { Checkbox } from '@material-ui/core';
@@ -28,7 +19,6 @@ const styles = (theme) => ({
     borderRadius: 8,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(1),
-    // paddingBottom: theme.spacing(1),
   },
   rootPop: {
     position: 'fixed',
@@ -68,7 +58,7 @@ const styles = (theme) => ({
   },
   titleContainer: {
     display: 'flex',
-    // alignItems: 'center',
+    alignItems: 'center',
   },
   checkboxContainer: {
     display: 'flex',
@@ -162,6 +152,7 @@ class TodoNote extends Component {
           onMouseLeave={this.handleHoverOut}
           onClick={this.handleEditing}
           elevation={hovered ? 4 : 0}
+          style={editing ? { opacity: 0 } : null}
         >
           <div className={classes.mainContainer}>
             <div className={classes.titleContainer}>
@@ -172,7 +163,7 @@ class TodoNote extends Component {
               </div>
 
               <Fade in={hovered}>
-                <div style={{ marginLeft: 'auto' }}>
+                <div style={{ marginLeft: 'auto', alignSelf: 'flex-start' }}>
                   <IconButton size="small">
                     <FavoriteIcon></FavoriteIcon>
                   </IconButton>
@@ -194,18 +185,22 @@ class TodoNote extends Component {
             </div>
           </Fade>
         </Paper>
+
         <Modal
           open={editing}
           onClose={this.handleNotEditing}
           className={classes.modal}
+          closeAfterTransition
         >
-          <Paper style={{ outline: 'none' }}>
-            <TodosContentWrapper
-              todosStore={todosStore}
-              note={note.contentId}
-              creating={false}
-            ></TodosContentWrapper>
-          </Paper>
+          <Fade in={editing}>
+            <div style={{ outline: 'none' }}>
+              <TodosPopup
+                note={note}
+                todosStore={todosStore}
+                handleHoverOut={this.handleHoverOut}
+              ></TodosPopup>
+            </div>
+          </Fade>
         </Modal>
       </React.Fragment>
     );

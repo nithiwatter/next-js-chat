@@ -27,7 +27,8 @@ const styles = (theme) => ({
   },
   inputTextWrapper: {
     paddingLeft: theme.spacing(2),
-    width: '85%',
+    width: '80%',
+    minHeight: '42px',
   },
   visible: {
     opacity: 100,
